@@ -1,6 +1,7 @@
 package com.ll.netmong.member.entity;
 
 import com.ll.netmong.common.BaseEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -25,6 +26,7 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ProviderTypeCode providerTypeCode;
 
+    @Column(unique = true)
     private String username;
     private String password;
 

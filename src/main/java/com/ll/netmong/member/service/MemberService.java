@@ -1,6 +1,7 @@
 package com.ll.netmong.member.service;
 
 import com.ll.netmong.member.dto.JoinRequest;
+import com.ll.netmong.member.dto.UsernameRequest;
 import com.ll.netmong.member.entity.AuthLevel;
 import com.ll.netmong.member.entity.Member;
 import com.ll.netmong.member.entity.ProviderTypeCode;
@@ -40,5 +41,10 @@ public class MemberService {
         member.encryptPassword(passwordEncoder);
 
         return memberRepository.save(member);
+    }
+
+    public boolean isDuplicateUsername(UsernameRequest usernameRequest) {
+        String username = usernameRequest.getUsername();
+        return memberRepository.findByUsername(username).isPresent();
     }
 }

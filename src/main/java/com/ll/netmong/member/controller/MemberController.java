@@ -1,9 +1,15 @@
 package com.ll.netmong.member.controller;
 
+import com.ll.netmong.common.RsData;
+import com.ll.netmong.member.dto.JoinRequest;
 import com.ll.netmong.member.entity.Member;
 import com.ll.netmong.member.service.MemberService;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -18,8 +24,17 @@ public class MemberController {
     }
 
     //db테스트용으로 잠시 get으로 해놓음
-    @GetMapping("/create")
+    @PostMapping ("/create")
     public Member create(){
         return memberService.save();
+    }
+
+    @PostMapping ("/api/v1/join")
+    public RsData<Member> join(@Valid @RequestBody JoinRequest joinRequest){
+
+        //create
+        Member user = memberService.createMember(joinRequest);
+
+        return RsData.successOf(user);
     }
 }

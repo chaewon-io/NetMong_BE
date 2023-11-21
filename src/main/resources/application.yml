@@ -7,9 +7,6 @@ spring:
     active:
     include: secret
 
-  h2:
-    console:
-      enabled: true
 
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver

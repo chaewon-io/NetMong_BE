@@ -3,12 +3,9 @@ package com.ll.netmong.security;
 import com.ll.netmong.member.dto.MemberDto;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 @Getter
 public class CustomUserDetails implements UserDetails {
@@ -30,10 +27,6 @@ public class CustomUserDetails implements UserDetails {
         this.password = dto.getPassword();
         this.email = dto.getEmail();
         this.realname = dto.getRealname();
-        Collection<GrantedAuthority> roles =
-                Arrays.stream(dto.getRoles().split(","))
-                        .map(role -> new SimpleGrantedAuthority(username))
-                        .collect(Collectors.toList());
-        this.authorities = roles;
+        this.authorities = dto.getRoles();
     }
 }

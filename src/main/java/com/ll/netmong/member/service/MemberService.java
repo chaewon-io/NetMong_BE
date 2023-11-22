@@ -88,4 +88,9 @@ public class MemberService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return authentication;
     }
+
+    public Member findByUsername(String username) throws Exception {
+        return memberRepository.findByUsername(username)
+                .orElseThrow(() -> new AccountNotFoundException("User not Found"));
+    }
 }

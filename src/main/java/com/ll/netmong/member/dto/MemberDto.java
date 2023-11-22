@@ -2,6 +2,9 @@ package com.ll.netmong.member.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.security.core.GrantedAuthority;
+
+import java.util.Collection;
 
 @Getter
 @Builder(toBuilder = true)
@@ -11,5 +14,5 @@ public class MemberDto {
 
     private String realname;
     private String email;
-    private String roles;
+    private Collection<? extends GrantedAuthority> roles;
 }

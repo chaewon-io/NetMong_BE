@@ -18,6 +18,7 @@ public class PostController {
     @ResponseStatus(HttpStatus.CREATED)
     public RsData postUpload(@RequestBody PostRequest postRequest) {
         postService.uploadPost(postRequest);
+
         return RsData.of("S-1", "게시물이 업로드되었습니다.");
     }
 
@@ -26,5 +27,12 @@ public class PostController {
         PostResponse postResponse = postService.getDetail(id);
 
         return RsData.of("S-1", "해당 게시물의 상세 내용입니다.", postResponse);
+    }
+
+    @PostMapping("/delete/{id}")
+    public RsData postDelete(@PathVariable long id) {
+        postService.deletePost(id);
+
+        return RsData.of("S-1", "해당 게시물이 삭제되었습니다.");
     }
 }

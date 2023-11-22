@@ -7,4 +7,5 @@ import com.ll.netmong.domain.post.entity.Post;
 public interface PostService {
     void uploadPost(PostRequest postRequest);
     PostResponse getDetail(long id);
+    void deletePost(long id);
 }

@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -43,10 +45,17 @@ public class PostCommentServiceImpl implements PostCommentService {
         return postCommentRepository.save(comment);
     }
 
-
     @Override
     @Transactional
     public void deleteComment(Long id) {
         postCommentRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public List<PostComment> getCommentsOfPost(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id=" + postId));
+        return post.getComments();
     }
 }

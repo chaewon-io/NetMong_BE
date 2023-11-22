@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/comment/post")
@@ -35,6 +37,12 @@ public class PostCommentController {
     public RsData<String> deleteComment(@PathVariable Long id) {
         service.deleteComment(id);
         return RsData.successOf("댓글이 삭제되었습니다.");
+    }
+
+    @GetMapping("/{postId}/list")
+    public RsData<List<PostComment>> getCommentsOfPost(@PathVariable Long postId) {
+        List<PostComment> comments = service.getCommentsOfPost(postId);
+        return RsData.successOf(comments);
     }
 
 }

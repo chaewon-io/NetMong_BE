@@ -12,6 +12,6 @@ public interface PostCommentRepository extends JpaRepository<PostComment, Long> 
 
     @Transactional(readOnly = true)
     @Modifying
-    @Query(value = "ALTER TABLE postComment AUTO_INCREMENT = 1", nativeQuery = true)
+    @Query(value = "ALTER TABLE post_comment AUTO_INCREMENT = 1", nativeQuery = true)
     void clearAutoIncrement();
 }

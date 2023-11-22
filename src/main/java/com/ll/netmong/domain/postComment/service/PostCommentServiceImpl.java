@@ -33,10 +33,16 @@ public class PostCommentServiceImpl implements PostCommentService {
     }
 
     @Override
-    public void modify(PostComment postComment, String content) {
-        postComment.setContent(content);
-        postCommentRepository.save(postComment);
+    @Transactional
+    public PostComment updateComment(Long id, PostCommentRequest request) {
+        PostComment comment = postCommentRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 없습니다. id=" + id));
+
+        comment.update(request.getContent());
+
+        return postCommentRepository.save(comment);
     }
+
 
     @Override
     public void delete(PostComment postComment) {

@@ -35,4 +35,11 @@ public class PostController {
 
         return RsData.of("S-1", "해당 게시물이 삭제되었습니다.");
     }
+
+    @PostMapping("/update/{id}")
+    public RsData postUpdate(@PathVariable long id, @RequestBody PostRequest updatedPostRequest) {
+        postService.updatePost(id, updatedPostRequest);
+
+        return RsData.of("S-1", "해당 게시물이 수정되었습니다.");
+    }
 }

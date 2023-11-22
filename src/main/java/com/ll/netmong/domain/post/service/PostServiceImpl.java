@@ -29,7 +29,7 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public PostResponse getDetail(long id) {
         Post post = postRepository.findById(id)
-                .orElseThrow(EntityNotFoundException::new);;
+                .orElseThrow(EntityNotFoundException::new);
 
         return new PostResponse(post);
     }
@@ -38,5 +38,17 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public void deletePost(long id) {
         postRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public void updatePost(long id, PostRequest updatedPostRequest) {
+        Post originPost = postRepository.findById(id)
+                .orElseThrow(EntityNotFoundException::new);
+
+        originPost.setTitle(updatedPostRequest.getTitle());
+        originPost.setContent(updatedPostRequest.getContent());
+
+        postRepository.save(originPost);
     }
 }

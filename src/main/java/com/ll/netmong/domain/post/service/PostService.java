@@ -8,4 +8,5 @@ public interface PostService {
     void uploadPost(PostRequest postRequest);
     PostResponse getDetail(long id);
     void deletePost(long id);
+    void updatePost(long id, PostRequest updatedPostRequest);
 }

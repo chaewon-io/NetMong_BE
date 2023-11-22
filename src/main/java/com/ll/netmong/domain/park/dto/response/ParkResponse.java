@@ -11,13 +11,16 @@ public class ParkResponse {
     private double latitude;
     private double longitude;
     private String phoneNumber;
+    private String state;
+    private String city;
 
-    public ParkResponse(String parkNm, String lnmadr, double latitude, double longitude, String phoneNumber) {
+    public ParkResponse(String parkNm, String lnmadr, double latitude, double longitude, String phoneNumber, String state, String city) {
         this.parkNm = parkNm;
         this.lnmadr = lnmadr;
         this.latitude = latitude;
         this.longitude = longitude;
         this.phoneNumber = phoneNumber;
+        this.state = state;
+        this.city = city;
     }
-
 }

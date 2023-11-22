@@ -10,4 +10,6 @@ public interface ParkService {
 
     ParkResponse getPark(Long id);
 
+    List<ParkResponse> getParksByStateAndCity(String state, String city);
+
 }

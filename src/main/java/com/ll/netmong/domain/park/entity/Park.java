@@ -35,6 +35,12 @@ public class Park extends BaseEntity {
     @Column(name = "phoneNumber")
     private String phoneNumber;
 
+    @Column(name = "state")
+    private String state;
+
+    @Column(name = "city")
+    private String city;
+
     @OneToMany(mappedBy = "park", fetch = LAZY)
     private List<ParkComent> parkComentList;
 

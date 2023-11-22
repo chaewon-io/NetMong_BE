@@ -36,7 +36,7 @@ public class ParkServiceImpl implements ParkService {
         Optional<Park> park = parkRepository.findById(id);
         if (park.isPresent()) {
             Park p = park.get();
-            return new ParkResponse(p.getParkNm(), p.getLnmadr(), p.getLatitude(), p.getLongitude(), p.getPhoneNumber());
+            return new ParkResponse(p.getParkNm(), p.getLnmadr(), p.getLatitude(), p.getLongitude(), p.getPhoneNumber(), p.getState(), p.getCity());
         } else {
             throw new IllegalArgumentException("해당 ID의 공원이 존재하지 않습니다: " + id);
         }
@@ -60,7 +60,15 @@ public class ParkServiceImpl implements ParkService {
         }
 
         return parks.stream()
-                .map(park -> new ParkResponse(park.getParkNm(), park.getLnmadr(), park.getLatitude(), park.getLongitude(), park.getPhoneNumber()))
+                .map(park -> new ParkResponse(park.getParkNm(), park.getLnmadr(), park.getLatitude(), park.getLongitude(), park.getPhoneNumber(), park.getState(), park.getCity()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ParkResponse> getParksByStateAndCity(String state, String city) {
+        List<Park> parks = parkRepository.findByLnmadrStartingWith(state + " " + city);
+        return parks.stream()
+                .map(park -> new ParkResponse(park.getParkNm(), park.getLnmadr(), park.getLatitude(), park.getLongitude(), park.getPhoneNumber(), park.getState(), park.getCity()))
                 .collect(Collectors.toList());
     }
 
@@ -110,6 +118,9 @@ public class ParkServiceImpl implements ParkService {
                     String longitudeStr = element.getElementsByTagName("longitude").item(0).getTextContent();
                     double longitude = longitudeStr.isEmpty() ? 0 : Double.parseDouble(longitudeStr);
                     String phoneNumber = element.getElementsByTagName("phoneNumber").item(0).getTextContent();
+                    String[] lnmadrSplit = lnmadr.split("\\s");
+                    String state = lnmadrSplit.length > 0 ? lnmadrSplit[0] : "";
+                    String city = lnmadrSplit.length > 1 ? lnmadrSplit[1] : "";
 
                     Park park = Park.builder()
                             .parkNm(parkNm)
@@ -117,6 +128,8 @@ public class ParkServiceImpl implements ParkService {
                             .latitude(latitude)
                             .longitude(longitude)
                             .phoneNumber(phoneNumber)
+                            .state(state)
+                            .city(city)
                             .build();
 
                     parks.add(park);

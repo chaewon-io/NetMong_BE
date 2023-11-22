@@ -12,5 +12,7 @@ public class ParkRequest {
     private double latitude;
     private double longitude;
     private String phoneNumber;
+    private String state;
+    private String city;
 
 }

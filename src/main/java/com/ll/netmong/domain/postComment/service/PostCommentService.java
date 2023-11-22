@@ -9,6 +9,6 @@ public interface PostCommentService {
 
     PostComment updateComment(Long id, PostCommentRequest request);
 
-    void delete(PostComment postComment);
+    void deleteComment(Long id);
 
 }

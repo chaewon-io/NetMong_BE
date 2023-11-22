@@ -30,4 +30,11 @@ public class PostCommentController {
         return RsData.successOf(updatedComment);
     }
 
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public RsData<String> deleteComment(@PathVariable Long id) {
+        service.deleteComment(id);
+        return RsData.successOf("댓글이 삭제되었습니다.");
+    }
+
 }

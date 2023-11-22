@@ -45,7 +45,8 @@ public class PostCommentServiceImpl implements PostCommentService {
 
 
     @Override
-    public void delete(PostComment postComment) {
-        postCommentRepository.delete(postComment);
+    @Transactional
+    public void deleteComment(Long id) {
+        postCommentRepository.deleteById(id);
     }
 }

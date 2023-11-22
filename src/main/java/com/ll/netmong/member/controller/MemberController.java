@@ -49,10 +49,10 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public RsData login(@Valid @RequestBody LoginDto loginDto) throws Exception {
+    public RsData<TokenDto> login(@Valid @RequestBody LoginDto loginDto) throws Exception {
 
-        // TODO: 실패 처리도 보내줘야함.
-        RsData<TokenDto> rsLoginToken = memberService.login(loginDto);
-        return rsLoginToken;
+        TokenDto tokenDto = memberService.login(loginDto);
+
+        return RsData.successOf(tokenDto);
     }
 }

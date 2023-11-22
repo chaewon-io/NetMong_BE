@@ -1,6 +1,5 @@
 package com.ll.netmong.member.service;
 
-import com.ll.netmong.common.RsData;
 import com.ll.netmong.jwt.TokenDto;
 import com.ll.netmong.jwt.TokenProvider;
 import com.ll.netmong.member.dto.JoinRequest;
@@ -61,7 +60,7 @@ public class MemberService {
         return memberRepository.findByUsername(username).isPresent();
     }
 
-    public RsData<TokenDto> login(LoginDto loginDto) throws Exception {
+    public TokenDto login(LoginDto loginDto) throws Exception {
 
         Member member = memberRepository.findByUsername(loginDto.getUsername())
                 .orElseThrow(() -> new AccountNotFoundException("User not Found"));
@@ -72,9 +71,7 @@ public class MemberService {
         }
 
         Authentication authentication = getAuthentication(loginDto);
-        TokenDto tokenDto = tokenProvider.createToken(authentication);
-
-        return RsData.successOf(tokenDto);
+        return tokenProvider.createToken(authentication);
     }
 
     private Authentication getAuthentication(LoginDto loginDto) {

@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface PostCommentService {
 
-    void addPostComment(long postId, PostCommentRequest postCommentRequest);
+    PostComment addPostComment(long postId, PostCommentRequest postCommentRequest);
 
     PostComment updateComment(Long id, PostCommentRequest request);
 

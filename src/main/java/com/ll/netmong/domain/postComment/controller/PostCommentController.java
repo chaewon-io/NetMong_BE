@@ -4,9 +4,9 @@ import com.ll.netmong.common.RsData;
 import com.ll.netmong.domain.postComment.dto.request.PostCommentRequest;
 import com.ll.netmong.domain.postComment.entity.PostComment;
 import com.ll.netmong.domain.postComment.service.PostCommentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,9 +20,9 @@ public class PostCommentController {
 
     @PostMapping("/{postId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public RsData addComment(@PathVariable long postId, @RequestBody PostCommentRequest postCommentRequest) {
-        service.addPostComment(postId, postCommentRequest);
-        return RsData.of("S-1", "댓글이 추가되었습니다.");
+    public RsData<PostComment> addPostComment(@PathVariable Long postId, @Valid @RequestBody PostCommentRequest request) {
+        PostComment newComment = service.addPostComment(postId, request);
+        return RsData.successOf(newComment);
     }
 
     @PatchMapping("/{id}")

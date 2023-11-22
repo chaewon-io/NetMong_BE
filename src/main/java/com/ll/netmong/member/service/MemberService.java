@@ -71,7 +71,13 @@ public class MemberService {
             throw new NotMatchPasswordException("Mismatch Password");
         }
 
-        //토큰 생성, TODO: 분리
+        Authentication authentication = getAuthentication(loginDto);
+        TokenDto tokenDto = tokenProvider.createToken(authentication);
+
+        return RsData.successOf(tokenDto);
+    }
+
+    private Authentication getAuthentication(LoginDto loginDto) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(
                         loginDto.getUsername(),
@@ -80,9 +86,6 @@ public class MemberService {
         Authentication authentication =
                 authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        TokenDto tokenDto = tokenProvider.createToken(authentication);
-
-        return RsData.successOf(tokenDto);
+        return authentication;
     }
 }

@@ -10,6 +10,7 @@ import com.ll.netmong.member.entity.Member;
 import com.ll.netmong.member.entity.ProviderTypeCode;
 import com.ll.netmong.member.exception.NotMatchPasswordException;
 import com.ll.netmong.member.repository.MemberRepository;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.security.auth.login.AccountNotFoundException;
 
 @Service
+@Builder
 @RequiredArgsConstructor
 public class MemberService {
 
@@ -32,12 +34,6 @@ public class MemberService {
 
     public Member findById(long id) {
         return memberRepository.findById(id).orElseThrow();
-    }
-
-    @Transactional
-    public Member save() {
-        Member member = Member.builder().username("newUser1").build();
-        return memberRepository.save(member);
     }
 
     @Transactional
@@ -82,6 +78,7 @@ public class MemberService {
 
         Authentication authentication =
                 authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return authentication;
     }

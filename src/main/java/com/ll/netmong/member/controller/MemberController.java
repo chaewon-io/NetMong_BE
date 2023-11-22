@@ -23,12 +23,6 @@ public class MemberController {
         return memberService.findById(1L);
     }
 
-    //db테스트용으로 잠시 get으로 해놓음
-    @PostMapping("/create")
-    public Member create() {
-        return memberService.save();
-    }
-
     @PostMapping("/join")
     public RsData<Member> join(@Valid @RequestBody JoinRequest joinRequest) {
 

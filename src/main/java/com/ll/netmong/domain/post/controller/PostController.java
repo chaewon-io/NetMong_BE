@@ -2,6 +2,7 @@ package com.ll.netmong.domain.post.controller;
 
 import com.ll.netmong.common.RsData;
 import com.ll.netmong.domain.post.dto.request.PostRequest;
+import com.ll.netmong.domain.post.dto.response.PostResponse;
 import com.ll.netmong.domain.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,5 +19,12 @@ public class PostController {
     public RsData postUpload(@RequestBody PostRequest postRequest) {
         postService.uploadPost(postRequest);
         return RsData.of("S-1", "게시물이 업로드되었습니다.");
+    }
+
+    @GetMapping("/detail/{id}")
+    public RsData postDetail(@PathVariable long id) {
+        PostResponse postResponse = postService.getDetail(id);
+
+        return RsData.of("S-1", "해당 게시물의 상세 내용입니다.", postResponse);
     }
 }

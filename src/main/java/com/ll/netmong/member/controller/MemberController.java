@@ -1,7 +1,9 @@
 package com.ll.netmong.member.controller;
 
 import com.ll.netmong.common.RsData;
+import com.ll.netmong.jwt.TokenDto;
 import com.ll.netmong.member.dto.JoinRequest;
+import com.ll.netmong.member.dto.LoginDto;
 import com.ll.netmong.member.dto.UsernameRequest;
 import com.ll.netmong.member.entity.Member;
 import com.ll.netmong.member.service.MemberService;
@@ -44,5 +46,13 @@ public class MemberController {
         }
 
         return RsData.of("S-1", "사용가능한 아이디입니다.");
+    }
+
+    @PostMapping("/login")
+    public RsData login(@Valid @RequestBody LoginDto loginDto) throws Exception {
+
+        // TODO: 실패 처리도 보내줘야함.
+        RsData<TokenDto> rsLoginToken = memberService.login(loginDto);
+        return rsLoginToken;
     }
 }

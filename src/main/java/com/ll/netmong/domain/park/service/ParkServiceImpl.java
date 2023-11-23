@@ -67,8 +67,9 @@ public class ParkServiceImpl implements ParkService {
     @Override
     public List<ParkResponse> getParksByStateAndCity(String state, String city) {
         List<Park> parks = parkRepository.findByLnmadrStartingWith(state + " " + city);
+
         return parks.stream()
-                .map(park -> new ParkResponse(park.getParkNm(), park.getLnmadr(), park.getLatitude(), park.getLongitude(), park.getPhoneNumber(), park.getState(), park.getCity()))
+                .map(Park::toResponse)
                 .collect(Collectors.toList());
     }
 
@@ -152,7 +153,6 @@ public class ParkServiceImpl implements ParkService {
             parkRepository.saveAll(parks);
             return RsData.of("S-1", "공원 정보 저장 성공");
         } catch (Exception e) {
-            e.printStackTrace();
             return RsData.of("F-1", "공원 정보 저장 중 다음과 같은 오류가 발생했습니다. 오류: " + e.getMessage());
         }
     }

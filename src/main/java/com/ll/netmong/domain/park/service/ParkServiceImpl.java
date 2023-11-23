@@ -37,13 +37,10 @@ public class ParkServiceImpl implements ParkService {
 
     @Override
     public ParkResponse getPark(Long parkId) {
-        Optional<Park> park = parkRepository.findById(parkId);
-        if (park.isPresent()) {
-            Park p = park.get();
-            return new ParkResponse(p.getParkNm(), p.getLnmadr(), p.getLatitude(), p.getLongitude(), p.getPhoneNumber(), p.getState(), p.getCity());
-        } else {
-            throw new IllegalArgumentException("해당 ID의 공원이 존재하지 않습니다: " + parkId);
-        }
+        Park park = parkRepository.findById(parkId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 공원이 존재하지 않습니다: " + parkId));
+
+        return park.toResponse();
     }
 
     @Override

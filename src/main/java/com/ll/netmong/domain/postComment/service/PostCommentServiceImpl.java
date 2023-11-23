@@ -23,7 +23,7 @@ public class PostCommentServiceImpl implements PostCommentService {
 
     @Override
     @Transactional
-    public PostComment addPostComment(long postId, PostCommentRequest postCommentRequest) {
+    public PostComment addPostComment(Long postId, PostCommentRequest postCommentRequest) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new DataNotFoundException("해당하는 게시물을 찾을 수 없습니다."));
         PostComment comment = PostComment.builder()

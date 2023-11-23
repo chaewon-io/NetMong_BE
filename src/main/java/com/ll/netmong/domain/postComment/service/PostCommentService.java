@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface PostCommentService {
 
-    PostComment addPostComment(long postId, PostCommentRequest postCommentRequest);
+    PostComment addPostComment(Long postId, PostCommentRequest postCommentRequest);
 
     PostComment updateComment(Long id, PostCommentRequest request);
 
@@ -15,5 +15,4 @@ public interface PostCommentService {
 
     List<PostComment> getCommentsOfPost(Long postId);
 
-
-    }
+}

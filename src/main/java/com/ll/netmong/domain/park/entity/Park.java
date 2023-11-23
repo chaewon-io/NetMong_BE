@@ -1,6 +1,7 @@
 package com.ll.netmong.domain.park.entity;
 
 import com.ll.netmong.common.BaseEntity;
+import com.ll.netmong.domain.park.dto.response.ParkResponse;
 import com.ll.netmong.domain.parkComent.entity.ParkComent;
 import com.ll.netmong.domain.parkLiked.entity.ParkLiked;
 import jakarta.persistence.Column;
@@ -46,5 +47,17 @@ public class Park extends BaseEntity {
 
     @OneToMany(mappedBy = "park", fetch = LAZY)
     private List<ParkLiked> parkLiked;
+
+    public ParkResponse toResponse() {
+        return new ParkResponse(
+                this.getParkNm(),
+                this.getLnmadr(),
+                this.getLatitude(),
+                this.getLongitude(),
+                this.getPhoneNumber(),
+                this.getState(),
+                this.getCity()
+        );
+    }
 
 }

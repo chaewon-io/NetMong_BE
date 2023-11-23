@@ -29,7 +29,7 @@ public class FakeMemberRepository implements MemberRepository {
                     .realName(member.getRealName())
                     .providerTypeCode(ProviderTypeCode.NETMONG)
                     .authLevel(AuthLevel.MEMBER)
-                    .realName(member.getRealName())
+                    .password("encoded"+member.getPassword())
                     .build();
             data.add(newUser);
             return newUser;

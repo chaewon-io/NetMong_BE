@@ -1,5 +1,6 @@
 package com.ll.netmong.member.service;
 
+import com.ll.netmong.jwt.TokenService;
 import com.ll.netmong.member.dto.JoinRequest;
 import com.ll.netmong.member.dto.UsernameRequest;
 import com.ll.netmong.member.entity.AuthLevel;
@@ -18,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MemberServiceTest {
 
     private MemberService memberService;
+    private TokenService tokenService;
 
     @BeforeEach
     void init() {
@@ -26,17 +28,18 @@ class MemberServiceTest {
         FakeTokenProvider fakeTokenProvider = new FakeTokenProvider("1", 84900L, "1", 90000L);
         FakeAuthenticationManagerBuilder fakeAuthenticationManagerBuilder = new FakeAuthenticationManagerBuilder();
 
+        this.tokenService = new TokenService(fakeTokenProvider, fakeAuthenticationManagerBuilder);
+
         this.memberService = MemberService.builder()
                 .memberRepository(fakeMemberRepository)
                 .passwordEncoder(fakePasswordEncoder)
-                .tokenProvider(fakeTokenProvider)
-                .authenticationManagerBuilder(fakeAuthenticationManagerBuilder)
+                .tokenService(tokenService)
                 .build();
 
         Member member1 = Member.builder()
                 .id(1L)
                 .username("member1")
-                .password("password1")
+                .password("encodedpassword1")
                 .email("aaa@aaa.com")
                 .realName("realMember1")
                 .authLevel(AuthLevel.MEMBER)
@@ -88,7 +91,5 @@ class MemberServiceTest {
         assertThat(result).isTrue();
 
     }
-
-    //TODO: loginTest작성
 
 }

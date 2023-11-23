@@ -2,6 +2,8 @@ package com.ll.netmong.member.mock;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Objects;
+
 public class FakePasswordEncoder implements PasswordEncoder {
     @Override
     public String encode(CharSequence rawPassword) {
@@ -10,7 +12,7 @@ public class FakePasswordEncoder implements PasswordEncoder {
 
     @Override
     public boolean matches(CharSequence rawPassword, String encodedPassword) {
-        return false;
+        return Objects.equals(encode(rawPassword),encodedPassword);
     }
 
     @Override

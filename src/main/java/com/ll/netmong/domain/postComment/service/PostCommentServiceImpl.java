@@ -7,7 +7,6 @@ import com.ll.netmong.domain.postComment.repository.PostCommentRepository;
 
 import com.ll.netmong.post.Post;
 import com.ll.netmong.post.PostRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +29,7 @@ public class PostCommentServiceImpl implements PostCommentService {
         PostComment comment = PostComment.builder()
                 .post(post)
                 .content(postCommentRequest.getContent())
+                .isDeleted(false) // 댓글이 생성될 때는 'isDeleted' 필드를 false로 설정
                 .build();
         post.getComments().add(comment);
         return postCommentRepository.save(comment);
@@ -70,6 +70,7 @@ public class PostCommentServiceImpl implements PostCommentService {
                 .orElseThrow(() -> new DataNotFoundException("해당 댓글이 없습니다. id: " + commentId));
         PostComment childComment = PostComment.builder()
                 .content(request.getContent())
+                .isDeleted(false) // 댓글이 생성될 때는 'isDeleted' 필드를 false로 설정
                 .build();
         parentComment.addChildComment(childComment);
         return postCommentRepository.save(childComment);

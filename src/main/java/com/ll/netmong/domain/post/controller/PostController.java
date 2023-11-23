@@ -22,10 +22,8 @@ import java.util.UUID;
 public class PostController {
     private final PostService postService;
 
-    @Value("${domain}")
-    String  imagesUploadPath ;
-    @Value("${domain}")
-    String  domain;
+    @Value("${spring.servlet.multipart.location}")
+    private String postImagePath;
 
     @PostMapping("/upload")
     @ResponseStatus(HttpStatus.CREATED)
@@ -33,14 +31,14 @@ public class PostController {
         String imageName = UUID.randomUUID() + "_" + image.getOriginalFilename(); //동일한 이미지명의 이미지가 업로드되지 않도록
 
         try {
-            Path imagePath = Path.of(imagesUploadPath, imageName);
+            Path imagePath = Path.of(postImagePath, imageName);
 
             Files.copy(image.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException ex) {
             throw new RuntimeException("Failed to upload image");
         }
 
-        postRequest.setImageUrl(domain + "/" + imagesUploadPath + "/" + imageName);
+        postRequest.setImageUrl(postImagePath + imageName);
 
         postService.uploadPost(image, postRequest);
 

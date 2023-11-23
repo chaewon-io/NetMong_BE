@@ -5,6 +5,7 @@ import com.ll.netmong.domain.post.dto.request.PostRequest;
 import com.ll.netmong.domain.post.dto.response.PostResponse;
 import com.ll.netmong.domain.post.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,8 +22,10 @@ import java.util.UUID;
 public class PostController {
     private final PostService postService;
 
-    String  imagesUploadPath = "images";
-    String  domain = "http://127.0.0.1:9000";
+    @Value("${domain}")
+    String  imagesUploadPath ;
+    @Value("${domain}")
+    String  domain;
 
     @PostMapping("/upload")
     @ResponseStatus(HttpStatus.CREATED)

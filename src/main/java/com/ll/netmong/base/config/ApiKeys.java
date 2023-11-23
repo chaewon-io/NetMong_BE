@@ -1,4 +1,4 @@
-package com.ll.netmong.config;
+package com.ll.netmong.base.config;
 
 public class ApiKeys {
 

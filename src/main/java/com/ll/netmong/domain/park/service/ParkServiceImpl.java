@@ -1,7 +1,7 @@
 package com.ll.netmong.domain.park.service;
 
+import com.ll.netmong.base.config.ApiKeys;
 import com.ll.netmong.common.RsData;
-import com.ll.netmong.config.ApiKeys;
 import com.ll.netmong.domain.park.dto.response.ParkResponse;
 import com.ll.netmong.domain.park.entity.Park;
 import com.ll.netmong.domain.park.repository.ParkRepository;

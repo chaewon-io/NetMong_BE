@@ -1,4 +1,4 @@
-package com.ll.netmong.config;
+package com.ll.netmong.base.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

@@ -1,4 +1,4 @@
-package com.ll.netmong.config;
+package com.ll.netmong.base.config;
 
 import com.ll.netmong.base.jwt.JwtAccessDeniedHandler;
 import com.ll.netmong.base.jwt.JwtAuthenticationEntryPoint;

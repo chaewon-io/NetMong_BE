@@ -1,14 +1,13 @@
 package com.ll.netmong.domain.postComment.entity;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.ll.netmong.common.BaseEntity;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.post.Post;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +27,10 @@ public class PostComment extends BaseEntity {
     @Column(length = 500)
     private String content;
 
+    @ColumnDefault("FALSE")
+    @Column(nullable = false)
+    private Boolean isDeleted; // 삭제유무(true시 삭제된 댓글)
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     @JsonIgnore
@@ -43,6 +46,10 @@ public class PostComment extends BaseEntity {
     public void addChildComment(PostComment childComment) {
         this.childComments.add(childComment);
         childComment.setParentComment(this);
+    }
+
+    public void changeIsDeleted(Boolean isDeleted) {
+        this.isDeleted = isDeleted;
     }
 
 }

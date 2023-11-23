@@ -24,7 +24,6 @@ import java.net.URL;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,7 +51,7 @@ public class ParkServiceImpl implements ParkService {
             if (rsData.isSuccess()) {
                 parks = rsData.getData();
                 RsData<Void> saveResult = saveParks(parks);
-                if (!saveResult.isSuccess()) {
+                if (saveResult.isFail()) {
                     throw new RuntimeException(saveResult.getMsg());
                 }
             } else {
@@ -61,7 +60,7 @@ public class ParkServiceImpl implements ParkService {
         }
 
         return parks.stream()
-                .map(park -> new ParkResponse(park.getParkNm(), park.getLnmadr(), park.getLatitude(), park.getLongitude(), park.getPhoneNumber(), park.getState(), park.getCity()))
+                .map(Park::toResponse)
                 .collect(Collectors.toList());
     }
 

@@ -26,7 +26,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public PostResponse getDetail(long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("포스트를 찾을 수 없습니다."));
@@ -46,9 +46,11 @@ public class PostServiceImpl implements PostService {
         Post originPost = postRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("포스트를 찾을 수 없습니다."));
 
-        originPost.setTitle(updatedPostRequest.getTitle());
-        originPost.setContent(updatedPostRequest.getContent());
+        Post updatedPost = originPost.toBuilder()
+                .title(updatedPostRequest.getTitle())
+                .content(updatedPostRequest.getContent())
+                .build();
 
-        postRepository.save(originPost);
+        postRepository.save(updatedPost);
     }
 }

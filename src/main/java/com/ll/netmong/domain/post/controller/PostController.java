@@ -45,7 +45,7 @@ public class PostController {
         return RsData.of("S-1", "게시물이 업로드되었습니다.");
     }
 
-    @GetMapping("/detail/{id}")
+    @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public RsData postDetail(@PathVariable long id) {
         PostResponse postResponse = postService.getDetail(id);
@@ -53,7 +53,7 @@ public class PostController {
         return RsData.of("S-1", "해당 게시물의 상세 내용입니다.", postResponse);
     }
 
-    @PostMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public RsData postDelete(@PathVariable long id) {
         postService.deletePost(id);
@@ -61,7 +61,7 @@ public class PostController {
         return RsData.of("S-1", "해당 게시물이 삭제되었습니다.");
     }
 
-    @PostMapping("/update/{id}")
+    @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public RsData postUpdate(@PathVariable long id, @RequestBody PostRequest updatedPostRequest) {
         postService.updatePost(id, updatedPostRequest);

@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Setter
 @SuperBuilder(toBuilder = true)
 public class Post extends BaseEntity {
     @Column(length=100)

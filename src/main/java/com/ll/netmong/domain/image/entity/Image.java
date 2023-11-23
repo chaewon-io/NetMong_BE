@@ -22,12 +22,12 @@ public class Image extends BaseEntity {
     @Column(name = "image_url")
     private String imageUrl;
 
+    public Image(final String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
     public void setProduct(Product product) {
         this.product = product;
         product.getProductImages().add(this);
-    }
-
-    public Image(final String imageUrl) {
-        this.imageUrl = imageUrl;
     }
 }

@@ -37,12 +37,12 @@ public class Product extends BaseEntity {
     @Builder.Default
     private List<Image> productImages = new ArrayList<>();
 
+    public static Image createProductImage(String imageUrl) {
+        return new Image(imageUrl);
+    }
+
     public void addProductImage(Image productImage) {
         productImages.add(productImage);
         productImage.setProduct(this);
-    }
-
-    public static Image createProductImage(String imageUrl) {
-        return new Image(imageUrl);
     }
 }

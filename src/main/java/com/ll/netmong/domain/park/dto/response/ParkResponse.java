@@ -1,6 +1,7 @@
 package com.ll.netmong.domain.park.dto.response;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter

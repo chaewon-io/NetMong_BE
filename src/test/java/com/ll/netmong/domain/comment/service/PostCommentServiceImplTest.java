@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -106,26 +107,26 @@ class PostCommentServiceImplTest {
         Post post = Post.builder()
                 .title("Test Title")
                 .content("Test Content")
+                .comments(new ArrayList<>())
                 .build();
         postRepository.save(post);
 
         PostComment comment1 = PostComment.builder()
                 .content("First Comment")
-                .post(post)
                 .build();
 
         PostComment comment2 = PostComment.builder()
                 .content("Second Comment")
-                .post(post)
                 .build();
 
-        post.getComments().addAll(Arrays.asList(comment1, comment2));
+        post.addComment(comment1);
+        post.addComment(comment2);
         postCommentRepository.saveAll(Arrays.asList(comment1, comment2));
 
-        // when
+// when
         List<PostComment> comments = postCommentService.getCommentsOfPost(post.getId());
 
-        // then
+// then
         assertNotNull(comments);
         assertEquals(2, comments.size());
     }

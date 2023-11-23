@@ -39,7 +39,7 @@ public class PostCommentServiceImpl implements PostCommentService {
     @Transactional
     public PostComment updateComment(Long commentId, PostCommentRequest request) {
         PostComment comment = postCommentRepository.findById(commentId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 댓글이 없습니다. id=" + commentId));
+                .orElseThrow(() -> new DataNotFoundException("해당 댓글이 없습니다. id=" + commentId));
 
         comment.update(request.getContent());
 
@@ -49,14 +49,17 @@ public class PostCommentServiceImpl implements PostCommentService {
     @Override
     @Transactional
     public void deleteComment(Long commentId) {
-        postCommentRepository.deleteById(commentId);
+        PostComment comment = postCommentRepository.findById(commentId)
+                .orElseThrow(() -> new DataNotFoundException("해당 댓글이 없습니다. id: " + commentId));
+        comment.changeIsDeleted(true);
+        postCommentRepository.save(comment);
     }
 
     @Override
     @Transactional
     public List<PostComment> getCommentsOfPost(Long postId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 게시글이 없습니다. id=" + postId));
+                .orElseThrow(() -> new DataNotFoundException("해당 게시글이 없습니다. id=" + postId));
         return post.getComments();
     }
 
@@ -64,7 +67,7 @@ public class PostCommentServiceImpl implements PostCommentService {
     @Transactional
     public PostComment addReplyToComment(Long commentId, PostCommentRequest request) {
         PostComment parentComment = postCommentRepository.findById(commentId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 댓글이 없습니다. id: " + commentId));
+                .orElseThrow(() -> new DataNotFoundException("해당 댓글이 없습니다. id: " + commentId));
         PostComment childComment = PostComment.builder()
                 .content(request.getContent())
                 .build();
@@ -76,7 +79,7 @@ public class PostCommentServiceImpl implements PostCommentService {
     @Transactional
     public List<PostComment> getRepliesOfComment(Long commentId) {
         PostComment parentComment = postCommentRepository.findById(commentId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 댓글이 없습니다. id: " + commentId));
+                .orElseThrow(() -> new DataNotFoundException("해당 댓글이 없습니다. id: " + commentId));
         return parentComment.getChildComments();
     }
 
@@ -84,7 +87,7 @@ public class PostCommentServiceImpl implements PostCommentService {
     @Transactional
     public PostComment updateReply(Long replyId, PostCommentRequest request) {
         PostComment reply = postCommentRepository.findById(replyId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 대댓글이 없습니다. id: " + replyId));
+                .orElseThrow(() -> new DataNotFoundException("해당 대댓글이 없습니다. id: " + replyId));
         reply.update(request.getContent());
         return postCommentRepository.save(reply);
     }

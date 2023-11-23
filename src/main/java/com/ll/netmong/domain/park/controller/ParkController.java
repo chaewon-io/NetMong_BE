@@ -21,9 +21,10 @@ public class ParkController {
         return RsData.successOf(parks);
     }
 
-    @GetMapping("/{id}")
-    public RsData<ParkResponse> getPark(@PathVariable Long id) {
-        ParkResponse park = parkService.getPark(id);
+    // Id로 조회 필요 없을 시 삭제 예정
+    @GetMapping("/{parkId}")
+    public RsData<ParkResponse> getPark(@PathVariable Long parkId) {
+        ParkResponse park = parkService.getPark(parkId);
         return RsData.successOf(park);
     }
 

@@ -7,6 +7,7 @@ import com.ll.netmong.domain.park.entity.Park;
 import com.ll.netmong.domain.park.repository.ParkRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -27,18 +28,20 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ParkServiceImpl implements ParkService {
+
     private final ParkRepository parkRepository;
     private final ApiKeys apikeys;
 
     @Override
-    public ParkResponse getPark(Long id) {
-        Optional<Park> park = parkRepository.findById(id);
+    public ParkResponse getPark(Long parkId) {
+        Optional<Park> park = parkRepository.findById(parkId);
         if (park.isPresent()) {
             Park p = park.get();
             return new ParkResponse(p.getParkNm(), p.getLnmadr(), p.getLatitude(), p.getLongitude(), p.getPhoneNumber(), p.getState(), p.getCity());
         } else {
-            throw new IllegalArgumentException("해당 ID의 공원이 존재하지 않습니다: " + id);
+            throw new IllegalArgumentException("해당 ID의 공원이 존재하지 않습니다: " + parkId);
         }
     }
 
@@ -72,7 +75,8 @@ public class ParkServiceImpl implements ParkService {
                 .collect(Collectors.toList());
     }
 
-    private RsData<List<Park>> getParksFromApi() {
+    @Transactional
+    public RsData<List<Park>> getParksFromApi() {
         List<Park> parks = new ArrayList<>();
         int pageNo = 1;
 
@@ -145,7 +149,8 @@ public class ParkServiceImpl implements ParkService {
         return RsData.of("S-1", "공원 API 성공", parks);
     }
 
-    private RsData<Void> saveParks(List<Park> parks) {
+    @Transactional
+    public RsData<Void> saveParks(List<Park> parks) {
         try {
             parkRepository.saveAll(parks);
             return RsData.of("S-1", "공원 정보 저장 성공");

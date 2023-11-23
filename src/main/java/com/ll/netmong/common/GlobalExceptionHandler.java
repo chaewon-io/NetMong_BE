@@ -2,13 +2,13 @@ package com.ll.netmong.common;
 
 import com.ll.netmong.member.exception.NotMatchPasswordException;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.security.auth.login.AccountNotFoundException;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(AccountNotFoundException.class)

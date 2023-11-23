@@ -2,7 +2,7 @@ package com.ll.netmong.domain.postComment.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ll.netmong.common.BaseEntity;
-import com.ll.netmong.domain.post.Post;
+import com.ll.netmong.domain.post.entity.Post;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -42,6 +42,7 @@ public class PostComment extends BaseEntity {
     }
 
     private void setParentComment(PostComment postComment) {
+        this.parentComment = postComment;
     }
 
     public void addChildComment(PostComment childComment) {

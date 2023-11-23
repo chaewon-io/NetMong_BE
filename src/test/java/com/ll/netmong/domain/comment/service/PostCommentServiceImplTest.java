@@ -1,11 +1,11 @@
 package com.ll.netmong.domain.comment.service;
 
+import com.ll.netmong.domain.post.entity.Post;
+import com.ll.netmong.domain.post.repository.PostRepository;
 import com.ll.netmong.domain.postComment.dto.request.PostCommentRequest;
 import com.ll.netmong.domain.postComment.entity.PostComment;
 import com.ll.netmong.domain.postComment.repository.PostCommentRepository;
 import com.ll.netmong.domain.postComment.service.PostCommentService;
-import com.ll.netmong.domain.post.Post;
-import com.ll.netmong.domain.post.PostRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

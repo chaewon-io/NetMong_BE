@@ -11,9 +11,11 @@ import java.time.LocalDateTime;
 public class PostResponse {
     private String title;
     private String content;
+    private String imageUrl;
 
     public PostResponse(Post post) {
         this.title = post.getTitle();
         this.content = post.getContent();
+        this.imageUrl = post.getImageUrl();
     }
 }

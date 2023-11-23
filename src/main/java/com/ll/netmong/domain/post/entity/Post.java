@@ -20,4 +20,5 @@ public class Post extends BaseEntity {
     private String title;
     @Column(length=100)
     private String content;
+    private String imageUrl;
 }

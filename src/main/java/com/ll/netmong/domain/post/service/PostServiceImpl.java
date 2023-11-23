@@ -8,8 +8,15 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Optional;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -19,17 +26,18 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void uploadPost(PostRequest postRequest) {
+    public void uploadPost(MultipartFile image, PostRequest postRequest) {
         postRepository.save(Post.builder()
                 .title(postRequest.getTitle())
-                .content(postRequest.getContent()).build());
+                .content(postRequest.getContent())
+                .imageUrl(postRequest.getImageUrl()).build());
     }
 
     @Override
     @Transactional
     public PostResponse getDetail(long id) {
         Post post = postRepository.findById(id)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new EntityNotFoundException("포스트를 찾을 수 없습니다."));
 
         return new PostResponse(post);
     }
@@ -44,7 +52,7 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public void updatePost(long id, PostRequest updatedPostRequest) {
         Post originPost = postRepository.findById(id)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new EntityNotFoundException("포스트를 찾을 수 없습니다."));
 
         originPost.setTitle(updatedPostRequest.getTitle());
         originPost.setContent(updatedPostRequest.getContent());

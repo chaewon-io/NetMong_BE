@@ -37,9 +37,9 @@ public class PostCommentServiceImpl implements PostCommentService {
 
     @Override
     @Transactional
-    public PostComment updateComment(Long id, PostCommentRequest request) {
-        PostComment comment = postCommentRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("해당 댓글이 없습니다. id=" + id));
+    public PostComment updateComment(Long commentId, PostCommentRequest request) {
+        PostComment comment = postCommentRepository.findById(commentId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 댓글이 없습니다. id=" + commentId));
 
         comment.update(request.getContent());
 
@@ -48,8 +48,8 @@ public class PostCommentServiceImpl implements PostCommentService {
 
     @Override
     @Transactional
-    public void deleteComment(Long id) {
-        postCommentRepository.deleteById(id);
+    public void deleteComment(Long commentId) {
+        postCommentRepository.deleteById(commentId);
     }
 
     @Override

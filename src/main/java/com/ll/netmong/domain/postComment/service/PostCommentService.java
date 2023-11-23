@@ -9,9 +9,9 @@ public interface PostCommentService {
 
     PostComment addPostComment(Long postId, PostCommentRequest postCommentRequest);
 
-    PostComment updateComment(Long id, PostCommentRequest request);
+    PostComment updateComment(Long commentId, PostCommentRequest request);
 
-    void deleteComment(Long id);
+    void deleteComment(Long commentId);
 
     List<PostComment> getCommentsOfPost(Long postId);
 

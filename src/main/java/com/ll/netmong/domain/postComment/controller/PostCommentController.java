@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/comment/post")
+@RequestMapping("/api/post/comment")
 public class PostCommentController {
 
     private final PostCommentService service;
@@ -38,7 +38,7 @@ public class PostCommentController {
         return RsData.of("S-1", "삭제된 메시지입니다.");
     }
 
-    @GetMapping("/{postId}/list")
+    @GetMapping("/{postId}")
     public RsData<List<PostComment>> getCommentsOfPost(@PathVariable Long postId) {
         List<PostComment> comments = service.getCommentsOfPost(postId);
         return RsData.successOf(comments);

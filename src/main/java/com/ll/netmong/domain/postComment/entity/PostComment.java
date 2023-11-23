@@ -2,8 +2,7 @@ package com.ll.netmong.domain.postComment.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ll.netmong.common.BaseEntity;
-import com.ll.netmong.domain.member.entity.Member;
-import com.ll.netmong.post.Post;
+import com.ll.netmong.domain.post.Post;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -14,7 +13,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PostComment extends BaseEntity {
@@ -43,6 +41,9 @@ public class PostComment extends BaseEntity {
         this.content = content;
     }
 
+    private void setParentComment(PostComment postComment) {
+    }
+
     public void addChildComment(PostComment childComment) {
         this.childComments.add(childComment);
         childComment.setParentComment(this);
@@ -52,4 +53,7 @@ public class PostComment extends BaseEntity {
         this.isDeleted = isDeleted;
     }
 
+    public void setPost(Post post) {
+        this.post = post;
+    }
 }

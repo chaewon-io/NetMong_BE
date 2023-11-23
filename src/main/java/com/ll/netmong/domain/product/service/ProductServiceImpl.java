@@ -33,10 +33,10 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     @Override
     public void createProductWithImage(CreateRequest createRequest, MultipartFile[] images) {
-        if (isImageExists(images)) {
+        if (!isImageExists(images)) {
             initProduct(createRequest);
         }
-        if (!isImageExists(images)) {
+        if (isImageExists(images)) {
             String imageLocation = productImagePath;
             Product product = initProduct(createRequest);
             for (MultipartFile image : images) {
@@ -81,7 +81,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private boolean isImageExists(MultipartFile[] image) {
-        return Objects.isNull(image);
+        return !Objects.isNull(image);
     }
 
     private List<ViewAllResponse> getViewAllResponse() {

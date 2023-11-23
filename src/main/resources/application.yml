@@ -29,6 +29,13 @@ spring:
 
     defer-datasource-initialization: true
 
+  servlet:
+    multipart:
+      enabled: true
+      location: '${custom.image.url}'
+      max-request-size: 500MB
+      max-file-size: 500MB
+
 logging:
   level:
     root: INFO

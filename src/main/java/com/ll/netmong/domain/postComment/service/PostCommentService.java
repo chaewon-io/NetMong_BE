@@ -15,4 +15,10 @@ public interface PostCommentService {
 
     List<PostComment> getCommentsOfPost(Long postId);
 
+    PostComment addReplyToComment(Long commentId, PostCommentRequest request);
+
+    List<PostComment> getRepliesOfComment(Long commentId);
+
+    PostComment updateReply(Long replyId, PostCommentRequest request);
+
 }

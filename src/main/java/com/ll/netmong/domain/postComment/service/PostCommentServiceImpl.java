@@ -7,6 +7,7 @@ import com.ll.netmong.domain.postComment.repository.PostCommentRepository;
 
 import com.ll.netmong.post.Post;
 import com.ll.netmong.post.PostRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +39,7 @@ public class PostCommentServiceImpl implements PostCommentService {
     @Transactional
     public PostComment updateComment(Long id, PostCommentRequest request) {
         PostComment comment = postCommentRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 없습니다. id=" + id));
+                .orElseThrow(() -> new EntityNotFoundException("해당 댓글이 없습니다. id=" + id));
 
         comment.update(request.getContent());
 
@@ -55,7 +56,36 @@ public class PostCommentServiceImpl implements PostCommentService {
     @Transactional
     public List<PostComment> getCommentsOfPost(Long postId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id=" + postId));
+                .orElseThrow(() -> new EntityNotFoundException("해당 게시글이 없습니다. id=" + postId));
         return post.getComments();
+    }
+
+    @Override
+    @Transactional
+    public PostComment addReplyToComment(Long commentId, PostCommentRequest request) {
+        PostComment parentComment = postCommentRepository.findById(commentId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 댓글이 없습니다. id: " + commentId));
+        PostComment childComment = PostComment.builder()
+                .content(request.getContent())
+                .build();
+        parentComment.addChildComment(childComment);
+        return postCommentRepository.save(childComment);
+    }
+
+    @Override
+    @Transactional
+    public List<PostComment> getRepliesOfComment(Long commentId) {
+        PostComment parentComment = postCommentRepository.findById(commentId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 댓글이 없습니다. id: " + commentId));
+        return parentComment.getChildComments();
+    }
+
+    @Override
+    @Transactional
+    public PostComment updateReply(Long replyId, PostCommentRequest request) {
+        PostComment reply = postCommentRepository.findById(replyId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 대댓글이 없습니다. id: " + replyId));
+        reply.update(request.getContent());
+        return postCommentRepository.save(reply);
     }
 }

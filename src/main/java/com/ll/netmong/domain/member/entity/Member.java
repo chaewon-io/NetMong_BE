@@ -1,10 +1,9 @@
 package com.ll.netmong.domain.member.entity;
 
 import com.ll.netmong.common.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import com.ll.netmong.domain.parkComent.entity.ParkComent;
+import com.ll.netmong.domain.parkLiked.entity.ParkLiked;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -14,6 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
@@ -32,6 +33,12 @@ public class Member extends BaseEntity {
 
     private String realName;
     private String email;
+
+    @OneToMany(mappedBy = "member", fetch = LAZY)
+    private List<ParkComent> walkComentList;
+
+    @OneToMany(mappedBy = "member", fetch = LAZY)
+    private List<ParkLiked> walkLiked;
 
     // 스프링 시큐리티 규격
     public List<? extends GrantedAuthority> getGrantedAuthorities() {

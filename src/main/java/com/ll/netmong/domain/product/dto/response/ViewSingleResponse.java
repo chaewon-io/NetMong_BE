@@ -7,13 +7,13 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ViewAllResponse {
+public class ViewSingleResponse {
     private String productName;
     private String price;
     private String content;
     private Category category;
 
-    public ViewAllResponse(Product product) {
+    public ViewSingleResponse(Product product) {
         this.productName = product.getProductName();
         this.price = product.getPrice();
         this.content = product.getContent();

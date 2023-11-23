@@ -4,15 +4,11 @@ import com.ll.netmong.domain.product.entity.Product;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Transactional
-@DataJpaTest
-@TestPropertySource(locations = "classpath:application-test.yml")
+@SpringBootTest
 class ProductRepositoryTest {
     @Autowired
     private ProductRepository productRepository;

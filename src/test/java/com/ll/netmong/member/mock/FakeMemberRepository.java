@@ -1,9 +1,9 @@
 package com.ll.netmong.member.mock;
 
-import com.ll.netmong.member.entity.AuthLevel;
-import com.ll.netmong.member.entity.Member;
-import com.ll.netmong.member.entity.ProviderTypeCode;
-import com.ll.netmong.member.repository.MemberRepository;
+import com.ll.netmong.domain.member.entity.AuthLevel;
+import com.ll.netmong.domain.member.entity.Member;
+import com.ll.netmong.domain.member.entity.ProviderTypeCode;
+import com.ll.netmong.domain.member.repository.MemberRepository;
 
 import java.util.ArrayList;
 import java.util.List;

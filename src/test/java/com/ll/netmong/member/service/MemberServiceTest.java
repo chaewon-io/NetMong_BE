@@ -1,11 +1,12 @@
 package com.ll.netmong.member.service;
 
-import com.ll.netmong.jwt.TokenService;
-import com.ll.netmong.member.dto.JoinRequest;
-import com.ll.netmong.member.dto.UsernameRequest;
-import com.ll.netmong.member.entity.AuthLevel;
-import com.ll.netmong.member.entity.Member;
-import com.ll.netmong.member.entity.ProviderTypeCode;
+import com.ll.netmong.base.jwt.TokenService;
+import com.ll.netmong.domain.member.dto.JoinRequest;
+import com.ll.netmong.domain.member.dto.UsernameRequest;
+import com.ll.netmong.domain.member.entity.AuthLevel;
+import com.ll.netmong.domain.member.entity.Member;
+import com.ll.netmong.domain.member.entity.ProviderTypeCode;
+import com.ll.netmong.domain.member.service.MemberService;
 import com.ll.netmong.member.mock.FakeAuthenticationManagerBuilder;
 import com.ll.netmong.member.mock.FakeMemberRepository;
 import com.ll.netmong.member.mock.FakePasswordEncoder;

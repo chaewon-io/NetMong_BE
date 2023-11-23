@@ -1,8 +1,8 @@
 package com.ll.netmong.member.mock;
 
-import com.ll.netmong.jwt.TokenDto;
-import com.ll.netmong.jwt.TokenProvider;
-import com.ll.netmong.member.dto.LoginDto;
+import com.ll.netmong.base.jwt.TokenDto;
+import com.ll.netmong.base.jwt.TokenProvider;
+import com.ll.netmong.domain.member.dto.LoginDto;
 
 public class FakeTokenProvider extends TokenProvider {
     public FakeTokenProvider(String secret, long tokenValidityInSeconds, String secret2, long tokenValidityInSeconds2) {

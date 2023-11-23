@@ -1,9 +1,9 @@
 package com.ll.netmong.config;
 
-import com.ll.netmong.jwt.JwtAccessDeniedHandler;
-import com.ll.netmong.jwt.JwtAuthenticationEntryPoint;
-import com.ll.netmong.jwt.JwtSecurityConfig;
-import com.ll.netmong.jwt.TokenProvider;
+import com.ll.netmong.base.jwt.JwtAccessDeniedHandler;
+import com.ll.netmong.base.jwt.JwtAuthenticationEntryPoint;
+import com.ll.netmong.base.jwt.JwtSecurityConfig;
+import com.ll.netmong.base.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

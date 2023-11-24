@@ -4,10 +4,7 @@ import com.ll.netmong.common.RsData;
 import com.ll.netmong.domain.park.dto.response.ParkResponse;
 import com.ll.netmong.domain.park.service.ParkService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,6 +19,12 @@ public class ParkController {
     public RsData<List<ParkResponse>> getParks() {
         List<ParkResponse> parks = parkService.getParks();
         return RsData.successOf(parks);
+    }
+
+    @PostMapping
+    public RsData<String> saveParksFromApi() {
+        parkService.saveParksFromApi();
+        return RsData.successOf("공원 정보가 성공적으로 저장되었습니다.");
     }
 
     // Id로 조회 필요 없을 시 삭제 예정

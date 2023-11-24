@@ -1,12 +1,15 @@
 package com.ll.netmong.domain.product.service;
 
+import com.ll.netmong.common.ProductException;
 import com.ll.netmong.domain.image.entity.Image;
 import com.ll.netmong.domain.image.repository.ImageRepository;
 import com.ll.netmong.domain.product.dto.request.CreateRequest;
+import com.ll.netmong.domain.product.dto.request.UpdateRequest;
 import com.ll.netmong.domain.product.dto.response.ViewAllResponse;
 import com.ll.netmong.domain.product.dto.response.ViewSingleResponse;
 import com.ll.netmong.domain.product.entity.Product;
 import com.ll.netmong.domain.product.repository.ProductRepository;
+import com.ll.netmong.domain.product.util.ProductErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -30,9 +33,9 @@ public class ProductServiceImpl implements ProductService {
     @Value("${spring.servlet.multipart.location}")
     private String productImagePath;
 
-    @Transactional
     @Override
-    public void createProductWithImage(CreateRequest createRequest, MultipartFile[] images) {
+    @Transactional
+    public void createProductWithImage(CreateRequest createRequest, MultipartFile[] images) throws IOException {
         if (!isImageExists(images)) {
             initProduct(createRequest);
         }
@@ -43,17 +46,9 @@ public class ProductServiceImpl implements ProductService {
                 String imageName = image.getOriginalFilename();
                 String imagePath = imageLocation + imageName;
 
-                // todo: 추후 예외처리 커스텀 작성 및 메소드로 추출
-                try {
-                    Files.createDirectories(Path.of(imageLocation));
-                } catch (IOException exception) {
-                    throw new IllegalArgumentException();
-                }
-                try {
-                    image.transferTo(Path.of(imagePath));
-                } catch (IOException exception) {
-                    throw new IllegalArgumentException();
-                }
+                validateCreateDirectory(imageLocation);
+                validateTransferImage(imagePath, image);
+
                 Image productImage = Product.createProductImage(imagePath);
                 product.addProductImage(productImage);
                 imageRepository.save(productImage);
@@ -68,7 +63,21 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ViewSingleResponse findByProduct(Long productId) {
-        return new ViewSingleResponse(productRepository.findById(productId).orElseThrow());
+        return new ViewSingleResponse(validateExistProduct(productId));
+    }
+
+    @Override
+    @Transactional
+    public void updateProduct(Long productId, UpdateRequest updateRequest) {
+        Product findProduct = validateExistProduct(productId);
+        findProduct.modifyProduct(updateRequest);
+    }
+
+    @Override
+    @Transactional
+    public void softDeleteProduct(Long productId) {
+        validateExistProduct(productId);
+        productRepository.deleteById(productId);
     }
 
     private Product initProduct(CreateRequest createRequest) {
@@ -92,12 +101,19 @@ public class ProductServiceImpl implements ProductService {
                 viewAllResponse.add(new ViewAllResponse(product));
             }
         }
-
-        // todo: 추후 예외처리 커스텀 작성 및 메소드로 추출
-        if (viewAllResponse.isEmpty()) {
-            throw new IllegalArgumentException();
-        }
-
         return viewAllResponse;
+    }
+
+    private Product validateExistProduct(Long productId) {
+        return productRepository.findById(productId).orElseThrow(() ->
+                new ProductException("상품이 존재하지 않습니다.", ProductErrorCode.NOT_EXIST_PRODUCT));
+    }
+
+    private void validateCreateDirectory(String imageLocation) throws IOException {
+        Files.createDirectories(Path.of(imageLocation));
+    }
+
+    private void validateTransferImage(String imagePath, MultipartFile image) throws IOException {
+        image.transferTo(Path.of(imagePath));
     }
 }

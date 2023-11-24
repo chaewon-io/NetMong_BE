@@ -25,9 +25,9 @@ public class GlobalExceptionHandler {
     }
 
     // 그 외 예외
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public RsData handleException(Exception e) {
-        return RsData.failOf("Unexpected error");
-    }
+//    @ExceptionHandler(Exception.class)
+//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+//    public RsData handleException(Exception e) {
+//        return RsData.failOf("Unexpected error");
+//    }
 }

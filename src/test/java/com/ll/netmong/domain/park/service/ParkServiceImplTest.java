@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -107,6 +108,40 @@ class ParkServiceImplTest {
         when(parkRepository.findAll()).thenReturn(Collections.emptyList());
 
         assertDoesNotThrow(() -> parkService.getParks());
+    }
+
+    @Test
+    @DisplayName("getParksByStateAndCity() 메서드는 유효한 state와 city를 입력받으면, 해당 지역의 ParkResponse 리스트를 반환해야 한다.")
+    void testGetParksByStateAndCityExists() {
+
+        String state = "Test State";
+        String city = "Test City";
+
+        List<Park> existingParks = sampleParks.stream()
+                .filter(park -> park.getState().equals(state) && park.getCity().equals(city))
+                .collect(Collectors.toList());
+
+        when(parkRepository.findByLnmadrStartingWith(state + " " + city)).thenReturn(existingParks);
+
+        List<ParkResponse> result = parkService.getParksByStateAndCity(state, city);
+
+        assertThat(result).isNotEmpty();
+        assertThat(result.size()).isEqualTo(existingParks.size());
+        assertThat(result.get(0).getParkNm()).isEqualTo(existingParks.get(0).getParkNm());
+        assertThat(result.get(1).getParkNm()).isEqualTo(existingParks.get(1).getParkNm());
+    }
+
+    @Test
+    @DisplayName("getParksByStateAndCity() 메서드는 유효한 state와 city를 입력받았지만 해당 지역의 공원이 없는 경우, 비어있는 리스트를 반환해야 한다.")
+    void testGetParksByStateAndCityNotExists() {
+        String state = "Test State";
+        String city = "Test City";
+
+        when(parkRepository.findByLnmadrStartingWith(state + " " + city)).thenReturn(Collections.emptyList());
+
+        List<ParkResponse> result = parkService.getParksByStateAndCity(state, city);
+
+        assertThat(result).isEmpty();
     }
 
 }

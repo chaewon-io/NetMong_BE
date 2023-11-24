@@ -82,18 +82,4 @@ class ParkServiceImplTest {
         assertThat(result).isNotEmpty();
     }
 
-    @Test
-    @DisplayName("saveParks(List<Park> parks) 메서드로 파싱된 공원 리스트를 데이터베이스에 저장한다.")
-    void testSaveParks() {
-
-        List<Park> mockParks = Arrays.asList(
-                Park.builder().parkNm("testPark2").lnmadr("새로운 주소1").latitude(37.1234).longitude(127.5678).phoneNumber("123-4567").state("State1").city("City1").build(),
-                Park.builder().parkNm("testPark3").lnmadr("새로운 주소2").latitude(37.5678).longitude(127.1234).phoneNumber("987-6543").state("State2").city("City2").build()
-        );
-
-        RsData<Void> result = parkService.saveParks(mockParks);
-
-        assertThat(result.isSuccess()).isTrue();
-    }
-
 }

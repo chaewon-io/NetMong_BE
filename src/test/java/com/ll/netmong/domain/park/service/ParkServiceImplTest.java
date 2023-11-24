@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
@@ -65,9 +66,11 @@ class ParkServiceImplTest {
         Park existingPark = sampleParks.stream()
                 .filter(park -> park.getId().equals(parkId))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 공원이 존재하지 않습니다: " + parkId));
+                .orElse(null);
 
-        when(parkRepository.findById(parkId)).thenReturn(Optional.of(existingPark));
+        assertNotNull(existingPark);
+
+        when(parkRepository.findById(parkId)).thenReturn(Optional.ofNullable(existingPark));
 
         ParkResponse result = parkService.getPark(parkId);
 

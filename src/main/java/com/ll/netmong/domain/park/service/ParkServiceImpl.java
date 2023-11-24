@@ -59,15 +59,17 @@ public class ParkServiceImpl implements ParkService {
             }
         }
 
-        return parks.stream()
-                .map(Park::toResponse)
-                .collect(Collectors.toList());
+        return convertToParkResponses(parks);
     }
 
     @Override
     public List<ParkResponse> getParksByStateAndCity(String state, String city) {
         List<Park> parks = parkRepository.findByLnmadrStartingWith(state + " " + city);
 
+        return convertToParkResponses(parks);
+    }
+
+    private List<ParkResponse> convertToParkResponses(List<Park> parks) {
         return parks.stream()
                 .map(Park::toResponse)
                 .collect(Collectors.toList());
@@ -156,5 +158,4 @@ public class ParkServiceImpl implements ParkService {
             return RsData.of("F-1", "공원 정보 저장 중 다음과 같은 오류가 발생했습니다. 오류: " + e.getMessage());
         }
     }
-
 }

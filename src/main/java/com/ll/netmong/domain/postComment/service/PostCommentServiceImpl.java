@@ -10,6 +10,7 @@ import com.ll.netmong.domain.postComment.dto.request.PostCommentRequest;
 import com.ll.netmong.domain.postComment.entity.PostComment;
 import com.ll.netmong.domain.postComment.repository.PostCommentRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -51,20 +52,25 @@ public class PostCommentServiceImpl implements PostCommentService {
 
     @Override
     @Transactional
-    public PostComment updateComment(Long commentId, PostCommentRequest request) {
+    public PostCommentResponse updateComment(Long commentId, PostCommentRequest updateRequest, @AuthenticationPrincipal UserDetails userDetails) {
         PostComment comment = postCommentRepository.findById(commentId)
-                .orElseThrow(() -> new DataNotFoundException("해당 댓글이 없습니다. id=" + commentId));
-
-        comment.update(request.getContent());
-
-        return postCommentRepository.save(comment);
+                .orElseThrow(() -> new DataNotFoundException("해당하는 댓글을 찾을 수 없습니다."));
+        if (!comment.getUsername().equals(userDetails.getUsername())) {
+            throw new AccessDeniedException("댓글 작성자만 수정할 수 있습니다.");
+        }
+        comment.updateContent(updateRequest.getContent());
+        PostComment updatedComment = postCommentRepository.save(comment);
+        return convertToResponse(updatedComment);
     }
 
     @Override
     @Transactional
-    public void deleteComment(Long commentId) {
+    public void deleteComment(Long commentId, @AuthenticationPrincipal UserDetails userDetails) {
         PostComment comment = postCommentRepository.findById(commentId)
                 .orElseThrow(() -> new DataNotFoundException("해당 댓글이 없습니다. id: " + commentId));
+        if (!comment.getUsername().equals(userDetails.getUsername())) {
+            throw new AccessDeniedException("댓글 작성자만 삭제할 수 있습니다.");
+        }
         comment.changeIsDeleted(true);
         postCommentRepository.save(comment);
     }
@@ -118,7 +124,7 @@ public class PostCommentServiceImpl implements PostCommentService {
     public PostComment updateReply(Long replyId, PostCommentRequest request) {
         PostComment reply = postCommentRepository.findById(replyId)
                 .orElseThrow(() -> new DataNotFoundException("해당 대댓글이 없습니다. id: " + replyId));
-        reply.update(request.getContent());
+        reply.updateContent(request.getContent());
         return postCommentRepository.save(reply);
     }
 }

@@ -30,14 +30,14 @@ public class PostCommentController {
 
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public RsData<PostComment> updateComment(@PathVariable Long id, @RequestBody PostCommentRequest request) {
-        PostComment updatedComment = service.updateComment(id, request);
+    public RsData<PostCommentResponse> updateComment(@PathVariable Long id, @RequestBody PostCommentRequest request, @AuthenticationPrincipal UserDetails userDetails) {
+        PostCommentResponse updatedComment = service.updateComment(id, request, userDetails);
         return RsData.successOf(updatedComment);
     }
 
     @DeleteMapping("/{commentId}")
-    public RsData<String> deleteComment(@PathVariable Long commentId) {
-        service.deleteComment(commentId);
+    public RsData<String> deleteComment(@PathVariable Long commentId, @AuthenticationPrincipal UserDetails userDetails) {
+        service.deleteComment(commentId, userDetails);
         return RsData.of("S-1", "삭제된 메시지입니다.");
     }
 

@@ -46,7 +46,7 @@ public class PostComment extends BaseEntity {
 
     private String username;
 
-    public void update(String content) {
+    public void updateContent(String content) {
         this.content = content;
     }
 

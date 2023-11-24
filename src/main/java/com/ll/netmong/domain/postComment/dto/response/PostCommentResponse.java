@@ -17,5 +17,5 @@ public class PostCommentResponse {
     private Boolean isDeleted;
     private String username;
     private Long parentCommentId;
-    private List<Long> childCommentsIds;
+    private List<PostCommentResponse> childCommentsIds;
 }

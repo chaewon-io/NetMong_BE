@@ -41,8 +41,10 @@ public class PostComment extends BaseEntity {
     private List<PostComment> childComments = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "username")
-    private Member username;
+    @JoinColumn(name = "member_id")
+    private Member memberID;
+
+    private String username;
 
     public void update(String content) {
         this.content = content;

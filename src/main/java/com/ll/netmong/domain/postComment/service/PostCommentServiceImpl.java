@@ -33,18 +33,20 @@ public class PostCommentServiceImpl implements PostCommentService {
     public PostCommentResponse addPostComment(Long postId, PostCommentRequest postCommentRequest, @AuthenticationPrincipal UserDetails userDetails) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new DataNotFoundException("해당하는 게시물을 찾을 수 없습니다."));
+
         Member member = memberRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new DataNotFoundException("해당하는 회원을 찾을 수 없습니다."));
+                .orElseThrow(() -> new DataNotFoundException("사용자를 찾을 수 없습니다."));
+
         PostComment comment = PostComment.builder()
                 .post(post)
-                .username(member)
+                .memberID(member)
+                .username(userDetails.getUsername())
                 .content(postCommentRequest.getContent())
                 .isDeleted(false)
                 .build();
         post.getComments().add(comment);
         PostComment savedComment = postCommentRepository.save(comment);
-        List<Long> childCommentsIds = savedComment.getChildComments() != null ? savedComment.getChildComments().stream().map(PostComment::getId).collect(Collectors.toList()) : new ArrayList<>();
-        return new PostCommentResponse(savedComment.getId(), savedComment.getContent(), savedComment.getIsDeleted(), member.getUsername(), savedComment.getParentComment() != null ? savedComment.getParentComment().getId() : null, childCommentsIds);
+        return convertToResponse(savedComment);
     }
 
     @Override
@@ -69,23 +71,35 @@ public class PostCommentServiceImpl implements PostCommentService {
 
     @Override
     @Transactional
-    public List<PostComment> getCommentsOfPost(Long postId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new DataNotFoundException("해당 게시글이 없습니다. id=" + postId));
-        return post.getComments();
+    public List<PostCommentResponse> getCommentsOfPost(Long postId) {
+        List<PostComment> comments = postCommentRepository.findByPostIdAndParentCommentIsNull(postId);
+        return comments.stream().map(this::convertToResponse).collect(Collectors.toList());
     }
+
+    private PostCommentResponse convertToResponse(PostComment comment) {
+        List<PostCommentResponse> childResponses = comment.getChildComments() != null ? comment.getChildComments().stream().map(this::convertToResponse).collect(Collectors.toList()) : new ArrayList<>();
+        return new PostCommentResponse(
+                comment.getId(),
+                comment.getContent(),
+                comment.getIsDeleted(),
+                comment.getUsername(),
+                comment.getParentComment() != null ? comment.getParentComment().getId() : null,
+                childResponses
+        );
+    }
+
 
     @Override
     @Transactional
     public PostComment addReplyToComment(Long commentId, PostCommentRequest request, UserDetails userDetails) {
         PostComment parentComment = postCommentRepository.findById(commentId)
                 .orElseThrow(() -> new DataNotFoundException("해당 댓글이 없습니다. id: " + commentId));
-        Member username = memberRepository.findByUsername(userDetails.getUsername())
+        Member member = memberRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new DataNotFoundException("해당하는 회원을 찾을 수 없습니다."));
         PostComment childComment = PostComment.builder()
                 .content(request.getContent())
                 .isDeleted(false)
-                .username(username)
+                .username(String.valueOf(member))
                 .build();
         parentComment.addChildComment(childComment);
         return postCommentRepository.save(childComment);

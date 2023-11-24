@@ -42,8 +42,8 @@ public class PostCommentController {
     }
 
     @GetMapping("/{postId}")
-    public RsData<List<PostComment>> getCommentsOfPost(@PathVariable Long postId) {
-        List<PostComment> comments = service.getCommentsOfPost(postId);
+    public RsData<List<PostCommentResponse>> getCommentsOfPost(@PathVariable Long postId) {
+        List<PostCommentResponse> comments = service.getCommentsOfPost(postId);
         return RsData.successOf(comments);
     }
 

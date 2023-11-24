@@ -8,11 +8,13 @@ import lombok.Setter;
 @Setter
 public class PostResponse {
     private String title;
+    private String writer;
     private String content;
     private String imageUrl;
 
     public PostResponse(Post post) {
         this.title = post.getTitle();
+        this.writer = post.getWriter();
         this.content = post.getContent();
         this.imageUrl = post.getImageUrl();
     }

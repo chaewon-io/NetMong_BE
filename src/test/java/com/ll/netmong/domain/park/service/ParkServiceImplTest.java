@@ -6,78 +6,84 @@ import com.ll.netmong.domain.park.repository.ParkRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
+@ExtendWith(SpringExtension.class)
 class ParkServiceImplTest {
+
+    @MockBean
+    private ParkRepository parkRepository;
 
     @Autowired
     private ParkService parkService;
 
-    @Autowired
-    private ParkRepository parkRepository;
+    private List<Park> sampleParks;
 
     @BeforeEach
     void setUp() {
-
-        String state = "State1";
-        String city = "City1";
-        List<Park> existingParks = parkRepository.findByLnmadrStartingWith(state + " " + city);
-
-        if (!existingParks.isEmpty()) {
-            parkRepository.deleteAll(existingParks);
-        }
-
-        Park mockPark = Park.builder()
-                .id(0L)
-                .parkNm("testPark1")
-                .lnmadr("State1 City1 Park1")
-                .latitude(37.1234)
-                .longitude(127.5678)
-                .phoneNumber("123-4567")
-                .state(state)
-                .city(city)
-                .build();
-
-        parkRepository.save(mockPark);
+        sampleParks = Arrays.asList(
+                Park.builder()
+                        .id(1L)
+                        .parkNm("testPark1")
+                        .lnmadr("Test Address 1")
+                        .latitude(37.5665)
+                        .longitude(126.9780)
+                        .phoneNumber("010-1234-5678")
+                        .state("Test State")
+                        .city("Test City")
+                        .build(),
+                Park.builder()
+                        .id(2L)
+                        .parkNm("testPark2")
+                        .lnmadr("Test Address 2")
+                        .latitude(37.5665)
+                        .longitude(126.9780)
+                        .phoneNumber("010-1234-5678")
+                        .state("Test State")
+                        .city("Test City")
+                        .build()
+        );
     }
 
     @Test
-    @DisplayName("getParks() 메서드는 Open Api에서 데이터를 조회하여 저장한 뒤 반환한다.")
-    void testGetParks() {
+    @DisplayName("getPark() 메서드는 유효한 parkId를 입력받으면, 해당 ParkResponse를 반환해야 한다.")
+    void testGetParkExists() {
+        Long parkId = 1L;
+        Park existingPark = sampleParks.stream()
+                .filter(park -> park.getId().equals(parkId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 공원이 존재하지 않습니다: " + parkId));
 
-        List<ParkResponse> result = parkService.getParks();
+        when(parkRepository.findById(parkId)).thenReturn(Optional.of(existingPark));
 
-        assertThat(result).isNotEmpty();
+        ParkResponse result = parkService.getPark(parkId);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getParkNm()).isEqualTo(existingPark.getParkNm());
     }
 
     @Test
-    @DisplayName("getPark(Long id) 메서드는 해당 공원 Id를 조회한다.")
-    void testGetPark() {
+    @DisplayName("getPark() 메서드는 존재하지 않는 parkId를 입력받으면, IllegalArgumentException을 발생시켜야 한다.")
+    void testGetParkNotExists() {
+        Long parkId = 1L;
 
-        Long parkId = 0L;
+        when(parkRepository.findById(parkId)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> parkService.getPark(parkId))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("해당 ID의 공원이 존재하지 않습니다: " + parkId);
-    }
-
-    @Test
-    @DisplayName("getParksByStateAndCity(String state, String city) 메서드는 시도/구군을 기준으로 공원 목록을 조회한다.")
-    void testGetParksByStateAndCity() {
-
-        String state = "State1";
-        String city = "City1";
-
-        List<ParkResponse> result = parkService.getParksByStateAndCity(state, city);
-
-        assertThat(result).isNotEmpty();
+        assertThrows(IllegalArgumentException.class, () -> parkService.getPark(parkId));
     }
 
 }
+

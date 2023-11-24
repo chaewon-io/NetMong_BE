@@ -8,6 +8,8 @@ public interface ParkService {
 
     List<ParkResponse> getParks();
 
+    void saveParksFromApi();
+
     ParkResponse getPark(Long parkId);
 
     List<ParkResponse> getParksByStateAndCity(String state, String city);

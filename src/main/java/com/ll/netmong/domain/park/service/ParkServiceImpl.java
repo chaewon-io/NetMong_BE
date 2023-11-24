@@ -1,11 +1,11 @@
 package com.ll.netmong.domain.park.service;
 
 import com.ll.netmong.base.config.ApiKeys;
-import com.ll.netmong.common.RsData;
 
 import com.ll.netmong.domain.park.dto.response.ParkResponse;
 import com.ll.netmong.domain.park.entity.Park;
 import com.ll.netmong.domain.park.repository.ParkRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,32 +34,33 @@ public class ParkServiceImpl implements ParkService {
     private final ParkRepository parkRepository;
     private final ApiKeys apikeys;
 
+// 실제 배포 시 활성화
+//    @PostConstruct
+//    public void init() {
+//        if (parkRepository.count() == 0) {
+//            saveParksFromApi();
+//        }
+//    }
+
+    @Override
+    public List<ParkResponse> getParks() {
+        List<Park> parks = parkRepository.findAll();
+        return convertToParkResponses(parks);
+    }
+
+    @Transactional
+    @Override
+    public void saveParksFromApi() {
+        List<Park> parks = getParksFromApi();
+        parkRepository.saveAll(parks);
+    }
+
     @Override
     public ParkResponse getPark(Long parkId) {
         Park park = parkRepository.findById(parkId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 공원이 존재하지 않습니다: " + parkId));
 
         return park.toResponse();
-    }
-
-    @Override
-    public List<ParkResponse> getParks() {
-        List<Park> parks = parkRepository.findAll();
-
-        if (parks.isEmpty()) {
-            RsData<List<Park>> rsData = getParksFromApi();
-            if (rsData.isSuccess()) {
-                parks = rsData.getData();
-                RsData<Void> saveResult = saveParksTransactionally(parks);
-                if (saveResult.isFail()) {
-                    throw new RuntimeException(saveResult.getMsg());
-                }
-            } else {
-                throw new RuntimeException(rsData.getMsg());
-            }
-        }
-
-        return convertToParkResponses(parks);
     }
 
     @Override
@@ -75,7 +76,7 @@ public class ParkServiceImpl implements ParkService {
                 .collect(Collectors.toList());
     }
 
-    private RsData<List<Park>> getParksFromApi() {
+    private List<Park> getParksFromApi() {
         List<Park> parks = new ArrayList<>();
         int pageNo = 1;
 
@@ -88,7 +89,7 @@ public class ParkServiceImpl implements ParkService {
             parks.addAll(newParks);
             pageNo++;
         }
-        return RsData.of("S-1", "공원 API 성공", parks);
+        return parks;
     }
 
     private String callApi(int pageNo) {
@@ -160,20 +161,6 @@ public class ParkServiceImpl implements ParkService {
                 .state(state)
                 .city(city)
                 .build();
-    }
-
-    private RsData<Void> saveParks(List<Park> parks) {
-        try {
-            parkRepository.saveAll(parks);
-            return RsData.of("S-1", "공원 정보 저장 성공");
-        } catch (Exception e) {
-            return RsData.of("F-1", "공원 정보 저장 중 다음과 같은 오류가 발생했습니다. 오류: " + e.getMessage());
-        }
-    }
-
-    @Transactional
-    public RsData<Void> saveParksTransactionally(List<Park> parks) {
-        return saveParks(parks);
     }
 
 }

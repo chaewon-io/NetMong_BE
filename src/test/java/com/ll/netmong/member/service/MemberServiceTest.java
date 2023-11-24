@@ -66,12 +66,12 @@ class MemberServiceTest {
     @DisplayName("createMember 는 joinRequest로 Member를 생성한다.")
     public void MST2() throws Exception {
         //given
-        JoinRequest joinRequest = JoinRequest.builder()
-                .username("user1")
-                .password("password1")
-                .email("email@aaa.com")
-                .realname("realuser1")
-                .build();
+        JoinRequest joinRequest = new JoinRequest();
+        joinRequest.setUsername("user1");
+        joinRequest.setPassword("password1");
+        joinRequest.setEmail("email@aaa.com");
+        joinRequest.setRealname("realuser1");
+
         //when
         Member result = memberService.createMember(joinRequest);
 

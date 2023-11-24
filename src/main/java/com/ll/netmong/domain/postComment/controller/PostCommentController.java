@@ -7,6 +7,8 @@ import com.ll.netmong.domain.postComment.service.PostCommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,8 +22,8 @@ public class PostCommentController {
 
     @PostMapping("/{postId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public RsData<PostComment> addPostComment(@PathVariable Long postId, @Valid @RequestBody PostCommentRequest request) {
-        PostComment newComment = service.addPostComment(postId, request);
+    public RsData<PostComment> addPostComment(@PathVariable Long postId, @Valid @RequestBody PostCommentRequest request, @AuthenticationPrincipal UserDetails userDetails) {
+        PostComment newComment = service.addPostComment(postId, request, userDetails);
         return RsData.successOf(newComment);
     }
 
@@ -46,8 +48,9 @@ public class PostCommentController {
 
     @PostMapping("/{commentId}/reply")
     @ResponseStatus(HttpStatus.CREATED)
-    public RsData<PostComment> addReplyToComment(@PathVariable Long commentId, @RequestBody PostCommentRequest request) {
-        PostComment childComment = service.addReplyToComment(commentId, request);
+    public RsData<PostComment> addReplyToComment(@PathVariable Long commentId, @RequestBody PostCommentRequest request, UserDetails userDetails) {
+        //String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        PostComment childComment = service.addReplyToComment(commentId, request, userDetails);
         return RsData.successOf(childComment);
     }
 

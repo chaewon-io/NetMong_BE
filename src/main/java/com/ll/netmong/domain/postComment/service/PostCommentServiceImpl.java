@@ -15,7 +15,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,9 +43,9 @@ public class PostCommentServiceImpl implements PostCommentService {
                 .build();
         post.getComments().add(comment);
         PostComment savedComment = postCommentRepository.save(comment);
-        return new PostCommentResponse(savedComment.getContent(), savedComment.getIsDeleted(), member.getUsername());
+        List<Long> childCommentsIds = savedComment.getChildComments() != null ? savedComment.getChildComments().stream().map(PostComment::getId).collect(Collectors.toList()) : new ArrayList<>();
+        return new PostCommentResponse(savedComment.getId(), savedComment.getContent(), savedComment.getIsDeleted(), member.getUsername(), savedComment.getParentComment() != null ? savedComment.getParentComment().getId() : null, childCommentsIds);
     }
-
 
     @Override
     @Transactional

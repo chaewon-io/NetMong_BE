@@ -13,12 +13,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -86,6 +86,27 @@ class ParkServiceImplTest {
         when(parkRepository.findById(parkId)).thenReturn(Optional.empty());
 
         assertThrows(IllegalArgumentException.class, () -> parkService.getPark(parkId));
+    }
+
+    @Test
+    @DisplayName("getParks() 메서드는 데이터를 조회하고, 조회한 데이터를 ParkResponse 객체로 변환한다.")
+    void testGetParks() {
+        when(parkRepository.findAll()).thenReturn(sampleParks);
+
+        List<ParkResponse> result = parkService.getParks();
+
+        assertThat(result).isNotEmpty();
+        assertThat(result.size()).isEqualTo(sampleParks.size());
+        assertThat(result.get(0).getParkNm()).isEqualTo(sampleParks.get(0).getParkNm());
+        assertThat(result.get(1).getParkNm()).isEqualTo(sampleParks.get(1).getParkNm());
+    }
+
+    @Test   // Open API 호출과 데이터 저장 부분은 예외를 발생시키지 않는다고 가정한다.
+    @DisplayName("getParks() 메서드는 비어있는 리스트를 반환하는 경우에도 예외를 발생시키지 않아야 한다.")
+    void testGetParksWhenNoData() {
+        when(parkRepository.findAll()).thenReturn(Collections.emptyList());
+
+        assertDoesNotThrow(() -> parkService.getParks());
     }
 
 }

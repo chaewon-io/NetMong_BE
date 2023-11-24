@@ -32,7 +32,10 @@ public class PostController {
 
     @PostMapping("/upload")
     @ResponseStatus(HttpStatus.CREATED)
-    public RsData postUpload(MultipartFile image, PostRequest postRequest) {
+    public RsData postUpload(@AuthenticationPrincipal UserDetails userDetails, MultipartFile image, PostRequest postRequest) throws Exception {
+        Member foundMember = memberService.findByUsername(userDetails.getUsername());
+        String foundUsername = foundMember.getUsername();
+
         String imageName = UUID.randomUUID() + "_" + image.getOriginalFilename(); //동일한 이미지명의 이미지가 업로드되지 않도록
         try {
             Path imagePath = Path.of(postImagePath, imageName);
@@ -43,7 +46,7 @@ public class PostController {
         }
         postRequest.setImageUrl(postImagePath + imageName);
 
-        postService.uploadPost(postRequest);
+        postService.uploadPost(postRequest, foundMember, foundUsername);
 
         return RsData.of("S-1", "게시물이 업로드되었습니다.");
     }

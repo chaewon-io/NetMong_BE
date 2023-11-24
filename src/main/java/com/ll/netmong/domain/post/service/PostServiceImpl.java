@@ -1,5 +1,7 @@
 package com.ll.netmong.domain.post.service;
 
+import com.ll.netmong.domain.member.entity.Member;
+import com.ll.netmong.domain.member.service.MemberService;
 import com.ll.netmong.domain.post.dto.request.PostRequest;
 import com.ll.netmong.domain.post.dto.response.PostResponse;
 import com.ll.netmong.domain.post.entity.Post;
@@ -8,19 +10,21 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
+    private final MemberService memberService;
 
     @Override
     @Transactional
-    public void uploadPost(PostRequest postRequest) {
+    public void uploadPost(PostRequest postRequest, Member foundMember, String foundUsername) {
         postRepository.save(Post.builder()
                 .title(postRequest.getTitle())
+                .member(foundMember)
+                .writer(foundUsername)
                 .content(postRequest.getContent())
                 .imageUrl(postRequest.getImageUrl()).build());
     }

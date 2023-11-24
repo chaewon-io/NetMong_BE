@@ -19,13 +19,20 @@ import java.util.List;
 public class Post extends BaseEntity {
     @Column(length=100)
     private String title;
+    private String writer;
     @Column(length=100)
     private String content;
     private String imageUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_username")
+    @JoinColumn(name = "member_id")
     private Member member;
+
+    //포스트 수정
+    public void update(String content, String imageUrl) {
+        this.content = content;
+        this.imageUrl = imageUrl;
+    }
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<PostComment> comments = new ArrayList<>();

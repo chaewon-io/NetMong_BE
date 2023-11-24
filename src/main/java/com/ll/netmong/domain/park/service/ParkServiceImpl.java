@@ -51,7 +51,19 @@ public class ParkServiceImpl implements ParkService {
     @Transactional
     @Override
     public void saveParksFromApi() {
-        List<Park> parks = getParksFromApi();
+        List<Park> parks = new ArrayList<>();
+        int pageNo = 1;
+
+        while (true) {
+            String result = callApi(pageNo);
+            List<Park> newParks = parseParksData(result);
+            if (newParks.isEmpty()) {
+                break;
+            }
+            parks.addAll(newParks);
+            pageNo++;
+        }
+
         parkRepository.saveAll(parks);
     }
 
@@ -74,22 +86,6 @@ public class ParkServiceImpl implements ParkService {
         return parks.stream()
                 .map(Park::toResponse)
                 .collect(Collectors.toList());
-    }
-
-    private List<Park> getParksFromApi() {
-        List<Park> parks = new ArrayList<>();
-        int pageNo = 1;
-
-        while (true) {
-            String result = callApi(pageNo);
-            List<Park> newParks = parseParksData(result);
-            if (newParks.isEmpty()) {
-                break;
-            }
-            parks.addAll(newParks);
-            pageNo++;
-        }
-        return parks;
     }
 
     private String callApi(int pageNo) {

@@ -2,6 +2,7 @@ package com.ll.netmong.domain.postComment.controller;
 
 import com.ll.netmong.common.RsData;
 import com.ll.netmong.domain.postComment.dto.request.PostCommentRequest;
+import com.ll.netmong.domain.postComment.dto.response.PostCommentResponse;
 import com.ll.netmong.domain.postComment.entity.PostComment;
 import com.ll.netmong.domain.postComment.service.PostCommentService;
 import jakarta.validation.Valid;
@@ -22,8 +23,8 @@ public class PostCommentController {
 
     @PostMapping("/{postId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public RsData<PostComment> addPostComment(@PathVariable Long postId, @Valid @RequestBody PostCommentRequest request, @AuthenticationPrincipal UserDetails userDetails) {
-        PostComment newComment = service.addPostComment(postId, request, userDetails);
+    public RsData<PostCommentResponse> addPostComment(@PathVariable Long postId, @Valid @RequestBody PostCommentRequest request, @AuthenticationPrincipal UserDetails userDetails) {
+        PostCommentResponse newComment = service.addPostComment(postId, request, userDetails);
         return RsData.successOf(newComment);
     }
 

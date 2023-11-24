@@ -18,7 +18,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void uploadPost(MultipartFile image, PostRequest postRequest) {
+    public void uploadPost(PostRequest postRequest) {
         postRepository.save(Post.builder()
                 .title(postRequest.getTitle())
                 .content(postRequest.getContent())

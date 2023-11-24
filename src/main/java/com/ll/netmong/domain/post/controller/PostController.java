@@ -1,12 +1,16 @@
 package com.ll.netmong.domain.post.controller;
 
 import com.ll.netmong.common.RsData;
+import com.ll.netmong.domain.member.entity.Member;
+import com.ll.netmong.domain.member.service.MemberService;
 import com.ll.netmong.domain.post.dto.request.PostRequest;
 import com.ll.netmong.domain.post.dto.response.PostResponse;
 import com.ll.netmong.domain.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,6 +25,7 @@ import java.util.UUID;
 @RequestMapping("/api/post")
 public class PostController {
     private final PostService postService;
+    private final MemberService memberService;
 
     @Value("${spring.servlet.multipart.location}")
     private String postImagePath;
@@ -29,18 +34,16 @@ public class PostController {
     @ResponseStatus(HttpStatus.CREATED)
     public RsData postUpload(MultipartFile image, PostRequest postRequest) {
         String imageName = UUID.randomUUID() + "_" + image.getOriginalFilename(); //동일한 이미지명의 이미지가 업로드되지 않도록
-
         try {
             Path imagePath = Path.of(postImagePath, imageName);
 
             Files.copy(image.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException ex) {
-            throw new RuntimeException("Failed to upload image");
+            throw new RuntimeException("이미지 업로드 실패");
         }
-
         postRequest.setImageUrl(postImagePath + imageName);
 
-        postService.uploadPost(image, postRequest);
+        postService.uploadPost(postRequest);
 
         return RsData.of("S-1", "게시물이 업로드되었습니다.");
     }

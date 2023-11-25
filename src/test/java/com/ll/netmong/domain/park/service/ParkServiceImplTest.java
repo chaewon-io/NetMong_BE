@@ -124,6 +124,24 @@ class ParkServiceImplTest {
     }
 
     @Test
+    @DisplayName("getCitiesByState() 메서드는 주어진 state에 해당하는 모든 유일한 city 목록을 반환해야 한다.")
+    void testGetCitiesByState() {
+        String state = "Test State";
+        List<String> cities = sampleParks.stream()
+                .filter(park -> park.getState().equals(state))
+                .map(Park::getCity)
+                .distinct()
+                .collect(Collectors.toList());
+
+        when(parkRepository.findCitiesByState(state)).thenReturn(cities);
+
+        List<String> result = parkService.getCitiesByState(state);
+
+        assertThat(result).isNotEmpty();
+        assertThat(result.size()).isEqualTo(cities.size());
+    }
+
+    @Test
     @DisplayName("getParksByStateAndCity() 메서드는 유효한 state와 city를 입력받으면, 해당 지역의 ParkResponse 리스트를 반환해야 한다.")
     void testGetParksByStateAndCityExists() {
 

@@ -14,6 +14,8 @@ public interface ParkService {
 
     List<String> getStates();
 
+    List<String> getCitiesByState(String state);
+
     List<ParkResponse> getParksByStateAndCity(String state, String city);
 
 }

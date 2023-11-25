@@ -11,6 +11,9 @@ public interface ParkRepository extends JpaRepository<Park, Long> {
     @Query("SELECT p.state FROM Park p GROUP BY p.state ORDER BY COUNT(p.state) DESC")
     List<String> findStates();
 
+    @Query("SELECT DISTINCT p.city FROM Park p WHERE p.state = ?1 ORDER BY p.city ASC")
+    List<String> findCitiesByState(String state);
+
     List<Park> findByLnmadrStartingWith(String stateAndCity);
 
 }

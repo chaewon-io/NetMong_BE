@@ -40,7 +40,13 @@ public class ParkController {
         return RsData.successOf(states);
     }
 
-    @GetMapping("/{state}/{city}")
+    @GetMapping("/states/{state}")
+    public RsData<List<String>> getDistinctCitiesByState(@PathVariable String state) {
+        List<String> cities = parkService.getCitiesByState(state);
+        return RsData.successOf(cities);
+    }
+
+    @GetMapping("/states/{state}/{city}")
     public RsData<List<ParkResponse>> getParksByStateAndCity(@PathVariable String state, @PathVariable String city) {
         List<ParkResponse> parks = parkService.getParksByStateAndCity(state, city);
         return RsData.successOf(parks);

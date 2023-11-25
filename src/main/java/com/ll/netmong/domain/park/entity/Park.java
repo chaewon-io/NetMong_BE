@@ -52,11 +52,7 @@ public class Park extends BaseEntity {
         return new ParkResponse(
                 this.getParkNm(),
                 this.getLnmadr(),
-                this.getLatitude(),
-                this.getLongitude(),
-                this.getPhoneNumber(),
-                this.getState(),
-                this.getCity()
+                this.getPhoneNumber()
         );
     }
 

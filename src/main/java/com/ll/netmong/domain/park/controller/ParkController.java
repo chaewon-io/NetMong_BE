@@ -34,6 +34,12 @@ public class ParkController {
         return RsData.successOf(park);
     }
 
+    @GetMapping("/states")
+    public RsData<List<String>> getStates() {
+        List<String> states = parkService.getStates();
+        return RsData.successOf(states);
+    }
+
     @GetMapping("/{state}/{city}")
     public RsData<List<ParkResponse>> getParksByStateAndCity(@PathVariable String state, @PathVariable String city) {
         List<ParkResponse> parks = parkService.getParksByStateAndCity(state, city);

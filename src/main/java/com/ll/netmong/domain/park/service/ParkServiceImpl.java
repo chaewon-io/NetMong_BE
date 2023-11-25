@@ -76,6 +76,11 @@ public class ParkServiceImpl implements ParkService {
     }
 
     @Override
+    public List<String> getStates() {
+        return parkRepository.findStates();
+    }
+
+    @Override
     public List<ParkResponse> getParksByStateAndCity(String state, String city) {
         List<Park> parks = parkRepository.findByLnmadrStartingWith(state + " " + city);
 

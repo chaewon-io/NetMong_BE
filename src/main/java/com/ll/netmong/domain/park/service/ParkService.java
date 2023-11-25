@@ -12,6 +12,8 @@ public interface ParkService {
 
     ParkResponse getPark(Long parkId);
 
+    List<String> getStates();
+
     List<ParkResponse> getParksByStateAndCity(String state, String city);
 
 }

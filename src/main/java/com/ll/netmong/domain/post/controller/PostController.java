@@ -36,15 +36,7 @@ public class PostController {
         Member foundMember = memberService.findByUsername(userDetails.getUsername());
         String foundUsername = foundMember.getUsername();
 
-        String imageName = UUID.randomUUID() + "_" + image.getOriginalFilename(); //동일한 이미지명의 이미지가 업로드되지 않도록
-        try {
-            Path imagePath = Path.of(postImagePath, imageName);
-
-            Files.copy(image.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException ex) {
-            throw new RuntimeException("이미지 업로드 실패");
-        }
-        postRequest.setImageUrl(postImagePath + imageName);
+        saveImage(image, postRequest);
 
         postService.uploadPost(postRequest, foundMember, foundUsername);
 
@@ -67,11 +59,27 @@ public class PostController {
         return RsData.of("S-1", "해당 게시물이 삭제되었습니다.");
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping ("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public RsData postUpdate(@PathVariable long id, @RequestBody PostRequest updatedPostRequest) {
+    public RsData postUpdate(MultipartFile image, @PathVariable long id, PostRequest updatedPostRequest) {
+        saveImage(image, updatedPostRequest);
+
         postService.updatePost(id, updatedPostRequest);
 
         return RsData.of("S-1", "해당 게시물이 수정되었습니다.");
+    }
+
+    public void saveImage(MultipartFile image, PostRequest postRequest) {
+        String imageName = UUID.randomUUID() + "_" + image.getOriginalFilename(); //동일한 이미지명의 이미지가 업로드되지 않도록
+
+        try {
+            Path imagePath = Path.of(postImagePath, imageName);
+
+            Files.copy(image.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException ex) {
+            throw new RuntimeException("이미지 업로드 실패");
+        }
+
+        postRequest.setImageUrl(postImagePath + imageName);
     }
 }

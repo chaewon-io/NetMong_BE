@@ -1,7 +1,6 @@
 package com.ll.netmong.domain.post.service;
 
 import com.ll.netmong.domain.member.entity.Member;
-import com.ll.netmong.domain.member.service.MemberService;
 import com.ll.netmong.domain.post.dto.request.PostRequest;
 import com.ll.netmong.domain.post.dto.response.PostResponse;
 import com.ll.netmong.domain.post.entity.Post;
@@ -16,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
-    private final MemberService memberService;
 
     @Override
     @Transactional
@@ -52,7 +50,7 @@ public class PostServiceImpl implements PostService {
         Post updatedPost = originPost.toBuilder()
                 .title(updatedPostRequest.getTitle())
                 .content(updatedPostRequest.getContent())
-                .build();
+                .imageUrl(updatedPostRequest.getImageUrl()).build();
 
         postRepository.save(updatedPost);
     }

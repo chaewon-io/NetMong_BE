@@ -50,7 +50,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void deletePost(long id, String foundUsername) {
+    public void deletePost(Long id, String foundUsername) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("포스트를 찾을 수 없습니다."));
 
@@ -63,7 +63,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void updatePost(long id, PostRequest updatedPostRequest, String foundUsername) {
+    public void updatePost(Long id, PostRequest updatedPostRequest, String foundUsername) {
         Post originPost = postRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("포스트를 찾을 수 없습니다."));
 

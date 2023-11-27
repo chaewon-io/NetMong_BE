@@ -10,6 +10,6 @@ public interface PostService {
     List<PostResponse> getViewAll();
     void uploadPost(PostRequest postRequest, Member foundMember, String foundUsername);
     PostResponse getDetail(long id);
-    void deletePost(long id, String foundUsername);
-    void updatePost(long id, PostRequest updatedPostRequest, String foundUsername);
+    void deletePost(Long id, String foundUsername);
+    void updatePost(Long id, PostRequest updatedPostRequest, String foundUsername);
 }

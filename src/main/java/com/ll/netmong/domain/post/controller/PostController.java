@@ -62,7 +62,7 @@ public class PostController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public RsData postDelete(@AuthenticationPrincipal UserDetails userDetails, @PathVariable long id) throws Exception {
+    public RsData postDelete(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) throws Exception {
         Member foundMember = memberService.findByUsername(userDetails.getUsername());
         String foundUsername = foundMember.getUsername();
 
@@ -73,7 +73,7 @@ public class PostController {
 
     @PatchMapping ("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public RsData postUpdate(@AuthenticationPrincipal UserDetails userDetails, MultipartFile image, @PathVariable long id, PostRequest updatedPostRequest) throws Exception {
+    public RsData postUpdate(@AuthenticationPrincipal UserDetails userDetails, MultipartFile image, @PathVariable Long id, PostRequest updatedPostRequest) throws Exception {
         Member foundMember = memberService.findByUsername(userDetails.getUsername());
         String foundUsername = foundMember.getUsername();
 

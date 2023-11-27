@@ -8,7 +8,10 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.SQLDelete;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +19,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @SuperBuilder(toBuilder = true)
+@SQLDelete(sql = "UPDATE post SET deleted_at = CURRENT_TIMESTAMP where id = ?")
 public class Post extends BaseEntity {
     @Column(length=100)
     private String title;
@@ -23,6 +27,9 @@ public class Post extends BaseEntity {
     @Column(length=100)
     private String content;
     private String imageUrl;
+
+    @Column(name = "deleted_at")
+    private String deleteDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")

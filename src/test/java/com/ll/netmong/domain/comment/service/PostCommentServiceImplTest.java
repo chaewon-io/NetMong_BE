@@ -77,13 +77,6 @@ class PostCommentServiceImplTest {
 
         assertEquals("네트멍 GOAT", response.getContent());
 
-        System.out.println("Response: " +
-                "id=" + response.getId() +
-                ", content='" + response.getContent() + '\'' +
-                ", isDeleted=" + response.getIsDeleted() +
-                ", username='" + response.getUsername() + '\'' +
-                ", parentCommentId=" + (response.getParentCommentId() != null ? response.getParentCommentId() : "null") +
-                ", childComments=" + (response.getChildCommentsIds() != null ? response.getChildCommentsIds().size() : "null"));
     }
 
     @Test
@@ -109,15 +102,6 @@ class PostCommentServiceImplTest {
         assertEquals("네트멍", responses.get(0).getContent());
         assertEquals("멍멍 왈왈", responses.get(1).getContent());
 
-        for (PostCommentResponse response : responses) {
-            System.out.println("Response: " +
-                    "id=" + response.getId() +
-                    ", content='" + response.getContent() + '\'' +
-                    ", isDeleted=" + response.getIsDeleted() +
-                    ", username='" + response.getUsername() + '\'' +
-                    ", parentCommentId=" + (response.getParentCommentId() != null ? response.getParentCommentId() : "null") +
-                    ", childComments=" + (response.getChildCommentsIds() != null ? response.getChildCommentsIds().size() : "null"));
-        }
     }
 
 }

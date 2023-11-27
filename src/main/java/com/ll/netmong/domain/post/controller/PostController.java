@@ -53,18 +53,24 @@ public class PostController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public RsData postDelete(@PathVariable long id) {
-        postService.deletePost(id);
+    public RsData postDelete(@AuthenticationPrincipal UserDetails userDetails, @PathVariable long id) throws Exception {
+        Member foundMember = memberService.findByUsername(userDetails.getUsername());
+        String foundUsername = foundMember.getUsername();
+
+        postService.deletePost(id, foundUsername);
 
         return RsData.of("S-1", "해당 게시물이 삭제되었습니다.");
     }
 
     @PatchMapping ("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public RsData postUpdate(MultipartFile image, @PathVariable long id, PostRequest updatedPostRequest) {
+    public RsData postUpdate(@AuthenticationPrincipal UserDetails userDetails, MultipartFile image, @PathVariable long id, PostRequest updatedPostRequest) throws Exception {
+        Member foundMember = memberService.findByUsername(userDetails.getUsername());
+        String foundUsername = foundMember.getUsername();
+
         saveImage(image, updatedPostRequest);
 
-        postService.updatePost(id, updatedPostRequest);
+        postService.updatePost(id, updatedPostRequest, foundUsername);
 
         return RsData.of("S-1", "해당 게시물이 수정되었습니다.");
     }

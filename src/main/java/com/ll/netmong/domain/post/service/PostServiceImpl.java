@@ -1,5 +1,6 @@
 package com.ll.netmong.domain.post.service;
 
+import com.ll.netmong.common.PermissionDeniedException;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.post.dto.request.PostRequest;
 import com.ll.netmong.domain.post.dto.response.PostResponse;
@@ -37,21 +38,32 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void deletePost(long id) {
-        postRepository.deleteById(id);
+    public void deletePost(long id, String foundUsername) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("포스트를 찾을 수 없습니다."));
+
+        if (post.getWriter().equals(foundUsername)) {
+            postRepository.deleteById(id);
+        } else {
+            throw new PermissionDeniedException("해당 포스트에 대한 삭제 권한이 없습니다.");
+        }
     }
 
     @Override
     @Transactional
-    public void updatePost(long id, PostRequest updatedPostRequest) {
+    public void updatePost(long id, PostRequest updatedPostRequest, String foundUsername) {
         Post originPost = postRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("포스트를 찾을 수 없습니다."));
 
-        Post updatedPost = originPost.toBuilder()
-                .title(updatedPostRequest.getTitle())
-                .content(updatedPostRequest.getContent())
-                .imageUrl(updatedPostRequest.getImageUrl()).build();
+        if (originPost.getWriter().equals(foundUsername)) {
+            Post updatedPost = originPost.toBuilder()
+                    .title(updatedPostRequest.getTitle())
+                    .content(updatedPostRequest.getContent())
+                    .imageUrl(updatedPostRequest.getImageUrl()).build();
 
-        postRepository.save(updatedPost);
+            postRepository.save(updatedPost);
+        } else {
+            throw new PermissionDeniedException("해당 포스트에 대한 수정 권한이 없습니다.");
+        }
     }
 }

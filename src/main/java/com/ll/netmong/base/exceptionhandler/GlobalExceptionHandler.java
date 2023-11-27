@@ -45,7 +45,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    //    @ExceptionHandler(Exception.class)
+//    @ExceptionHandler(Exception.class)
 //    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 //    public RsData handleException(Exception e) {
 //        return RsData.failOf("Unexpected error");

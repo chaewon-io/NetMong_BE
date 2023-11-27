@@ -50,5 +50,4 @@ class ProductControllerTest {
     private RsData productResponse() {
         return RsData.of("S-1", "상품이 등록 되었습니다.", "create");
     }
-
 }

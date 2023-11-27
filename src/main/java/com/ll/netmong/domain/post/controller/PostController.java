@@ -18,17 +18,26 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/post")
+@RequestMapping("/api/v1/post")
 public class PostController {
     private final PostService postService;
     private final MemberService memberService;
 
     @Value("${spring.servlet.multipart.location}")
     private String postImagePath;
+
+    @GetMapping("/view")
+    @ResponseStatus(HttpStatus.OK)
+    public RsData postView() {
+        List<PostResponse> postViewAll = postService.getViewAll();
+
+        return RsData.of("S-1", "전체 게시글이 조회되었습니다.", postViewAll);
+    }
 
     @PostMapping("/upload")
     @ResponseStatus(HttpStatus.CREATED)
@@ -72,7 +81,7 @@ public class PostController {
 
         postService.updatePost(id, updatedPostRequest, foundUsername);
 
-        return RsData.of("S-1", "해당 게시물이 수정되었습니다.");
+        return RsData.of("S-1", "해당 게시물이 수정되었습니다.", updatedPostRequest);
     }
 
     public void saveImage(MultipartFile image, PostRequest postRequest) {

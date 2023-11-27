@@ -59,8 +59,8 @@ public class PostComment extends BaseEntity {
         childComment.setParentComment(this);
     }
 
-    public void changeIsDeleted(Boolean isDeleted) {
-        this.isDeleted = isDeleted;
+    public void markAsDeleted(Boolean b) {
+        this.isDeleted = b;
     }
 
     public void setPost(Post post) {

@@ -50,7 +50,6 @@ public class PostCommentController {
     @PostMapping("/{commentId}/reply")
     @ResponseStatus(HttpStatus.CREATED)
     public RsData<PostComment> addReplyToComment(@PathVariable Long commentId, @RequestBody PostCommentRequest request, UserDetails userDetails) {
-        //String username = SecurityContextHolder.getContext().getAuthentication().getName();
         PostComment childComment = service.addReplyToComment(commentId, request, userDetails);
         return RsData.successOf(childComment);
     }

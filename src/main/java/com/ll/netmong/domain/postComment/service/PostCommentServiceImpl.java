@@ -67,7 +67,7 @@ public class PostCommentServiceImpl implements PostCommentService {
         PostComment comment = postCommentRepository.findById(commentId)
                 .orElseThrow(() -> new DataNotFoundException("해당 댓글이 없습니다. id: " + commentId));
         checkCommentAuthor(comment, userDetails);
-        comment.changeIsDeleted(true);
+        comment.markAsDeleted(true);
         postCommentRepository.save(comment);
     }
 

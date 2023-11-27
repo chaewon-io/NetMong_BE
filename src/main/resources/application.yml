@@ -1,12 +1,13 @@
 server:
   port: 9000
 spring:
+  spring:
+    config:
+      activate:
+        on-profile: local
   profiles:
     active:
     include: secret
-  h2:
-    console:
-      enabled: true
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     url: '${custom.db.url}'

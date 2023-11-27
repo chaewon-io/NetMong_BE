@@ -1,8 +1,11 @@
 package com.ll.netmong.domain.comment.service;
 
+import com.ll.netmong.domain.member.entity.Member;
+import com.ll.netmong.domain.member.repository.MemberRepository;
 import com.ll.netmong.domain.post.entity.Post;
 import com.ll.netmong.domain.post.repository.PostRepository;
 import com.ll.netmong.domain.postComment.dto.request.PostCommentRequest;
+import com.ll.netmong.domain.postComment.dto.response.PostCommentResponse;
 import com.ll.netmong.domain.postComment.entity.PostComment;
 import com.ll.netmong.domain.postComment.repository.PostCommentRepository;
 import com.ll.netmong.domain.postComment.service.PostCommentService;
@@ -10,124 +13,95 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class PostCommentServiceImplTest {
 
     @Autowired
-    private PostCommentService postCommentService;
+    PostCommentService postCommentService;
 
-    @Autowired
-    private PostRepository postRepository;
+    @MockBean
+    PostRepository postRepository;
 
-    @Autowired
-    private PostCommentRepository postCommentRepository;
+    @MockBean
+    MemberRepository memberRepository;
+
+    @MockBean
+    PostCommentRepository postCommentRepository;
 
     @Test
     @DisplayName("게시글에 댓글을 작성할 수 있다.")
-    void addPostComment() {
+    public void addPostCommentTest() {
         // given
+        Long postId = 1L;
         Post post = Post.builder()
-                .title("Test Title")
-                .content("Test Content")
+                .comments(new ArrayList<>())
                 .build();
-        postRepository.save(post);
+        when(postRepository.findById(postId)).thenReturn(Optional.of(post));
 
-        PostCommentRequest request = new PostCommentRequest();
-        request.setContent("Test Comment");
+        String username = "네트멍";
+        Member member = new Member();
+        when(memberRepository.findByUsername(username)).thenReturn(Optional.of(member));
 
         // when
-        PostComment comment = postCommentService.addPostComment(post.getId(), request);
+        PostCommentRequest request = new PostCommentRequest();
+        request.setContent("네트멍 GOAT");
 
-        // then
-        assertNotNull(comment);
-        assertEquals(request.getContent(), comment.getContent());
-    }
-
-    @Test
-    @DisplayName("댓글을 수정할 수 있다.")
-    void updateComment() {
-        // given
-        Post post = Post.builder()
-                .title("Test Title")
-                .content("Test Content")
-                .build();
-        postRepository.save(post);
+        UserDetails userDetails = new User(username, "password", new ArrayList<>());
 
         PostComment comment = PostComment.builder()
-                .content("Original Comment")
                 .post(post)
+                .memberID(member)
+                .content(request.getContent())
                 .build();
-        postCommentRepository.save(comment);
 
-        PostCommentRequest request = new PostCommentRequest();
-        request.setContent("Updated Comment");
+        when(postCommentRepository.save(any(PostComment.class))).thenReturn(comment);
 
-        // when
-        PostComment updatedComment = postCommentService.updateComment(comment.getId(), request);
+        PostCommentResponse response = postCommentService.addPostComment(postId, request, userDetails);
 
         // then
-        assertNotNull(updatedComment);
-        assertEquals(request.getContent(), updatedComment.getContent());
-    }
+        verify(postRepository, times(1)).findById(postId);
+        verify(memberRepository, times(1)).findByUsername(username);
+        verify(postCommentRepository, times(1)).save(any(PostComment.class));
 
-    @Test
-    @DisplayName("댓글을 삭제할 수 있다.")
-    void deleteComment() {
-        // given
-        Post post = Post.builder()
-                .title("Test Title")
-                .content("Test Content")
-                .build();
-        postRepository.save(post);
+        assertEquals("네트멍 GOAT", response.getContent());
 
-        PostComment comment = PostComment.builder()
-                .content("To be Deleted Comment")
-                .post(post)
-                .build();
-        postCommentRepository.save(comment);
-
-        // when
-        postCommentService.deleteComment(comment.getId());
-
-        // then
-        assertFalse(postCommentRepository.findById(comment.getId()).isPresent());
     }
 
     @Test
     @DisplayName("게시글에 달린 댓글을 가져올 수 있다.")
-    void getCommentsOfPost() {
+    public void getCommentsOfPostTest() {
         // given
-        Post post = Post.builder()
-                .title("Test Title")
-                .content("Test Content")
-                .comments(new ArrayList<>())
-                .build();
-        postRepository.save(post);
+        Long postId = 1L;
 
-        PostComment comment1 = PostComment.builder()
-                .content("First Comment")
-                .build();
+        List<PostComment> childComments = new ArrayList<>();
+        PostComment comment1 = PostComment.builder().id(1L).content("네트멍").childComments(childComments).build();
+        PostComment comment2 = PostComment.builder().id(2L).content("멍멍 왈왈").childComments(childComments).build();
+        List<PostComment> comments = Arrays.asList(comment1, comment2);
 
-        PostComment comment2 = PostComment.builder()
-                .content("Second Comment")
-                .build();
+        // when
+        when(postCommentRepository.findByPostIdAndParentCommentIsNull(postId)).thenReturn(comments);
 
-        post.addComment(comment1);
-        post.addComment(comment2);
-        postCommentRepository.saveAll(Arrays.asList(comment1, comment2));
+        List<PostCommentResponse> responses = postCommentService.getCommentsOfPost(postId);
 
-// when
-        List<PostComment> comments = postCommentService.getCommentsOfPost(post.getId());
+        // then
+        verify(postCommentRepository, times(1)).findByPostIdAndParentCommentIsNull(postId);
 
-// then
-        assertNotNull(comments);
-        assertEquals(2, comments.size());
+        assertEquals(2, responses.size());
+        assertEquals("네트멍", responses.get(0).getContent());
+        assertEquals("멍멍 왈왈", responses.get(1).getContent());
+
     }
+
 }

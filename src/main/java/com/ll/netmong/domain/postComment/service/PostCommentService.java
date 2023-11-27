@@ -1,23 +1,24 @@
 package com.ll.netmong.domain.postComment.service;
 
 import com.ll.netmong.domain.postComment.dto.request.PostCommentRequest;
+import com.ll.netmong.domain.postComment.dto.response.PostCommentResponse;
 import com.ll.netmong.domain.postComment.entity.PostComment;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
 
 public interface PostCommentService {
 
-    PostComment addPostComment(Long postId, PostCommentRequest postCommentRequest);
+    PostCommentResponse addPostComment(Long postId, PostCommentRequest postCommentRequest, UserDetails userDetails);
 
-    PostComment updateComment(Long commentId, PostCommentRequest request);
+    PostCommentResponse updateComment(Long commentId, PostCommentRequest request, UserDetails userDetails);
 
-    void deleteComment(Long commentId);
+    void deleteComment(Long commentId, UserDetails userDetails);
 
-    List<PostComment> getCommentsOfPost(Long postId);
+    List<PostCommentResponse> getCommentsOfPost(Long postId);
 
-    PostComment addReplyToComment(Long commentId, PostCommentRequest request);
+    PostComment addReplyToComment(Long commentId, PostCommentRequest request, UserDetails userDetails);
 
-    List<PostComment> getRepliesOfComment(Long commentId);
 
     PostComment updateReply(Long replyId, PostCommentRequest request);
 

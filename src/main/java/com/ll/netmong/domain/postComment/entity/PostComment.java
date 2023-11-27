@@ -2,6 +2,7 @@ package com.ll.netmong.domain.postComment.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ll.netmong.common.BaseEntity;
+import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.post.entity.Post;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -39,7 +40,13 @@ public class PostComment extends BaseEntity {
     @OneToMany(mappedBy = "parentComment", orphanRemoval = true)
     private List<PostComment> childComments = new ArrayList<>();
 
-    public void update(String content) {
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member memberID;
+
+    private String username;
+
+    public void updateContent(String content) {
         this.content = content;
     }
 
@@ -52,8 +59,8 @@ public class PostComment extends BaseEntity {
         childComment.setParentComment(this);
     }
 
-    public void changeIsDeleted(Boolean isDeleted) {
-        this.isDeleted = isDeleted;
+    public void markAsDeleted(Boolean b) {
+        this.isDeleted = b;
     }
 
     public void setPost(Post post) {

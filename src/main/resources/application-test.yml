@@ -1,0 +1,12 @@
+spring:
+  config:
+    activate:
+      on-profile: test
+  profiles:
+    active:
+    include: secret
+  datasource:
+    jdbc-url: '${test.db.url}'
+    driver-class-name: org.h2.Driver
+    username: '${test.db.username}'
+    password: '${test.db.password}'

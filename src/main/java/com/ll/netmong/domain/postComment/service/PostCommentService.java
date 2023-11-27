@@ -19,7 +19,6 @@ public interface PostCommentService {
 
     PostComment addReplyToComment(Long commentId, PostCommentRequest request, UserDetails userDetails);
 
-    List<PostComment> getRepliesOfComment(Long commentId);
 
     PostComment updateReply(Long replyId, PostCommentRequest request);
 

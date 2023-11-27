@@ -55,13 +55,6 @@ public class PostCommentController {
         return RsData.successOf(childComment);
     }
 
-    @GetMapping("/{commentId}/replies")
-    @ResponseStatus(HttpStatus.OK)
-    public RsData<List<PostComment>> getRepliesOfComment(@PathVariable Long commentId) {
-        List<PostComment> replies = service.getRepliesOfComment(commentId);
-        return RsData.successOf(replies);
-    }
-
     @PatchMapping("/replies/{replyId}")
     @ResponseStatus(HttpStatus.OK)
     public RsData<PostComment> updateReply(@PathVariable Long replyId, @RequestBody PostCommentRequest request) {

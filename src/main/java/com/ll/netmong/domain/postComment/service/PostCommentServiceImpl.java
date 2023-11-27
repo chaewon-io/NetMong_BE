@@ -45,9 +45,9 @@ public class PostCommentServiceImpl implements PostCommentService {
                 .content(postCommentRequest.getContent())
                 .isDeleted(false)
                 .build();
-        post.getComments().add(comment);
+        post.addComment(comment);
         PostComment savedComment = postCommentRepository.save(comment);
-        return convertToResponse(savedComment);
+        return PostCommentResponse.of(savedComment);
     }
 
     @Override
@@ -55,12 +55,10 @@ public class PostCommentServiceImpl implements PostCommentService {
     public PostCommentResponse updateComment(Long commentId, PostCommentRequest updateRequest, @AuthenticationPrincipal UserDetails userDetails) {
         PostComment comment = postCommentRepository.findById(commentId)
                 .orElseThrow(() -> new DataNotFoundException("해당하는 댓글을 찾을 수 없습니다."));
-        if (!comment.getUsername().equals(userDetails.getUsername())) {
-            throw new AccessDeniedException("댓글 작성자만 수정할 수 있습니다.");
-        }
+        checkCommentAuthor(comment, userDetails);
         comment.updateContent(updateRequest.getContent());
         PostComment updatedComment = postCommentRepository.save(comment);
-        return convertToResponse(updatedComment);
+        return PostCommentResponse.of(updatedComment);
     }
 
     @Override
@@ -68,9 +66,7 @@ public class PostCommentServiceImpl implements PostCommentService {
     public void deleteComment(Long commentId, @AuthenticationPrincipal UserDetails userDetails) {
         PostComment comment = postCommentRepository.findById(commentId)
                 .orElseThrow(() -> new DataNotFoundException("해당 댓글이 없습니다. id: " + commentId));
-        if (!comment.getUsername().equals(userDetails.getUsername())) {
-            throw new AccessDeniedException("댓글 작성자만 삭제할 수 있습니다.");
-        }
+        checkCommentAuthor(comment, userDetails);
         comment.changeIsDeleted(true);
         postCommentRepository.save(comment);
     }
@@ -94,6 +90,11 @@ public class PostCommentServiceImpl implements PostCommentService {
         );
     }
 
+    private void checkCommentAuthor(PostComment comment, UserDetails userDetails) {
+        if (!comment.getUsername().equals(userDetails.getUsername())) {
+            throw new AccessDeniedException("댓글 작성자만 수정할 수 있습니다.");
+        }
+    }
 
     @Override
     @Transactional
@@ -109,14 +110,6 @@ public class PostCommentServiceImpl implements PostCommentService {
                 .build();
         parentComment.addChildComment(childComment);
         return postCommentRepository.save(childComment);
-    }
-
-    @Override
-    @Transactional
-    public List<PostComment> getRepliesOfComment(Long commentId) {
-        PostComment parentComment = postCommentRepository.findById(commentId)
-                .orElseThrow(() -> new DataNotFoundException("해당 댓글이 없습니다. id: " + commentId));
-        return parentComment.getChildComments();
     }
 
     @Override

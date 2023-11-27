@@ -39,7 +39,15 @@ class ProductRepositoryTest {
     @DisplayName("등록된 상품 단일 조회 확인")
     @Test
     void find_By_Single_Product() {
-        Product findProduct = productRepository.findById(1L).orElseThrow();
+        Product newProduct = Product.builder()
+                .productName("강아지 사료")
+                .price("25_000")
+                .content("유통기한 1년 남은 사료입니다.")
+                .build();
+
+        productRepository.save(newProduct);
+
+        Product findProduct = productRepository.findById(newProduct.getId()).orElseThrow();
         assertThat(findProduct.getProductName()).isEqualTo("강아지 사료");
     }
 

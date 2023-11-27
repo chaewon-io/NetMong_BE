@@ -49,11 +49,15 @@ public class Park extends BaseEntity {
     private List<ParkLiked> parkLiked;
 
     public ParkResponse toResponse() {
-        return new ParkResponse(
-                this.getParkNm(),
-                this.getLnmadr(),
-                this.getPhoneNumber()
-        );
+        return ParkResponse.builder()
+                .parkNm(parkNm)
+                .lnmadr(lnmadr)
+                .latitude(latitude)
+                .longitude(longitude)
+                .phoneNumber(phoneNumber)
+                .state(state)
+                .city(city)
+                .build();
     }
 
 }

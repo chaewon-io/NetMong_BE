@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/parks")
+@RequestMapping("/api/v1/parks")
 public class ParkController {
 
     private final ParkService parkService;

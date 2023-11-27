@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/products")
+@RequestMapping("/api/v1/products")
 public class ProductController {
     private static final String FIND_SUCCESS_PRODUCT = "상품 조회가 되었습니다.";
     private static final String POST_SUCCESS_PRODUCT = "상품이 등록 되었습니다.";

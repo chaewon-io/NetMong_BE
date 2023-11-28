@@ -40,7 +40,7 @@ public class WebSecurityConfig {
 
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                         .requestMatchers("/api/v1/member/login",
-                                "/api/v1/member/join"
+                                "/api/v1/member/join", "/images/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

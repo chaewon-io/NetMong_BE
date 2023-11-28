@@ -32,6 +32,9 @@ public class PostController {
     @Value("${spring.servlet.multipart.location}")
     private String postImagePath;
 
+    @Value("${domain}")
+    String  domain;
+
     @GetMapping("/view")
     @ResponseStatus(HttpStatus.OK)
     public RsData postView() {
@@ -97,6 +100,6 @@ public class PostController {
             throw new RuntimeException("이미지 업로드 실패");
         }
 
-        postRequest.setImageUrl(postImagePath + imageName);
+        postRequest.setImageUrl(domain + "/" + postImagePath + imageName);
     }
 }

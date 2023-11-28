@@ -5,6 +5,7 @@ import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.member.service.MemberService;
 import com.ll.netmong.domain.post.dto.request.PostRequest;
 import com.ll.netmong.domain.post.dto.response.PostResponse;
+import com.ll.netmong.domain.post.entity.Post;
 import com.ll.netmong.domain.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,9 +48,10 @@ public class PostController {
 
         saveImage(image, postRequest);
 
-        postService.uploadPost(postRequest, foundMember, foundUsername);
+        Post createdPost = postService.uploadPost(postRequest, foundMember, foundUsername);
+        PostResponse postResponse = new PostResponse(createdPost);
 
-        return RsData.of("S-1", "게시물이 업로드되었습니다.");
+        return RsData.of("S-1", "게시물이 업로드되었습니다.", postResponse);
     }
 
     @GetMapping("/{id}")

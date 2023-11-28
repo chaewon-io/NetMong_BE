@@ -29,7 +29,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public void createProductWithImage(CreateRequest createRequest, MultipartFile[] images) throws IOException {
+    public void createProductWithImage(CreateRequest createRequest, MultipartFile images) throws IOException {
         if (!isImageExists(images)) {
             initProduct(createRequest);
         }
@@ -72,7 +72,7 @@ public class ProductServiceImpl implements ProductService {
                 .build());
     }
 
-    private boolean isImageExists(MultipartFile[] image) {
+    private boolean isImageExists(MultipartFile image) {
         return !Objects.isNull(image);
     }
 

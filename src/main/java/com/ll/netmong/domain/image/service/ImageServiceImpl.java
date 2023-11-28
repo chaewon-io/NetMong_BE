@@ -22,19 +22,17 @@ public class ImageServiceImpl implements ImageService {
     private String productImagePath;
 
     @Transactional
-    public void uploadImage(Product product, MultipartFile[] images) throws IOException {
-        for (MultipartFile image : images) {
-            String imageLocation = productImagePath;
-            String imageName = image.getOriginalFilename();
-            String imagePath = imageLocation + imageName;
+    public void uploadImage(Product product, MultipartFile image) throws IOException {
+        String imageLocation = productImagePath;
+        String imageName = image.getOriginalFilename();
+        String imagePath = imageLocation + imageName;
 
-            validateCreateDirectory(imageLocation);
-            validateTransferImage(imagePath, image);
+        validateCreateDirectory(imageLocation);
+        validateTransferImage(imagePath, image);
 
-            Image productImage = Product.createProductImage(imagePath);
-            product.addProductImage(productImage);
-            imageRepository.save(productImage);
-        }
+        Image productImage = Product.createProductImage(imagePath);
+        product.addProductImage(productImage);
+        imageRepository.save(productImage);
     }
 
     private void validateCreateDirectory(String imageLocation) throws IOException {

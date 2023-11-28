@@ -11,4 +11,5 @@ public class CreateRequest {
     private String price;
     private String content;
     private Category category;
+    private String imageUrl;
 }

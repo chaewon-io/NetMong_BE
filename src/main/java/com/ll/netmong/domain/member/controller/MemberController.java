@@ -24,12 +24,11 @@ public class MemberController {
     }
 
     @PostMapping("/join")
-    public RsData<Member> join(@Valid @RequestBody JoinRequest joinRequest) {
+    public RsData<String> join(@Valid @RequestBody JoinRequest joinRequest) {
 
-        //create
-        Member user = memberService.createMember(joinRequest);
+        String username = memberService.createMember(joinRequest).getUsername();
 
-        return RsData.successOf(user);
+        return RsData.successOf(username);
     }
 
     @PostMapping("/dup-username")

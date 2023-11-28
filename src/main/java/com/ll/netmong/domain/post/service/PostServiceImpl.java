@@ -31,8 +31,8 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void uploadPost(PostRequest postRequest, Member foundMember, String foundUsername) {
-        postRepository.save(Post.builder()
+    public Post uploadPost(PostRequest postRequest, Member foundMember, String foundUsername) {
+        return postRepository.save(Post.builder()
                 .title(postRequest.getTitle())
                 .member(foundMember)
                 .writer(foundUsername)

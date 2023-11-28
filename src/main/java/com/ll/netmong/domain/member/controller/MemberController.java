@@ -49,4 +49,9 @@ public class MemberController {
 
         return RsData.successOf(tokenDto);
     }
+
+    @PostMapping("/logout")
+    public RsData logout() {
+        return RsData.successOf("logout success");
+    }
 }

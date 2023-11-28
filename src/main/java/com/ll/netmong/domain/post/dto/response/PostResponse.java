@@ -7,12 +7,14 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PostResponse {
+    private Long postId;
     private String title;
     private String writer;
     private String content;
     private String imageUrl;
 
     public PostResponse(Post post) {
+        this.postId = post.getId();
         this.title = post.getTitle();
         this.writer = post.getWriter();
         this.content = post.getContent();

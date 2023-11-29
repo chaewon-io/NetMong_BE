@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +26,6 @@ import java.util.Objects;
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final ImageService imageService;
-    private final List<ViewAllResponse> viewAllResponse = new ArrayList<>();
 
     @Override
     @Transactional
@@ -79,12 +79,10 @@ public class ProductServiceImpl implements ProductService {
     private List<ViewAllResponse> getViewAllResponse() {
         List<Product> products = productRepository.findAll();
 
-        for (Product product : products) {
-            if (!Objects.isNull(product)) {
-                viewAllResponse.add(new ViewAllResponse(product));
-            }
-        }
-        return viewAllResponse;
+        return products.stream()
+                .filter(product -> product != null)
+                .map(ViewAllResponse::new)
+                .collect(Collectors.toList());
     }
 
     private Product validateExistProduct(Long productId) {

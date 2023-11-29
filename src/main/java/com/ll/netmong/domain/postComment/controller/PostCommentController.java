@@ -2,6 +2,7 @@ package com.ll.netmong.domain.postComment.controller;
 
 import com.ll.netmong.common.RsData;
 import com.ll.netmong.domain.postComment.dto.request.PostCommentRequest;
+import com.ll.netmong.common.PageResponse;
 import com.ll.netmong.domain.postComment.dto.response.PostCommentResponse;
 import com.ll.netmong.domain.postComment.entity.PostComment;
 import com.ll.netmong.domain.postComment.service.PostCommentService;
@@ -14,8 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -45,10 +44,10 @@ public class PostCommentController {
     }
 
     @GetMapping("/{postId}")
-    public RsData<Page<PostCommentResponse>> getCommentsOfPost(@PathVariable Long postId, @RequestParam(defaultValue = "0") int page) {
-        Pageable pageable = PageRequest.of(page, 5);
+    public RsData<PageResponse<PostCommentResponse>> getCommentsOfPost(@PathVariable Long postId, @RequestParam(defaultValue = "1") int page) {
+        Pageable pageable = PageRequest.of(page - 1, 5);
         Page<PostCommentResponse> comments = service.getCommentsOfPost(postId, pageable);
-        return RsData.successOf(comments);
+        return RsData.successOf(new PageResponse<>(comments));
     }
 
     @PostMapping("/{commentId}/reply")

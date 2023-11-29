@@ -10,7 +10,6 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLDelete;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Entity
 @Getter
@@ -28,7 +27,7 @@ public class Image extends BaseEntity {
     private String imageUrl;
 
     @Column(name = "deleted_at")
-    private String deleteDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
+    private LocalDateTime deleteDate;
 
     public Image(final String imageUrl) {
         this.imageUrl = imageUrl;

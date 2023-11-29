@@ -1,5 +1,6 @@
 package com.ll.netmong.domain.product.controller;
 
+import com.ll.netmong.common.PageResponse;
 import com.ll.netmong.common.RsData;
 import com.ll.netmong.domain.product.dto.request.CreateRequest;
 import com.ll.netmong.domain.product.dto.request.UpdateRequest;
@@ -7,6 +8,9 @@ import com.ll.netmong.domain.product.dto.response.ViewAllResponse;
 import com.ll.netmong.domain.product.dto.response.ViewSingleResponse;
 import com.ll.netmong.domain.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +26,7 @@ public class ProductController {
     private static final String POST_SUCCESS_PRODUCT = "상품이 등록 되었습니다.";
     private static final String MODIFY_SUCCESS_PRODUCT = "상품이 수정 되었습니다.";
     private static final String DELETE_SUCCESS_PRODUCT = "상품이 삭제 되었습니다.";
+    private static final String PAGE_START_NUMBER = "1";
     private final ProductService productService;
 
     @GetMapping
@@ -36,6 +41,13 @@ public class ProductController {
     public RsData findByProduct(@PathVariable(name = "id") Long productId) {
         ViewSingleResponse viewSingleProduct = productService.findByProduct(productId);
         return RsData.of("S-1", FIND_SUCCESS_PRODUCT, viewSingleProduct);
+    }
+
+    @GetMapping("/all")
+    public RsData readPageByProduct(@RequestParam(name = "pageNumber", defaultValue = PAGE_START_NUMBER) Integer page) {
+        Pageable pageRequest = PageRequest.of(page - 1, 5);
+        Page<ViewAllResponse> pageByProduct = productService.readPageByProduct(pageRequest);
+        return RsData.successOf(new PageResponse<>(pageByProduct));
     }
 
     @PostMapping

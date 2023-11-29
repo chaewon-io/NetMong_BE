@@ -33,3 +33,5 @@ spring:
 logging:
   level:
     root: INFO
+
+domain: '${custom.image.domain}'

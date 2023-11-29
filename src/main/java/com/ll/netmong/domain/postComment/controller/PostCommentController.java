@@ -7,6 +7,9 @@ import com.ll.netmong.domain.postComment.entity.PostComment;
 import com.ll.netmong.domain.postComment.service.PostCommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -42,8 +45,9 @@ public class PostCommentController {
     }
 
     @GetMapping("/{postId}")
-    public RsData<List<PostCommentResponse>> getCommentsOfPost(@PathVariable Long postId) {
-        List<PostCommentResponse> comments = service.getCommentsOfPost(postId);
+    public RsData<Page<PostCommentResponse>> getCommentsOfPost(@PathVariable Long postId, @RequestParam(defaultValue = "0") int page) {
+        Pageable pageable = PageRequest.of(page, 5);
+        Page<PostCommentResponse> comments = service.getCommentsOfPost(postId, pageable);
         return RsData.successOf(comments);
     }
 

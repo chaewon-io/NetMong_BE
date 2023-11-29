@@ -10,6 +10,8 @@ import com.ll.netmong.domain.postComment.dto.request.PostCommentRequest;
 import com.ll.netmong.domain.postComment.entity.PostComment;
 import com.ll.netmong.domain.postComment.repository.PostCommentRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -73,9 +75,9 @@ public class PostCommentServiceImpl implements PostCommentService {
 
     @Override
     @Transactional
-    public List<PostCommentResponse> getCommentsOfPost(Long postId) {
-        List<PostComment> comments = postCommentRepository.findByPostIdAndParentCommentIsNull(postId);
-        return comments.stream().map(this::convertToResponse).collect(Collectors.toList());
+    public Page<PostCommentResponse> getCommentsOfPost(Long postId, Pageable pageable) {
+        Page<PostComment> comments = postCommentRepository.findByPostIdAndParentCommentIsNull(postId, pageable);
+        return comments.map(this::convertToResponse);
     }
 
     private PostCommentResponse convertToResponse(PostComment comment) {

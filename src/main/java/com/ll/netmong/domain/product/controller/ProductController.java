@@ -41,7 +41,7 @@ public class ProductController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public RsData createProduct(@ModelAttribute CreateRequest createRequest,
-                                @ModelAttribute("images") MultipartFile[] images) throws IOException {
+                                @ModelAttribute("images") MultipartFile images) throws IOException {
         productService.createProductWithImage(createRequest, images);
         return RsData.of("S-1", POST_SUCCESS_PRODUCT, "create");
     }

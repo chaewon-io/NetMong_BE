@@ -10,12 +10,13 @@ import com.ll.netmong.domain.product.entity.Product;
 import com.ll.netmong.domain.product.repository.ProductRepository;
 import com.ll.netmong.domain.product.util.ProductErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -42,6 +43,13 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ViewAllResponse> viewAllProducts() {
         return getViewAllResponse();
+    }
+
+    @Override
+    public Page<ViewAllResponse> readPageByProduct(Pageable pageable) {
+        Page<Product> productPage = productRepository.findAll(pageable);
+
+        return productPage.map(ViewAllResponse::pageByProduct);
     }
 
     @Override

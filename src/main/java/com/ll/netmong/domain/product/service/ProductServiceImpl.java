@@ -76,6 +76,7 @@ public class ProductServiceImpl implements ProductService {
                 .productName(createRequest.getProductName())
                 .price(createRequest.getPrice())
                 .content(createRequest.getContent())
+                .count(createRequest.getCount())
                 .category(createRequest.getCategory())
                 .build());
     }

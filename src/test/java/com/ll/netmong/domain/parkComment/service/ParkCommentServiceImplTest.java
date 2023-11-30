@@ -22,10 +22,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -131,4 +130,23 @@ class ParkCommentServiceImplTest {
         assertFalse(response.getIsDeleted());
     }
 
+    @Test
+    @DisplayName("deleteComment() 메서드는 주어진 댓글 ID, 사용자 정보를 이용하여 댓글을 삭제한다.")
+    void testDeleteComment() {
+        // Given
+        Long commentId = 1L;
+        ParkComment originalComment = ParkComment.builder().id(commentId).park(park).memberID(member).username(userDetails.getUsername()).content("content1").isDeleted(false).build();
+
+        when(parkCommentRepository.findById(commentId)).thenReturn(Optional.of(originalComment));
+        when(parkCommentRepository.save(any(ParkComment.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // When
+        parkCommentService.deleteComment(commentId, userDetails);
+
+        // Then
+        assertTrue(originalComment.getIsDeleted());
+    }
+
 }
+
+

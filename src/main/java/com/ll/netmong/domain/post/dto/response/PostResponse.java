@@ -24,4 +24,8 @@ public class PostResponse {
         this.createDate = post.getCreateDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         this.imageUrl = post.getImageUrl();
     }
+
+    public static PostResponse postsView (Post post) {
+        return new PostResponse(post);
+    }
 }

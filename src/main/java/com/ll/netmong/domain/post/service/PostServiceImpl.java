@@ -8,11 +8,10 @@ import com.ll.netmong.domain.post.entity.Post;
 import com.ll.netmong.domain.post.repository.PostRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,12 +20,10 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
 
     @Override
-    public List<PostResponse> getViewAll() {
-        List<Post> posts = postRepository.findAll();
+    public Page<PostResponse> viewPostsByPage(Pageable pageable) {
+        Page<Post> postsPage = postRepository.findAll(pageable);
 
-        return posts.stream()
-                .map(PostResponse::new)
-                .collect(Collectors.toList());
+        return postsPage.map(PostResponse::postsView);
     }
 
     @Override

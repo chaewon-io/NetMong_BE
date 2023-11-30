@@ -1,5 +1,6 @@
 package com.ll.netmong.domain.post.controller;
 
+import com.ll.netmong.common.PageResponse;
 import com.ll.netmong.common.RsData;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.member.service.MemberService;
@@ -9,6 +10,9 @@ import com.ll.netmong.domain.post.entity.Post;
 import com.ll.netmong.domain.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,7 +23,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -36,11 +39,11 @@ public class PostController {
     String  domain;
 
     @GetMapping("/view")
-    @ResponseStatus(HttpStatus.OK)
-    public RsData postView() {
-        List<PostResponse> postViewAll = postService.getViewAll();
+    public RsData postsViewByPage(@RequestParam(defaultValue = "1") int page) {
+        Pageable pageRequest = PageRequest.of(page - 1, 5);
+        Page<PostResponse> postsView = postService.viewPostsByPage(pageRequest);
 
-        return RsData.of("S-1", "전체 게시글이 조회되었습니다.", postViewAll);
+        return RsData.successOf(new PageResponse<>(postsView));
     }
 
     @PostMapping("/upload")

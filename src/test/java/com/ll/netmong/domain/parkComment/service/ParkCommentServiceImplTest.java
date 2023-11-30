@@ -109,4 +109,26 @@ class ParkCommentServiceImplTest {
         }
     }
 
+    // 테스트에서는 UserDetails 객체와 댓글의 작성자가 동일하도록 설정하여 updateComment() 메서드 호출 시 AccessDeniedException이 발생하지 않도록 한다.
+    @Test
+    @DisplayName("updateComment() 메서드는 주어진 댓글 ID, 댓글 수정 요청, 사용자 정보를 이용하여 댓글을 수정한다.")
+    void testUpdateComment() {
+        // Given
+        Long commentId = 1L;
+        ParkComment originalComment = ParkComment.builder().id(commentId).park(park).memberID(member).username(userDetails.getUsername()).content("content1").isDeleted(false).build();
+        ParkCommentRequest updateRequest = new ParkCommentRequest();
+        updateRequest.setContent("updatedContent");
+
+        when(parkCommentRepository.findById(commentId)).thenReturn(Optional.of(originalComment));
+        when(parkCommentRepository.save(any(ParkComment.class))).thenReturn(originalComment);
+
+        // When
+        ParkCommentResponse response = parkCommentService.updateComment(commentId, updateRequest, userDetails);
+
+        // Then
+        assertEquals(updateRequest.getContent(), response.getContent());
+        assertEquals(originalComment.getUsername(), response.getUsername());
+        assertFalse(response.getIsDeleted());
+    }
+
 }

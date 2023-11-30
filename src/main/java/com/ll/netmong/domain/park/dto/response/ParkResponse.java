@@ -9,6 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 public class ParkResponse {
 
+    private Long id;
     private String parkNm;
     private String lnmadr;
     private double latitude;

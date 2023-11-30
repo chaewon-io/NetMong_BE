@@ -19,4 +19,8 @@ public class ViewAllResponse {
         this.content = product.getContent();
         this.category = product.getCategory();
     }
+
+    public static ViewAllResponse pageByProduct(Product product) {
+        return new ViewAllResponse(product);
+    }
 }

@@ -12,6 +12,7 @@ import com.ll.netmong.domain.member.exception.NotMatchPasswordException;
 import com.ll.netmong.domain.member.repository.MemberRepository;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,5 +69,16 @@ public class MemberService {
     public Member findByUsername(String username) throws Exception {
         return memberRepository.findByUsername(username)
                 .orElseThrow(() -> new AccountNotFoundException("User not Found"));
+    }
+
+    public String changePassword(UserDetails userDetails, String oldPassword, String newPassword) throws Exception {
+
+        Member member = findByUsername(userDetails.getUsername());
+
+        if (passwordEncoder.matches(oldPassword, member.getPassword())) {
+            member.changePassword(newPassword);
+            member.encryptPassword(passwordEncoder);
+        }
+        return memberRepository.save(member).getUsername();
     }
 }

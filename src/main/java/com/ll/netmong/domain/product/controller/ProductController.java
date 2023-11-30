@@ -64,7 +64,7 @@ public class ProductController {
     }
 
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public RsData updateProduct(@PathVariable(name = "id") Long productId,
                                 @ModelAttribute @Valid UpdateRequest updateRequest,
                                 BindingResult bindingResult) {

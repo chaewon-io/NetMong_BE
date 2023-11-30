@@ -45,9 +45,12 @@ public class ParkComment extends BaseEntity {
                 .build();
     }
 
+    public void setPark(Park park) { this.park = park; }
+    public void updateContent(String content) {
+        this.content = content;
+    }
     public void markAsDeleted(Boolean b) {
         this.isDeleted = b;
     }
-    public void setPark(Park park) { this.park = park; }
 
 }

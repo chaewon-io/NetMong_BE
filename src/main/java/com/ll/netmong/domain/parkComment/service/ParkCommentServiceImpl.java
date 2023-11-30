@@ -10,6 +10,7 @@ import com.ll.netmong.domain.parkComment.entity.ParkComment;
 import com.ll.netmong.domain.parkComment.repository.ParkCommentRepository;
 import com.ll.netmong.domain.postComment.exception.DataNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -53,6 +54,24 @@ public class ParkCommentServiceImpl implements ParkCommentService {
     public List<ParkCommentResponse> getCommentsOfPark(Long parkId) {
         List<ParkComment> comments = parkCommentRepository.findByParkId(parkId);
         return comments.stream().map(ParkComment::toResponse).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public ParkCommentResponse updateComment(Long commentId, ParkCommentRequest updateRequest, @AuthenticationPrincipal UserDetails userDetails) {
+        ParkComment comment = parkCommentRepository.findById(commentId)
+                .orElseThrow(() -> new DataNotFoundException("해당하는 댓글을 찾을 수 없습니다."));
+
+        checkCommentAuthor(comment, userDetails);
+        comment.updateContent(updateRequest.getContent());
+        ParkComment updatedComment = parkCommentRepository.save(comment);
+        return updatedComment.toResponse();
+    }
+
+    private void checkCommentAuthor(ParkComment comment, UserDetails userDetails) {
+        if (!comment.getUsername().equals(userDetails.getUsername())) {
+            throw new AccessDeniedException("댓글 작성자만 수정할 수 있습니다.");
+        }
     }
 
 }

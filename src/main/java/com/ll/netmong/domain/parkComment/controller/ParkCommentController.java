@@ -33,4 +33,11 @@ public class ParkCommentController {
         return RsData.successOf(comments);
     }
 
+    @PatchMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public RsData<ParkCommentResponse> updateComment(@PathVariable Long id, @RequestBody ParkCommentRequest request, @AuthenticationPrincipal UserDetails userDetails) {
+        ParkCommentResponse updatedComment = parkCommentService.updateComment(id, request, userDetails);
+        return RsData.successOf(updatedComment);
+    }
+
 }

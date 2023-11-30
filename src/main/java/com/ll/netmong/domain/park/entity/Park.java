@@ -43,9 +43,6 @@ public class Park extends BaseEntity {
     @Column(name = "city")
     private String city;
 
-    @OneToMany(mappedBy = "park", fetch = LAZY)
-    private List<ParkComment> parkCommentList;
-
     @OneToMany(mappedBy = "park", cascade = CascadeType.ALL)
     private List<ParkComment> comments = new ArrayList<>();
 

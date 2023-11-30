@@ -1,8 +1,6 @@
 package com.ll.netmong.domain.member.entity;
 
 import com.ll.netmong.common.BaseEntity;
-import com.ll.netmong.domain.parkComent.entity.ParkComent;
-import com.ll.netmong.domain.parkLiked.entity.ParkLiked;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,12 +31,6 @@ public class Member extends BaseEntity {
 
     private String realName;
     private String email;
-
-    @OneToMany(mappedBy = "member", fetch = LAZY)
-    private List<ParkComent> walkComentList;
-
-    @OneToMany(mappedBy = "member", fetch = LAZY)
-    private List<ParkLiked> walkLiked;
 
     // 스프링 시큐리티 규격
     public List<? extends GrantedAuthority> getGrantedAuthorities() {

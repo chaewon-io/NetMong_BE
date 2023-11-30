@@ -30,13 +30,16 @@ public class Product extends BaseEntity {
     @Column(name = "product_price")
     private String price;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "product_category")
-    private Category category;
-
     @Lob
     @Column(name = "product_content")
     private String content;
+
+    @Column(name = "product_count")
+    private Integer count;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "product_category")
+    private Category category;
 
     @Column(name = "deleted_at")
     private String deleteDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
@@ -59,7 +62,9 @@ public class Product extends BaseEntity {
     public void modifyProduct(UpdateRequest updateRequest) {
         this.productName = updateRequest.getProductName();
         this.price = updateRequest.getPrice();
-        this.category = updateRequest.getCategory();
+        this.count = updateRequest.getCount();
         this.content = updateRequest.getContent();
+        this.category = updateRequest.getCategory();
+
     }
 }

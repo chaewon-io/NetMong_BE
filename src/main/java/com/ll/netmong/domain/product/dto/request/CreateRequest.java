@@ -16,6 +16,8 @@ public class CreateRequest {
     private String price;
     @NotBlank(message = "상품 설명은 필수 입니다.")
     private String content;
+    @NotNull(message = "상품 갯수는 필수 입니다.")
+    private Integer count;
     @NotNull(message = "상품 카테고리는 필수 입니다.")
     private Category category;
     private MultipartFile images;

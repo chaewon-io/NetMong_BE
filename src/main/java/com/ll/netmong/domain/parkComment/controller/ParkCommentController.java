@@ -40,4 +40,10 @@ public class ParkCommentController {
         return RsData.successOf(updatedComment);
     }
 
+    @DeleteMapping("/{commentId}")
+    public RsData<String> deleteComment(@PathVariable Long commentId, @AuthenticationPrincipal UserDetails userDetails) {
+        parkCommentService.deleteComment(commentId, userDetails);
+        return RsData.of("S-1", "삭제된 메시지입니다.");
+    }
+
 }

@@ -68,6 +68,16 @@ public class ParkCommentServiceImpl implements ParkCommentService {
         return updatedComment.toResponse();
     }
 
+    @Override
+    @Transactional
+    public void deleteComment(Long commentId, @AuthenticationPrincipal UserDetails userDetails) {
+        ParkComment comment = parkCommentRepository.findById(commentId)
+                .orElseThrow(() -> new DataNotFoundException("해당 댓글이 없습니다. id: " + commentId));
+        checkCommentAuthor(comment, userDetails);
+        comment.markAsDeleted(true);
+        parkCommentRepository.save(comment);
+    }
+
     private void checkCommentAuthor(ParkComment comment, UserDetails userDetails) {
         if (!comment.getUsername().equals(userDetails.getUsername())) {
             throw new AccessDeniedException("댓글 작성자만 수정할 수 있습니다.");

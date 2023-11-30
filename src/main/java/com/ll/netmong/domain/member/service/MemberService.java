@@ -54,11 +54,11 @@ public class MemberService {
     public TokenDto login(LoginDto loginDto) throws Exception {
 
         Member member = memberRepository.findByUsername(loginDto.getUsername())
-                .orElseThrow(() -> new AccountNotFoundException("User not Found"));
+                .orElseThrow(() -> new AccountNotFoundException("아이디/비밀번호가 잘못되었습니다."));
 
         boolean matches = passwordEncoder.matches(loginDto.getPassword(), member.getPassword());
         if (!matches) {
-            throw new NotMatchPasswordException("Mismatch Password");
+            throw new NotMatchPasswordException("잘못된 비밀번호입니다.");
         }
 
         return tokenService.provideTokenWithLoginDto(loginDto);

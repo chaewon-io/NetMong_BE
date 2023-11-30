@@ -18,6 +18,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -82,6 +84,29 @@ class ParkCommentServiceImplTest {
         assertEquals(comment.getContent(), response.getContent());
         assertEquals(comment.getUsername(), response.getUsername());
         assertFalse(response.getIsDeleted());
+    }
+
+    @Test
+    @DisplayName("getCommentsOfPark() 메서드는 주어진 공원 ID에 해당하는 댓글 리스트를 반환한다.")
+    void testGetCommentsOfPark() {
+        // Given
+        Long parkId = 1L;
+        List<ParkComment> comments = Arrays.asList(
+                ParkComment.builder().id(1L).park(park).memberID(member).username("user1").content("content1").isDeleted(false).build(),
+                ParkComment.builder().id(2L).park(park).memberID(member).username("user2").content("content2").isDeleted(false).build()
+        );
+        when(parkCommentRepository.findByParkId(parkId)).thenReturn(comments);
+
+        // When
+        List<ParkCommentResponse> response = parkCommentService.getCommentsOfPark(parkId);
+
+        // Then
+        assertEquals(comments.size(), response.size());
+        for (int i = 0; i < comments.size(); i++) {
+            assertEquals(comments.get(i).getContent(), response.get(i).getContent());
+            assertEquals(comments.get(i).getUsername(), response.get(i).getUsername());
+            assertFalse(response.get(i).getIsDeleted());
+        }
     }
 
 }

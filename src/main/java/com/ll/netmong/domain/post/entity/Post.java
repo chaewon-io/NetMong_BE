@@ -3,11 +3,13 @@ package com.ll.netmong.domain.post.entity;
 import com.ll.netmong.common.BaseEntity;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.postComment.entity.PostComment;
+import com.ll.netmong.domain.likedPost.entity.LikedPost;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLDelete;
 
 import java.time.LocalDateTime;
@@ -48,4 +50,23 @@ public class Post extends BaseEntity {
         this.comments.add(comment);
         comment.setPost(this);
     }
+
+    @Column(name = "likes_count", nullable = false, columnDefinition = "int default 0")
+    private Integer likesCount;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<LikedPost> likes = new ArrayList<>();
+
+    public void addLike(LikedPost like) {
+        this.likes.add(like);
+        like.setPost(this);
+        this.likesCount++;  // 좋아요 수 증가
+    }
+
+    public void removeLike(LikedPost like) {
+        this.likes.remove(like);
+        like.setPost(null);
+        this.likesCount--;  // 좋아요 수 감소
+    }
+
 }

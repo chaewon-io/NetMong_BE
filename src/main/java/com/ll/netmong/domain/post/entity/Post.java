@@ -6,6 +6,7 @@ import com.ll.netmong.domain.postComment.entity.PostComment;
 import com.ll.netmong.domain.likedPost.entity.LikedPost;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -51,8 +52,9 @@ public class Post extends BaseEntity {
         comment.setPost(this);
     }
 
-    @Column(name = "likes_count", nullable = false, columnDefinition = "int default 0")
-    private Integer likesCount;
+    @Builder.Default
+    @Column(name = "likes_count", nullable = false)
+    private Long likesCount = 0L;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<LikedPost> likes = new ArrayList<>();

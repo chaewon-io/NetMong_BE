@@ -27,10 +27,6 @@ public class LikedPost extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ColumnDefault("0")
-    @Column(nullable = false)
-    private Integer likeCount;
-
     public void setPost(Post post) {
         this.post = post;
     }

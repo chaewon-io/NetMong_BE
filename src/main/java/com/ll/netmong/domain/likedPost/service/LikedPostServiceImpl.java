@@ -24,24 +24,40 @@ public class LikedPostServiceImpl implements LikedPostService {
     private final MemberRepository memberRepository;
     private final LikedPostRepository likedPostRepository;
 
+    // TODO: 로직 분리
+    // TODO: 스트림, 람다 사용해서 좋아요 중복 및 취소 확인
+
     @Override
     @Transactional
-    public LikedPostResponse addLike(Long postId, LikedPostRequest likedPostRequest, @AuthenticationPrincipal UserDetails userDetails) {
-        Post post = postRepository.findById(likedPostRequest.getPostId())
-                .orElseThrow(() -> new DataNotFoundException("해당하는 게시물을 찾을 수 없습니다."));
-
-        Member member = memberRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new DataNotFoundException("사용자를 찾을 수 없습니다."));
+    public void addLike(Post post, @AuthenticationPrincipal UserDetails userDetails) {
+        Member member = getMemberById(userDetails);
 
         LikedPost like = LikedPost.builder()
                 .post(post)
                 .member(member)
                 .build();
+
         post.addLike(like);
-        LikedPost savedLike = likedPostRepository.save(like);
+        likedPostRepository.save(like);
+    }
 
-        int likeCount = likedPostRepository.countByPostId(likedPostRequest.getPostId());
+    @Override
+    @Transactional
+    public int countLikes(Post post) {
+        return likedPostRepository.countLikesByPost(post);
+    }
 
-        return new LikedPostResponse(likedPostRequest.getPostId(), likeCount);
+    @Override
+    @Transactional
+    public Post getPostById(Long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new DataNotFoundException("해당하는 게시물을 찾을 수 없습니다."));
+    }
+
+    @Override
+    @Transactional
+    public Member getMemberById(@AuthenticationPrincipal UserDetails userDetails) {
+        return memberRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new DataNotFoundException("사용자를 찾을 수 없습니다."));
     }
 }

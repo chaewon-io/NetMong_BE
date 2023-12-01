@@ -25,9 +25,6 @@ public class LikedPostServiceImpl implements LikedPostService {
     private final MemberRepository memberRepository;
     private final LikedPostRepository likedPostRepository;
 
-    // TODO: 로직 분리
-    // TODO: 스트림, 람다 사용해서 좋아요 중복 및 취소 확인
-
     @Override
     @Transactional
     public void addLike(Post post, @AuthenticationPrincipal UserDetails userDetails) {
@@ -63,20 +60,20 @@ public class LikedPostServiceImpl implements LikedPostService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public int countLikes(Post post) {
         return likedPostRepository.countLikesByPost(post);
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Post getPostById(Long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new DataNotFoundException("해당하는 게시물을 찾을 수 없습니다."));
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Member getMemberById(@AuthenticationPrincipal UserDetails userDetails) {
         return memberRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new DataNotFoundException("사용자를 찾을 수 없습니다."));

@@ -7,11 +7,13 @@ import com.ll.netmong.domain.product.dto.request.UpdateRequest;
 import com.ll.netmong.domain.product.dto.response.ViewAllResponse;
 import com.ll.netmong.domain.product.dto.response.ViewSingleResponse;
 import com.ll.netmong.domain.product.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,6 +28,7 @@ public class ProductController {
     private static final String POST_SUCCESS_PRODUCT = "상품이 등록 되었습니다.";
     private static final String MODIFY_SUCCESS_PRODUCT = "상품이 수정 되었습니다.";
     private static final String DELETE_SUCCESS_PRODUCT = "상품이 삭제 되었습니다.";
+    private static final String INVALID_PRODUCT_REQUEST = "유효하지 않은 요청 입니다.";
     private static final String PAGE_START_NUMBER = "1";
     private final ProductService productService;
 
@@ -52,15 +55,24 @@ public class ProductController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public RsData createProduct(@ModelAttribute CreateRequest createRequest,
-                                @ModelAttribute("images") MultipartFile images) throws IOException {
+    public RsData createProduct(@ModelAttribute @Valid CreateRequest createRequest,
+                                @ModelAttribute(name = "images") MultipartFile images,
+                                BindingResult bindingResult) throws IOException {
+        if (hasErrors(bindingResult)) {
+            return RsData.failOf(INVALID_PRODUCT_REQUEST);
+        }
         productService.createProductWithImage(createRequest, images);
         return RsData.of("S-1", POST_SUCCESS_PRODUCT, "create");
     }
 
-    @PutMapping("/{id}")
+
+    @PatchMapping("/{id}")
     public RsData updateProduct(@PathVariable(name = "id") Long productId,
-                                @ModelAttribute UpdateRequest updateRequest) {
+                                @ModelAttribute @Valid UpdateRequest updateRequest,
+                                BindingResult bindingResult) {
+        if (hasErrors(bindingResult)) {
+            return RsData.failOf(INVALID_PRODUCT_REQUEST);
+        }
         productService.updateProduct(productId, updateRequest);
         return RsData.of(MODIFY_SUCCESS_PRODUCT, "modify");
     }
@@ -69,5 +81,9 @@ public class ProductController {
     public RsData softDeleteProduct(@PathVariable(name = "id") Long productId) {
         productService.softDeleteProduct(productId);
         return RsData.of(DELETE_SUCCESS_PRODUCT, "delete");
+    }
+
+    private boolean hasErrors(BindingResult bindingResult) {
+        return bindingResult.hasErrors();
     }
 }

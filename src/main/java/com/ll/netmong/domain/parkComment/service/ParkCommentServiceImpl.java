@@ -10,14 +10,13 @@ import com.ll.netmong.domain.parkComment.entity.ParkComment;
 import com.ll.netmong.domain.parkComment.repository.ParkCommentRepository;
 import com.ll.netmong.domain.postComment.exception.DataNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -51,9 +50,9 @@ public class ParkCommentServiceImpl implements ParkCommentService {
 
     @Override
     @Transactional
-    public List<ParkCommentResponse> getCommentsOfPark(Long parkId) {
-        List<ParkComment> comments = parkCommentRepository.findByParkId(parkId);
-        return comments.stream().map(ParkComment::toResponse).collect(Collectors.toList());
+    public Page<ParkCommentResponse> getCommentsOfPark(Long parkId, Pageable pageable) {
+        Page<ParkComment> comments = parkCommentRepository.findByParkId(parkId, pageable);
+        return comments.map(ParkComment::toResponse);
     }
 
     @Override

@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface ProductService {
-    void createProductWithImage(CreateRequest createRequest, MultipartFile image) throws IOException;
+    void createProductWithImage(CreateRequest createRequest, MultipartFile images) throws IOException;
 
     List<ViewAllResponse> viewAllProducts();
 

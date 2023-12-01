@@ -2,6 +2,7 @@ package com.ll.netmong.base.exceptionhandler;
 
 import com.ll.netmong.common.ProductException;
 import com.ll.netmong.common.RsData;
+import com.ll.netmong.domain.likedPost.exception.DuplicateLikeException;
 import com.ll.netmong.domain.member.exception.NotMatchPasswordException;
 import com.ll.netmong.domain.product.dto.response.ErrorResponse;
 import org.springframework.http.HttpStatus;
@@ -50,4 +51,10 @@ public class GlobalExceptionHandler {
 //    public RsData handleException(Exception e) {
 //        return RsData.failOf("Unexpected error");
 //    }
+
+    @ExceptionHandler(DuplicateLikeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public RsData handleDuplicateLike(DuplicateLikeException e) {
+        return RsData.failOf(e.getMessage());
+    }
 }

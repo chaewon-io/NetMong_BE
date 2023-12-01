@@ -1,5 +1,6 @@
 package com.ll.netmong.domain.likedPost.service;
 
+import com.ll.netmong.domain.likedPost.exception.DuplicateLikeException;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.member.repository.MemberRepository;
 import com.ll.netmong.domain.post.entity.Post;
@@ -31,6 +32,13 @@ public class LikedPostServiceImpl implements LikedPostService {
     @Transactional
     public void addLike(Post post, @AuthenticationPrincipal UserDetails userDetails) {
         Member member = getMemberById(userDetails);
+
+        // 특정 게시물에 대한 좋아요만 조회
+        boolean hasAlreadyLiked = likedPostRepository.existsByMemberAndPost(member, post);
+
+        if (hasAlreadyLiked) {
+            throw new DuplicateLikeException("이미 좋아요를 누른 게시물입니다.");
+        }
 
         LikedPost like = LikedPost.builder()
                 .post(post)

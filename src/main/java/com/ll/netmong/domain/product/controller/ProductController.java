@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -55,11 +56,12 @@ public class ProductController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public RsData createProduct(@ModelAttribute @Valid CreateRequest createRequest,
+                                @ModelAttribute(name = "images") MultipartFile images,
                                 BindingResult bindingResult) throws IOException {
         if (hasErrors(bindingResult)) {
             return RsData.failOf(INVALID_PRODUCT_REQUEST);
         }
-        productService.createProductWithImage(createRequest);
+        productService.createProductWithImage(createRequest, images);
         return RsData.of("S-1", POST_SUCCESS_PRODUCT, "create");
     }
 

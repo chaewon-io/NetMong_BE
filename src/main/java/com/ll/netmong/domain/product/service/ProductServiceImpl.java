@@ -30,13 +30,13 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public void createProductWithImage(CreateRequest createRequest) throws IOException {
-        if (!isImageExists(createRequest.getImages())) {
+    public void createProductWithImage(CreateRequest createRequest, MultipartFile images) throws IOException {
+        if (!isImageExists(images)) {
             initProduct(createRequest);
         }
-        if (isImageExists(createRequest.getImages())) {
+        if (isImageExists(images)) {
             Product product = initProduct(createRequest);
-            imageService.uploadImage(product, createRequest.getImages());
+            imageService.uploadImage(product, images);
         }
     }
 

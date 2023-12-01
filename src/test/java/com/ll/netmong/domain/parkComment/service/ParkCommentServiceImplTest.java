@@ -14,6 +14,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -90,21 +94,23 @@ class ParkCommentServiceImplTest {
     void testGetCommentsOfPark() {
         // Given
         Long parkId = 1L;
-        List<ParkComment> comments = Arrays.asList(
+        Pageable pageable = PageRequest.of(0, 5); // 첫 페이지, 페이지당 5개의 요소
+        List<ParkComment> commentList = Arrays.asList(
                 ParkComment.builder().id(1L).park(park).memberID(member).username("user1").content("content1").isDeleted(false).build(),
                 ParkComment.builder().id(2L).park(park).memberID(member).username("user2").content("content2").isDeleted(false).build()
         );
-        when(parkCommentRepository.findByParkId(parkId)).thenReturn(comments);
+        Page<ParkComment> comments = new PageImpl<>(commentList, pageable, commentList.size());
+        when(parkCommentRepository.findByParkId(parkId, pageable)).thenReturn(comments);
 
         // When
-        List<ParkCommentResponse> response = parkCommentService.getCommentsOfPark(parkId);
+        Page<ParkCommentResponse> response = parkCommentService.getCommentsOfPark(parkId, pageable);
 
         // Then
-        assertEquals(comments.size(), response.size());
-        for (int i = 0; i < comments.size(); i++) {
-            assertEquals(comments.get(i).getContent(), response.get(i).getContent());
-            assertEquals(comments.get(i).getUsername(), response.get(i).getUsername());
-            assertFalse(response.get(i).getIsDeleted());
+        assertEquals(comments.getTotalElements(), response.getTotalElements());
+        for (int i = 0; i < comments.getContent().size(); i++) {
+            assertEquals(comments.getContent().get(i).getContent(), response.getContent().get(i).getContent());
+            assertEquals(comments.getContent().get(i).getUsername(), response.getContent().get(i).getUsername());
+            assertFalse(response.getContent().get(i).getIsDeleted());
         }
     }
 

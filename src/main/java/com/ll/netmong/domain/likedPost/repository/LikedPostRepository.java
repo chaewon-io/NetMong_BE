@@ -6,11 +6,13 @@ import com.ll.netmong.domain.post.entity.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface LikedPostRepository extends JpaRepository<LikedPost, Long> {
-    int countByPostId(Long postId);
-
     boolean existsByMemberAndPost(Member member, Post post);
 
     int countLikesByPost(Post post);
+
+    Optional<LikedPost> findByMemberAndPost(Member member, Post post);
 }

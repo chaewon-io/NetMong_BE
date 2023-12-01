@@ -51,6 +51,19 @@ public class LikedPostServiceImpl implements LikedPostService {
 
     @Override
     @Transactional
+    public void removeLike(Post post, @AuthenticationPrincipal UserDetails userDetails) {
+        Member member = getMemberById(userDetails);
+
+        // 특정 게시물에 대한 좋아요만 조회
+        LikedPost likedPost = likedPostRepository.findByMemberAndPost(member, post)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시물에 좋아요를 누르지 않았습니다."));
+
+        post.removeLike(likedPost);
+        likedPostRepository.delete(likedPost);
+    }
+
+    @Override
+    @Transactional
     public int countLikes(Post post) {
         return likedPostRepository.countLikesByPost(post);
     }

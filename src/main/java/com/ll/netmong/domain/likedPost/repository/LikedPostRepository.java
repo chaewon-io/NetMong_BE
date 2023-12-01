@@ -10,9 +10,9 @@ import java.util.Optional;
 
 @Repository
 public interface LikedPostRepository extends JpaRepository<LikedPost, Long> {
-    boolean existsByMemberAndPost(Member member, Post post);
+    Boolean existsByMemberAndPost(Member member, Post post);
 
-    int countLikesByPost(Post post);
+    Long countLikesByPost(Post post);
 
     Optional<LikedPost> findByMemberAndPost(Member member, Post post);
 }

@@ -11,5 +11,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class LikedPostResponse {
     private Long postId;
-    private Integer likedCount;
+    private Long likedCount;
 }

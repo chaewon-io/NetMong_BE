@@ -11,7 +11,7 @@ public interface LikedPostService {
 
     void addLike(Post post, UserDetails userDetails);
     void removeLike(Post post, @AuthenticationPrincipal UserDetails userDetails);
-    int countLikes(Post post);
+    Long countLikes(Post post);
     Post getPostById(Long postId);
     Member getMemberById(@AuthenticationPrincipal UserDetails userDetails);
 }

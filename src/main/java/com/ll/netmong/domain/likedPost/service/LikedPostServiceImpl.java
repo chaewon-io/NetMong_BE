@@ -61,7 +61,7 @@ public class LikedPostServiceImpl implements LikedPostService {
 
     @Override
     @Transactional(readOnly = true)
-    public int countLikes(Post post) {
+    public Long countLikes(Post post) {
         return likedPostRepository.countLikesByPost(post);
     }
 

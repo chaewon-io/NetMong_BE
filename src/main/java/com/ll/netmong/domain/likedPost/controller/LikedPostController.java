@@ -29,7 +29,7 @@ public class LikedPostController {
     @GetMapping("/{postId}")
     public RsData<LikedPostResponse> getLikesCount(@PathVariable Long postId) {
         Post post = likedService.getPostById(postId);
-        int likeCount = likedService.countLikes(post);
+        Long likeCount = likedService.countLikes(post);
 
         return RsData.successOf(new LikedPostResponse(postId, likeCount));
     }

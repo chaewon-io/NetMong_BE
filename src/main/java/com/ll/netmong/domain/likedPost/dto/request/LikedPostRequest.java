@@ -11,5 +11,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class LikedPostRequest {
     private Long postId;
-    private Long memberId; // usernmae or id ??
+    private Long memberId;
 }

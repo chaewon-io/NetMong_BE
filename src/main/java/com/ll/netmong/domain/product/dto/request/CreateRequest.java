@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -20,5 +19,4 @@ public class CreateRequest {
     private Integer count;
     @NotNull(message = "상품 카테고리는 필수 입니다.")
     private Category category;
-    private MultipartFile images;
 }

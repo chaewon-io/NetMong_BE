@@ -12,6 +12,7 @@ import com.ll.netmong.domain.member.exception.NotMatchPasswordException;
 import com.ll.netmong.domain.member.repository.MemberRepository;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,11 +55,11 @@ public class MemberService {
     public TokenDto login(LoginDto loginDto) throws Exception {
 
         Member member = memberRepository.findByUsername(loginDto.getUsername())
-                .orElseThrow(() -> new AccountNotFoundException("User not Found"));
+                .orElseThrow(() -> new AccountNotFoundException("아이디/비밀번호가 잘못되었습니다."));
 
         boolean matches = passwordEncoder.matches(loginDto.getPassword(), member.getPassword());
         if (!matches) {
-            throw new NotMatchPasswordException("Mismatch Password");
+            throw new NotMatchPasswordException("잘못된 비밀번호입니다.");
         }
 
         return tokenService.provideTokenWithLoginDto(loginDto);
@@ -68,5 +69,16 @@ public class MemberService {
     public Member findByUsername(String username) throws Exception {
         return memberRepository.findByUsername(username)
                 .orElseThrow(() -> new AccountNotFoundException("User not Found"));
+    }
+
+    public String changePassword(UserDetails userDetails, String oldPassword, String newPassword) throws Exception {
+
+        Member member = findByUsername(userDetails.getUsername());
+
+        if (passwordEncoder.matches(oldPassword, member.getPassword())) {
+            member.changePassword(newPassword);
+            member.encryptPassword(passwordEncoder);
+        }
+        return memberRepository.save(member).getUsername();
     }
 }

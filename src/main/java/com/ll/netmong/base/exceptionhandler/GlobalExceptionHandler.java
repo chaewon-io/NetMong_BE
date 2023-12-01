@@ -17,13 +17,13 @@ import java.io.IOException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(AccountNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.OK)
     public RsData handleAccountNotFound(AccountNotFoundException e) {
         return RsData.failOf(e.getMessage());
     }
 
     @ExceptionHandler(NotMatchPasswordException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseStatus(HttpStatus.OK)
     public RsData handleNotMatchPassword(NotMatchPasswordException e) {
         return RsData.failOf(e.getMessage());
     }

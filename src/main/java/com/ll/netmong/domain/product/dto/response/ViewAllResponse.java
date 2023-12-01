@@ -1,5 +1,6 @@
 package com.ll.netmong.domain.product.dto.response;
 
+import com.ll.netmong.domain.image.entity.Image;
 import com.ll.netmong.domain.product.entity.Product;
 import com.ll.netmong.domain.product.util.Category;
 import lombok.Getter;
@@ -11,12 +12,14 @@ public class ViewAllResponse {
     private String productName;
     private String price;
     private String content;
+    private Integer count;
     private Category category;
 
     public ViewAllResponse(Product product) {
         this.productName = product.getProductName();
         this.price = product.getPrice();
         this.content = product.getContent();
+        this.count = product.getCount();
         this.category = product.getCategory();
     }
 

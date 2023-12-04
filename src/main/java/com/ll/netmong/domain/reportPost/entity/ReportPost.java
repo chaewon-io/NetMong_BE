@@ -31,6 +31,7 @@ public class ReportPost extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ReportType reportType;
 
+    @Column(nullable = false)
     private String content;
 
 }

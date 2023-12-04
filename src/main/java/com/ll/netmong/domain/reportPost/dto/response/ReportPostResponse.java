@@ -12,12 +12,14 @@ public class ReportPostResponse {
     private Long reporterId; // 신고한 유저
     private Long reportedPostId; // 신고된 게시글
     private ReportType reportType; // 신고 유형
+    private String content; // 신고 사유
 
-    public ReportPostResponse(Long reportId, Long reporterId, Long reportedPostId, ReportType reportType) {
+    public ReportPostResponse(Long reportId, Long reporterId, Long reportedPostId, ReportType reportType, String content) {
         this.reportId = reportId;
         this.reporterId = reporterId;
         this.reportedPostId = reportedPostId;
         this.reportType = reportType;
+        this.content = content;
     }
 
 }

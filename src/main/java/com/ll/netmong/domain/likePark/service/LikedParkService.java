@@ -13,4 +13,6 @@ public interface LikedParkService {
     Member getMemberById(@AuthenticationPrincipal UserDetails userDetails);
 
     Long countLikesToPark(Park park);
+
+    void removeLikeFromPark(Park park, @AuthenticationPrincipal UserDetails userDetails);
 }

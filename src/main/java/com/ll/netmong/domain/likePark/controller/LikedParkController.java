@@ -32,4 +32,12 @@ public class LikedParkController {
 
         return RsData.successOf(new LikedParkResponse(parkId, likeCount));
     }
+
+    @DeleteMapping("/{parkId}")
+    public RsData removeLikeFromPark(@PathVariable Long parkId, @AuthenticationPrincipal UserDetails userDetails) {
+        Park park = likedParkService.getParkById(parkId);
+        likedParkService.removeLikeFromPark(park, userDetails);
+
+        return RsData.successOf("좋아요를 취소하였습니다.");
+    }
 }

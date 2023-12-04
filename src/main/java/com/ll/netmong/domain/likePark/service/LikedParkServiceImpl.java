@@ -62,4 +62,16 @@ public class LikedParkServiceImpl implements LikedParkService {
     public Long countLikesToPark(Park park) {
         return likedParkRepository.countLikesByPark(park);
     }
+
+    @Override
+    @Transactional
+    public void removeLikeFromPark(Park park, @AuthenticationPrincipal UserDetails userDetails) {
+        Member member = getMemberById(userDetails);
+
+        LikedPark likedPark = likedParkRepository.findByMemberAndPark(member, park)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시물에 좋아요를 누르지 않았습니다."));
+
+        park.removeLikeFromPark(likedPark);
+        likedParkRepository.delete(likedPark);
+    }
 }

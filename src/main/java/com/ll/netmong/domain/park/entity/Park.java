@@ -74,6 +74,12 @@ public class Park extends BaseEntity {
     public void addLikeToPark(LikedPark like) {
         this.likedParks.add(like);
         like.setPark(this);
-        this.likesCount++; // 좋아요 수 증가
+        this.likesCount++;
+    }
+
+    public void removeLikeFromPark(LikedPark like) {
+        this.likedParks.remove(like);
+        like.setPark(null);
+        this.likesCount--;
     }
 }

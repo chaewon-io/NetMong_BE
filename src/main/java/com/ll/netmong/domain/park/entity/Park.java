@@ -8,6 +8,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -64,5 +65,15 @@ public class Park extends BaseEntity {
     public void addComment(ParkComment comment) {
         this.comments.add(comment);
         comment.setPark(this);
+    }
+
+    @Builder.Default
+    @Column(name = "likes_count", nullable = false)
+    private Long likesCount = 0L;
+
+    public void addLikeToPark(LikedPark like) {
+        this.likedParks.add(like);
+        like.setPark(this);
+        this.likesCount++; // 좋아요 수 증가
     }
 }

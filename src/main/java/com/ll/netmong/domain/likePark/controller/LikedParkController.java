@@ -1,6 +1,7 @@
 package com.ll.netmong.domain.likePark.controller;
 
 import com.ll.netmong.common.RsData;
+import com.ll.netmong.domain.likePark.dto.response.LikedParkResponse;
 import com.ll.netmong.domain.likePark.service.LikedParkService;
 import com.ll.netmong.domain.park.entity.Park;
 import lombok.RequiredArgsConstructor;
@@ -22,5 +23,13 @@ public class LikedParkController {
         likedParkService.addLikeToPark(park, userDetails);
 
         return RsData.successOf("좋아요를 추가하였습니다.");
+    }
+
+    @GetMapping("/{parkId}")
+    public RsData<LikedParkResponse> getCountLikesByPark(@PathVariable Long parkId) {
+        Park park = likedParkService.getParkById(parkId);
+        Long likeCount = likedParkService.countLikesToPark(park);
+
+        return RsData.successOf(new LikedParkResponse(parkId, likeCount));
     }
 }

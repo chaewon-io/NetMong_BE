@@ -39,6 +39,7 @@ public class LikedParkServiceImpl implements LikedParkService {
                 .member(member)
                 .build();
 
+        park.addLikeToPark(like);
         likedParkRepository.save(like);
     }
 
@@ -56,4 +57,9 @@ public class LikedParkServiceImpl implements LikedParkService {
                 .orElseThrow(() -> new DataNotFoundException("사용자를 찾을 수 없습니다."));
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Long countLikesToPark(Park park) {
+        return likedParkRepository.countLikesByPark(park);
+    }
 }

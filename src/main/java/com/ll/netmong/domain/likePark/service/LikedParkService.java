@@ -11,4 +11,6 @@ public interface LikedParkService {
     Park getParkById(Long parkId);
 
     Member getMemberById(@AuthenticationPrincipal UserDetails userDetails);
+
+    Long countLikesToPark(Park park);
 }

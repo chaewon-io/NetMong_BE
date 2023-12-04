@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface LikedParkRepository extends JpaRepository<LikedPark, Long> {
     Boolean existsByMemberAndPark(Member member, Park park);
+
+    Long countLikesByPark(Park park);
 }

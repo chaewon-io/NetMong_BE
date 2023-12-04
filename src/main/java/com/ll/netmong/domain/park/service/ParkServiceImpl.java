@@ -80,6 +80,7 @@ public class ParkServiceImpl implements ParkService {
 
         Member member = memberRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new DataNotFoundException("사용자를 찾을 수 없습니다."));
+
         boolean isLiked = likedParkRepository.existsByMemberAndPark(member, park);
 
         ParkResponse parkResponse = park.toResponse();

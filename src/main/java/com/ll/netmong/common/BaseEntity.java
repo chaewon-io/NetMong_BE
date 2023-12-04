@@ -21,11 +21,15 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity {
+
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
+
     @CreatedDate
     private LocalDateTime createDate;
+
     @LastModifiedDate
     private LocalDateTime modifyDate;
+
 }

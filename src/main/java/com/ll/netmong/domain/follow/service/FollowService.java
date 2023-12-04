@@ -1,6 +1,7 @@
 package com.ll.netmong.domain.follow.service;
 
 import com.ll.netmong.domain.follow.entity.Follow;
+import com.ll.netmong.domain.follow.exception.NotFollowedException;
 import com.ll.netmong.domain.follow.repository.FollowRepository;
 import com.ll.netmong.domain.member.entity.Member;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,10 @@ public class FollowService {
 
     @Transactional
     public void unfollow(Member follower, Member followee) {
-        Follow follow = followRepository.findByFollowerAndFollowing(follower, followee);
+        Follow follow = followRepository.findByFollowerAndFollowing(follower, followee).orElseThrow(() ->
+                new NotFollowedException("현재 팔로우 중인 상태가 아닙니다.")
+        );
         followRepository.delete(follow);
     }
+
 }

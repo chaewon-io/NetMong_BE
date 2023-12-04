@@ -6,6 +6,7 @@ import com.ll.netmong.domain.post.dto.response.PostResponse;
 import com.ll.netmong.domain.post.entity.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ public interface PostService {
     List<PostResponse> searchPostsByCategory(String category, String searchWord);
     Page<PostResponse> viewPostsByPage(Pageable pageable);
     Post uploadPost(PostRequest postRequest, Member foundMember, String foundUsername);
-    PostResponse getDetail(long id);
+    PostResponse getDetail(long id, UserDetails userDetails);
     void deletePost(Long id, String foundUsername);
     void updatePost(Long id, PostRequest updatedPostRequest, String foundUsername);
 

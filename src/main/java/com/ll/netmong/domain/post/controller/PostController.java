@@ -70,8 +70,8 @@ public class PostController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public RsData postDetail(@PathVariable long id) {
-        PostResponse postResponse = postService.getDetail(id);
+    public RsData postDetail(@PathVariable long id, @AuthenticationPrincipal UserDetails userDetails) {
+        PostResponse postResponse = postService.getDetail(id, userDetails);
 
         return RsData.of("S-1", "해당 게시물의 상세 내용입니다.", postResponse);
     }

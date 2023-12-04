@@ -21,5 +21,5 @@ public class Follow extends BaseEntity {
     private Member follower;
 
     @ManyToOne
-    private Member following;
+    private Member followee;
 }

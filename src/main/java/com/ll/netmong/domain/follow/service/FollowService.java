@@ -1,5 +1,6 @@
 package com.ll.netmong.domain.follow.service;
 
+import com.ll.netmong.domain.follow.dto.FollowCountDto;
 import com.ll.netmong.domain.follow.entity.Follow;
 import com.ll.netmong.domain.follow.exception.NotFollowedException;
 import com.ll.netmong.domain.follow.repository.FollowRepository;
@@ -17,7 +18,7 @@ public class FollowService {
     public Long follow(Member follower, Member followee) {
         Follow follow = Follow.builder()
                 .follower(follower)
-                .following(followee)
+                .followee(followee)
                 .build();
 
         return followRepository.save(follow).getId();
@@ -25,10 +26,16 @@ public class FollowService {
 
     @Transactional
     public void unfollow(Member follower, Member followee) {
-        Follow follow = followRepository.findByFollowerAndFollowing(follower, followee).orElseThrow(() ->
+        Follow follow = followRepository.findByFollowerAndFollowee(follower, followee).orElseThrow(() ->
                 new NotFollowedException("현재 팔로우 중인 상태가 아닙니다.")
         );
         followRepository.delete(follow);
     }
 
+    public FollowCountDto countFollowerAndFollowee(Member member) {
+        long countByFollower = followRepository.countByFollower(member);
+        long countByFollowee = followRepository.countByFollowee(member);
+
+        return new FollowCountDto(countByFollower, countByFollowee);
+    }
 }

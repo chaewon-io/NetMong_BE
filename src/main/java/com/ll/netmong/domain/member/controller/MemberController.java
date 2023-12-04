@@ -2,6 +2,7 @@ package com.ll.netmong.domain.member.controller;
 
 import com.ll.netmong.base.jwt.TokenDto;
 import com.ll.netmong.common.RsData;
+import com.ll.netmong.domain.follow.service.FollowService;
 import com.ll.netmong.domain.member.dto.ChangePasswordRequest;
 import com.ll.netmong.domain.member.dto.JoinRequest;
 import com.ll.netmong.domain.member.dto.LoginDto;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
+    private final FollowService followService;
 
     @GetMapping("/find")
     public Member findMember() {
@@ -63,4 +65,19 @@ public class MemberController {
                 changePasswordRequest.getNewPassword());
         return RsData.successOf(username + "님의 비밀번호가 변경되었습니다.");
     }
+
+    @PostMapping("/follow")
+    public RsData follow(UsernameRequest usernameRequest, @AuthenticationPrincipal UserDetails userDetails) throws Exception {
+
+        //팔로우 하는 사람
+        String followerName = userDetails.getUsername();
+        Member follower = memberService.findByUsername(followerName);
+
+        //팔로우 받는 사람
+        Member followee = memberService.findByUsername(usernameRequest.getUsername());
+        followService.follow(follower, followee);
+
+        return RsData.successOf("follow 성공");
+    }
+
 }

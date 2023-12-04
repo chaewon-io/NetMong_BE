@@ -1,6 +1,7 @@
 package com.ll.netmong.domain.park.entity;
 
 import com.ll.netmong.common.BaseEntity;
+import com.ll.netmong.domain.likePark.entity.LikedPark;
 import com.ll.netmong.domain.park.dto.response.ParkResponse;
 import com.ll.netmong.domain.parkComment.entity.ParkComment;
 import jakarta.persistence.CascadeType;
@@ -13,8 +14,6 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
@@ -46,10 +45,8 @@ public class Park extends BaseEntity {
     @OneToMany(mappedBy = "park", cascade = CascadeType.ALL)
     private List<ParkComment> comments = new ArrayList<>();
 
-    public void addComment(ParkComment comment) {
-        this.comments.add(comment);
-        comment.setPark(this);
-    }
+    @OneToMany(mappedBy = "park", cascade = CascadeType.ALL)
+    private List<LikedPark> likedParks = new ArrayList<>();
 
     public ParkResponse toResponse() {
         return ParkResponse.builder()
@@ -64,4 +61,8 @@ public class Park extends BaseEntity {
                 .build();
     }
 
+    public void addComment(ParkComment comment) {
+        this.comments.add(comment);
+        comment.setPark(this);
+    }
 }

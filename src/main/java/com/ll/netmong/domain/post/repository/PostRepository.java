@@ -13,4 +13,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     List<Post> findByMemberIdAndDeleteDateIsNullOrderByCreateDateDesc(@Param("memberId") Long memberId);
 
+    List<Post> findByWriterContaining(String searchWord);
+    List<Post> findByContentContaining(String searchWord);
 }

@@ -13,13 +13,31 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
+
+    @Override
+    public List<PostResponse> searchPostsByCategory(String category, String searchWord) {
+        List<Post> posts;
+        if (category.equals("작성자")) {
+            posts = postRepository.findByWriterContaining(searchWord);
+        } else if (category.equals("내용")) {
+            posts = postRepository.findByContentContaining(searchWord);
+        } else {
+            return Collections.emptyList();
+        }
+
+        return posts.stream()
+                .map(PostResponse::new)
+                .collect(Collectors.toList());
+    }
 
     @Override
     public Page<PostResponse> viewPostsByPage(Pageable pageable) {

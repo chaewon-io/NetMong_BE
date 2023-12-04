@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface PostService {
+    List<PostResponse> searchPostsByCategory(String category, String searchWord);
     Page<PostResponse> viewPostsByPage(Pageable pageable);
     Post uploadPost(PostRequest postRequest, Member foundMember, String foundUsername);
     PostResponse getDetail(long id);

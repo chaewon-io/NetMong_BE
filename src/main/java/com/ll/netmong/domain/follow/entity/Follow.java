@@ -16,8 +16,8 @@ import lombok.experimental.SuperBuilder;
 public class Follow extends BaseEntity {
 
     @ManyToOne
-    private Member followers;
+    private Member follower;
 
     @ManyToOne
-    private Member followings;
+    private Member following;
 }

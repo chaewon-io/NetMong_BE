@@ -15,10 +15,16 @@ public class FollowService {
     @Transactional
     public Long follow(Member follower, Member followee) {
         Follow follow = Follow.builder()
-                .followers(follower)
-                .followings(followee)
+                .follower(follower)
+                .following(followee)
                 .build();
 
         return followRepository.save(follow).getId();
+    }
+
+    @Transactional
+    public void unfollow(Member follower, Member followee) {
+        Follow follow = followRepository.findByFollowerAndFollowing(follower, followee);
+        followRepository.delete(follow);
     }
 }

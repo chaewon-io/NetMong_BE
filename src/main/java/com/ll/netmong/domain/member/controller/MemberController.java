@@ -80,4 +80,18 @@ public class MemberController {
         return RsData.successOf("follow 성공");
     }
 
+    @PostMapping("/unfollow")
+    public RsData unfollow(UsernameRequest usernameRequest, @AuthenticationPrincipal UserDetails userDetails) throws Exception {
+
+        //언팔로우 하는 사람
+        String followerName = userDetails.getUsername();
+        Member follower = memberService.findByUsername(followerName);
+
+        //언팔로우 받는 사람
+        Member followee = memberService.findByUsername(usernameRequest.getUsername());
+        followService.unfollow(follower, followee);
+
+        return RsData.successOf("unfollow 성공");
+    }
+
 }

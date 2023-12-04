@@ -59,6 +59,7 @@ public class Park extends BaseEntity {
                 .phoneNumber(phoneNumber)
                 .state(state)
                 .city(city)
+                .likesCount(likesCount)
                 .build();
     }
 

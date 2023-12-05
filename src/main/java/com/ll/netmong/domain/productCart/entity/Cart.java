@@ -15,20 +15,21 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 public class Cart extends BaseEntity {
 
-    @Column(name = "item_count_in_cart")
-    private Integer count;
-    //    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "product_id")
-//    private Product product;
-    // TODO :  상품, 회원과 연관관계 작성
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Column(name = "item_count_in_cart")
+    private Integer totalCount;
+
     public static Cart createCart(Member member) {
         return Cart.builder()
-                .count(0)
+                .totalCount(0)
                 .member(member)
                 .build();
+    }
+
+    public void addCount(Integer count) {
+        this.totalCount += count;
     }
 }

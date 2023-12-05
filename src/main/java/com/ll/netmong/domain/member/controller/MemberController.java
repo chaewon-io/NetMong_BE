@@ -7,7 +7,7 @@ import com.ll.netmong.domain.member.dto.LoginDto;
 import com.ll.netmong.domain.member.dto.UsernameRequest;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.member.service.MemberService;
-import com.ll.netmong.domain.productCart.service.CartService;
+import com.ll.netmong.domain.cart.service.CartService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

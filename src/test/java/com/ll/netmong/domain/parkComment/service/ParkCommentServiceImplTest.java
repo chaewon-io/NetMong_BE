@@ -100,7 +100,7 @@ class ParkCommentServiceImplTest {
                 ParkComment.builder().id(2L).park(park).memberID(member).username("user2").content("content2").isDeleted(false).build()
         );
         Page<ParkComment> comments = new PageImpl<>(commentList, pageable, commentList.size());
-        when(parkCommentRepository.findByParkId(parkId, pageable)).thenReturn(comments);
+        when(parkCommentRepository.findByParkIdAndIsDeletedFalse(parkId, pageable)).thenReturn(comments);
 
         // When
         Page<ParkCommentResponse> response = parkCommentService.getCommentsOfPark(parkId, pageable);

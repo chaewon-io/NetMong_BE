@@ -69,7 +69,7 @@ public class LikedParkServiceImpl implements LikedParkService {
         Member member = getMemberById(userDetails);
 
         LikedPark likedPark = likedParkRepository.findByMemberAndPark(member, park)
-                .orElseThrow(() -> new IllegalArgumentException("해당 게시물에 좋아요를 누르지 않았습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("해당 공원에 좋아요를 누르지 않았습니다."));
 
         park.removeLikeFromPark(likedPark);
         likedParkRepository.delete(likedPark);

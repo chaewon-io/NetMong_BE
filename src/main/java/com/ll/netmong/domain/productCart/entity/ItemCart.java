@@ -25,4 +25,20 @@ public class ItemCart extends BaseEntity {
 
     @Column(name = "item_stack_count")
     private Integer stackCount;
+
+    public static ItemCart createItemCart(Cart cart, Product product, Integer count) {
+        return ItemCart.builder()
+                .cart(cart)
+                .product(product)
+                .stackCount(count)
+                .build();
+    }
+
+    public void addCount(int number) {
+        this.stackCount += number;
+    }
+
+    public void removeStock(Product product, Integer count) {
+        product.removeStock(count);
+    }
 }

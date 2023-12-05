@@ -1,4 +1,4 @@
-package com.ll.netmong.domain.productCart.dto.request;
+package com.ll.netmong.domain.cart.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;

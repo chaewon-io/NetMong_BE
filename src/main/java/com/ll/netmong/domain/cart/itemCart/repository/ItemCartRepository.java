@@ -1,6 +1,6 @@
-package com.ll.netmong.domain.productCart.repository;
+package com.ll.netmong.domain.cart.itemCart.repository;
 
-import com.ll.netmong.domain.productCart.entity.ItemCart;
+import com.ll.netmong.domain.cart.itemCart.entity.ItemCart;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ItemCartRepository extends JpaRepository<ItemCart, Long> {

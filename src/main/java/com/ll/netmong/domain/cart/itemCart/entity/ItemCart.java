@@ -1,6 +1,7 @@
-package com.ll.netmong.domain.productCart.entity;
+package com.ll.netmong.domain.cart.itemCart.entity;
 
 import com.ll.netmong.common.BaseEntity;
+import com.ll.netmong.domain.cart.entity.Cart;
 import com.ll.netmong.domain.product.entity.Product;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

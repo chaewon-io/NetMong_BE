@@ -114,4 +114,40 @@ public class LikedParkServiceImplTest {
         System.out.println("Expected: " + expectedCount + ", Actual: " + actualCount);
     }
 
+    @Test
+    @DisplayName("removeLikeFromPark() 메소드는 특정 사용자의 좋아요를 삭제한다.")
+    void testRemoveLikeFromPark() {
+        String username = "testUser";
+        UserDetails userDetails = User.withUsername(username).password("testPassword").authorities("USER").build();
+        Member member = Member.builder().username(username).build();
+        Long parkId = 1L;
+        Park park = Park.builder().id(parkId).likesCount(1L).likedParks(new ArrayList<>()).build();
+
+        LikedPark likedPark = LikedPark.builder()
+                .member(member)
+                .park(park)
+                .build();
+
+        when(memberRepository.findByUsername(username)).thenReturn(Optional.of(member));
+        when(likedParkRepository.findByMemberAndPark(member, park)).thenReturn(Optional.of(likedPark));
+
+        likedParkService.removeLikeFromPark(park, userDetails);
+
+        verify(likedParkRepository, times(1)).delete(likedPark);
+    }
+
+    @Test
+    @DisplayName("removeLikeFromPark() 메소드는 특정 사용자의 좋아요가 없을 경우 IllegalArgumentException을 발생시킨다.")
+    void testRemoveLikeFromParkThrowsIllegalArgumentException() {
+        String username = "testUser";
+        UserDetails userDetails = User.withUsername(username).password("testPassword").authorities("USER").build();
+        Member member = Member.builder().username(username).build();
+        Long parkId = 1L;
+        Park park = Park.builder().id(parkId).likesCount(1L).likedParks(new ArrayList<>()).build();
+
+        when(memberRepository.findByUsername(username)).thenReturn(Optional.of(member));
+        when(likedParkRepository.findByMemberAndPark(member, park)).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () -> likedParkService.removeLikeFromPark(park, userDetails));
+    }
 }

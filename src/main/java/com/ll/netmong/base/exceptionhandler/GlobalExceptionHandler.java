@@ -2,8 +2,11 @@ package com.ll.netmong.base.exceptionhandler;
 
 import com.ll.netmong.common.ProductException;
 import com.ll.netmong.common.RsData;
+import com.ll.netmong.domain.likedPost.exception.DuplicateLikeException;
 import com.ll.netmong.domain.member.exception.NotMatchPasswordException;
 import com.ll.netmong.domain.product.dto.response.ErrorResponse;
+import com.ll.netmong.domain.reportPost.exception.DuplicateReportException;
+import com.ll.netmong.domain.reportPost.exception.InvalidReportException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -21,13 +24,13 @@ public class GlobalExceptionHandler {
     private static final String INVALID_PRODUCT_REQUEST = "유효하지 않은 요청 입니다.";
 
     @ExceptionHandler(AccountNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.OK)
     public RsData handleAccountNotFound(AccountNotFoundException e) {
         return RsData.failOf(e.getMessage());
     }
 
     @ExceptionHandler(NotMatchPasswordException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseStatus(HttpStatus.OK)
     public RsData handleNotMatchPassword(NotMatchPasswordException e) {
         return RsData.failOf(e.getMessage());
     }
@@ -57,5 +60,29 @@ public class GlobalExceptionHandler {
                 .orElseThrow(() -> new RuntimeException(INVALID_PRODUCT_REQUEST));
 
         return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+    }
+ 
+//    @ExceptionHandler(Exception.class)
+//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+//    public RsData handleException(Exception e) {
+//        return RsData.failOf("Unexpected error");
+//    }
+
+    @ExceptionHandler(DuplicateLikeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public RsData handleDuplicateLike(DuplicateLikeException e) {
+        return RsData.failOf(e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidReportException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public RsData handleInvalidReport(InvalidReportException e) {
+        return RsData.failOf(e.getMessage());
+    }
+
+    @ExceptionHandler(DuplicateReportException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public RsData handleDuplicateReport(DuplicateReportException e) {
+        return RsData.failOf(e.getMessage());
     }
 }

@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -62,8 +63,8 @@ public class PostController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public RsData postDetail(@PathVariable long id) {
-        PostResponse postResponse = postService.getDetail(id);
+    public RsData postDetail(@PathVariable long id, @AuthenticationPrincipal UserDetails userDetails) {
+        PostResponse postResponse = postService.getDetail(id, userDetails);
 
         return RsData.of("S-1", "해당 게시물의 상세 내용입니다.", postResponse);
     }
@@ -104,5 +105,15 @@ public class PostController {
         }
 
         postRequest.setImageUrl(domain + "/" + postImagePath + imageName);
+    }
+
+    @GetMapping("/my-posts")
+    @ResponseStatus(HttpStatus.OK)
+    public RsData<List<PostResponse>> viewMyPage(@AuthenticationPrincipal UserDetails userDetails) throws Exception {
+        String username = userDetails.getUsername();
+        Long memberId = memberService.findByUsername(username).getId();
+
+        List<PostResponse> myPosts = postService.viewMyPosts(memberId);
+        return RsData.successOf(myPosts);
     }
 }

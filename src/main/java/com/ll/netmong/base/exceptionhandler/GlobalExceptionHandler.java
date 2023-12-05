@@ -5,6 +5,8 @@ import com.ll.netmong.common.RsData;
 import com.ll.netmong.domain.likedPost.exception.DuplicateLikeException;
 import com.ll.netmong.domain.member.exception.NotMatchPasswordException;
 import com.ll.netmong.domain.product.dto.response.ErrorResponse;
+import com.ll.netmong.domain.reportPost.exception.DuplicateReportException;
+import com.ll.netmong.domain.reportPost.exception.InvalidReportException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -55,6 +57,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DuplicateLikeException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public RsData handleDuplicateLike(DuplicateLikeException e) {
+        return RsData.failOf(e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidReportException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public RsData handleInvalidReport(InvalidReportException e) {
+        return RsData.failOf(e.getMessage());
+    }
+
+    @ExceptionHandler(DuplicateReportException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public RsData handleDuplicateReport(DuplicateReportException e) {
         return RsData.failOf(e.getMessage());
     }
 }

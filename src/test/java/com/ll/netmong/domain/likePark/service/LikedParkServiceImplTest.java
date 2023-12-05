@@ -1,45 +1,40 @@
 package com.ll.netmong.domain.likePark.service;
 
-import com.ll.netmong.domain.likePark.entity.LikedPark;
 import com.ll.netmong.domain.likePark.repository.LikedParkRepository;
+import com.ll.netmong.domain.likedPost.exception.DuplicateLikeException;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.member.repository.MemberRepository;
 import com.ll.netmong.domain.park.entity.Park;
 import com.ll.netmong.domain.park.repository.ParkRepository;
 import com.ll.netmong.domain.postComment.exception.DataNotFoundException;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
-import java.util.Optional;
+import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@Transactional
 public class LikedParkServiceImplTest {
 
-    @InjectMocks
+    @Autowired
     private LikedParkServiceImpl likedParkService;
 
-    @Mock
+    @Autowired
     private MemberRepository memberRepository;
 
-    @Mock
+    @Autowired
     private LikedParkRepository likedParkRepository;
 
-    @Mock
+    @Autowired
     private ParkRepository parkRepository;
 
     private Park park;
@@ -51,103 +46,87 @@ public class LikedParkServiceImplTest {
     void setUp() {
         parkId = 1L;
         park = Park.builder().id(parkId).likesCount(0L).likedParks(new ArrayList<>()).build();
+        parkRepository.save(park);
+
+        String username = "testUser" + UUID.randomUUID().toString();
+        userDetails = User.withUsername(username).password("testPassword").authorities("USER").build();
+        member = Member.builder().username(username).build();
+        memberRepository.save(member);
     }
 
     @Test
     @DisplayName("addLikeToPark() 메서드는 해당 공원, userDetails를 통해 좋아요를 추가하고 저장한다.")
     void testAddLikeToPark() {
-        String username = "testUser";
-        userDetails = User.withUsername(username).password("testPassword").authorities("USER").build();
-        member = Member.builder().username(username).build();
-        when(memberRepository.findByUsername(username)).thenReturn(Optional.of(member));
-        when(likedParkRepository.existsByMemberAndPark(member, park)).thenReturn(false);
-
         likedParkService.addLikeToPark(park, userDetails);
+        assertTrue(likedParkRepository.existsByMemberAndPark(member, park));
+    }
 
-        verify(likedParkRepository, times(1)).save(any(LikedPark.class));
+    @Test
+    @DisplayName("addLikeToPark() 메서드는 이미 좋아요를 누른 공원에 대해 DuplicateLikeException을 발생시켜 중복 체크를 한다.")
+    void testAddLikeToParkThrowsDuplicateLikeException() {
+        likedParkService.addLikeToPark(park, userDetails);
+        assertThrows(DuplicateLikeException.class, () -> likedParkService.addLikeToPark(park, userDetails));
     }
 
     @Test
     @DisplayName("getParkById() 메서드는 주어진 ID에 해당하는 Park를 반환한다.")
     void testGetParkById() {
-        when(parkRepository.findById(parkId)).thenReturn(Optional.of(park));
-
-        Park foundPark = likedParkService.getParkById(parkId);
-
-        assertEquals(park, foundPark);
+        Park foundPark = likedParkService.getParkById(park.getId());
+        assertEquals(park.getId(), foundPark.getId());
     }
 
     @Test
-    @DisplayName("getMemberById() 메서드는 주어진 ID에 해당하는 Member 객체를 반환한다.")
+    @DisplayName("getParkById() 메서드는 주어진 ID에 해당하는 Park가 없을 경우 DataNotFoundException을 발생시킨다.")
+    void testGetParkByIdThrowsDataNotFoundException() {
+        Long nonExistingParkId = 99999L;
+        assertThrows(DataNotFoundException.class, () -> likedParkService.getParkById(nonExistingParkId));
+    }
+
+    @Test
+    @DisplayName("getMemberById() 메서드는 주어진 Username에 해당하는 Member 객체를 반환한다.")
     void testGetMemberById() {
-        String username = "testUser";
-        UserDetails userDetails = User.withUsername(username).password("testPassword").authorities("USER").build();
-        Member member = Member.builder().username(username).build();
-        when(memberRepository.findByUsername(username)).thenReturn(Optional.of(member));
-
         Member foundMember = likedParkService.getMemberById(userDetails);
-
-        assertEquals(member, foundMember);
+        assertEquals(member.getUsername(), foundMember.getUsername());
     }
 
     @Test
-    @DisplayName("getMemberById() 메서드는 주어진 ID에 해당하는 Member가 없을 경우 DataNotFoundException을 발생시킨다.")
+    @DisplayName("getMemberById() 메서드는 주어진 Username에 해당하는 Member가 없을 경우 DataNotFoundException을 발생시킨다.")
     void testGetMemberByIdThrowsDataNotFoundException() {
-        String username = "testUser";
-        UserDetails userDetails = User.withUsername(username).password("testPassword").authorities("USER").build();
-        when(memberRepository.findByUsername(username)).thenReturn(Optional.empty());
-
-        assertThrows(DataNotFoundException.class, () -> likedParkService.getMemberById(userDetails));
+        UserDetails nonExistingUserDetails = User.withUsername("nonExistingUser").password("testPassword").authorities("USER").build();
+        assertThrows(DataNotFoundException.class, () -> likedParkService.getMemberById(nonExistingUserDetails));
     }
 
     @Test
     @DisplayName("countLikesToPark() 메서드는 해당 Park에 대한 좋아요 개수를 반환한다.")
     void testCountLikesToPark() {
-        Long parkId = 1L;
-        Park park = Park.builder().id(parkId).likesCount(0L).likedParks(new ArrayList<>()).build();
-        Long expectedCount = 10L;
-        when(likedParkRepository.countLikesByPark(park)).thenReturn(expectedCount);
+        for (int i = 0; i < 10; i++) {
+            String username = "liker" + UUID.randomUUID().toString();
+            UserDetails userDetails = User.withUsername(username).password("testPassword").authorities("USER").build();
+            Member liker = Member.builder().username(username).build();
+            memberRepository.save(liker);
+            likedParkService.addLikeToPark(park, userDetails);
+        }
 
         Long actualCount = likedParkService.countLikesToPark(park);
 
+        Long expectedCount = 10L;
         assertEquals(expectedCount, actualCount);
-        System.out.println("Expected: " + expectedCount + ", Actual: " + actualCount);
     }
 
     @Test
-    @DisplayName("removeLikeFromPark() 메소드는 특정 사용자의 좋아요를 삭제한다.")
+    @DisplayName("removeLikeFromPark() 메서드는 해당 공원, userDetails를 통해 좋아요를 제거한다.")
     void testRemoveLikeFromPark() {
-        String username = "testUser";
-        UserDetails userDetails = User.withUsername(username).password("testPassword").authorities("USER").build();
-        Member member = Member.builder().username(username).build();
-        Long parkId = 1L;
-        Park park = Park.builder().id(parkId).likesCount(1L).likedParks(new ArrayList<>()).build();
-
-        LikedPark likedPark = LikedPark.builder()
-                .member(member)
-                .park(park)
-                .build();
-
-        when(memberRepository.findByUsername(username)).thenReturn(Optional.of(member));
-        when(likedParkRepository.findByMemberAndPark(member, park)).thenReturn(Optional.of(likedPark));
+        likedParkService.addLikeToPark(park, userDetails);
+        assertTrue(likedParkRepository.existsByMemberAndPark(member, park));
 
         likedParkService.removeLikeFromPark(park, userDetails);
-
-        verify(likedParkRepository, times(1)).delete(likedPark);
+        assertFalse(likedParkRepository.existsByMemberAndPark(member, park));
     }
 
     @Test
-    @DisplayName("removeLikeFromPark() 메소드는 특정 사용자의 좋아요가 없을 경우 IllegalArgumentException을 발생시킨다.")
+    @DisplayName("removeLikeFromPark() 메서드는 해당 공원에 userDetails가 좋아요를 누르지 않았을 경우 IllegalArgumentException을 발생시킨다.")
     void testRemoveLikeFromParkThrowsIllegalArgumentException() {
-        String username = "testUser";
-        UserDetails userDetails = User.withUsername(username).password("testPassword").authorities("USER").build();
-        Member member = Member.builder().username(username).build();
-        Long parkId = 1L;
-        Park park = Park.builder().id(parkId).likesCount(1L).likedParks(new ArrayList<>()).build();
-
-        when(memberRepository.findByUsername(username)).thenReturn(Optional.of(member));
-        when(likedParkRepository.findByMemberAndPark(member, park)).thenReturn(Optional.empty());
-
         assertThrows(IllegalArgumentException.class, () -> likedParkService.removeLikeFromPark(park, userDetails));
     }
 }
+

@@ -1,12 +1,13 @@
-package com.ll.netmong.domain.productCart.service;
+package com.ll.netmong.domain.cart.service;
 
+import com.ll.netmong.domain.cart.dto.response.ViewCartResponse;
+import com.ll.netmong.domain.cart.entity.Cart;
+import com.ll.netmong.domain.cart.itemCart.entity.ItemCart;
+import com.ll.netmong.domain.cart.itemCart.repository.ItemCartRepository;
+import com.ll.netmong.domain.cart.itemCart.service.ItemCartServiceImpl;
+import com.ll.netmong.domain.cart.repository.CartRepository;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.product.entity.Product;
-import com.ll.netmong.domain.productCart.dto.response.ViewCartResponse;
-import com.ll.netmong.domain.productCart.entity.Cart;
-import com.ll.netmong.domain.productCart.entity.ItemCart;
-import com.ll.netmong.domain.productCart.repository.CartRepository;
-import com.ll.netmong.domain.productCart.repository.ItemCartRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,8 @@ class CartServiceImplTest {
 
     @InjectMocks
     private CartServiceImpl cartService;
+    @InjectMocks
+    private ItemCartServiceImpl itemCartService;
 
     @Mock
     private ItemCartRepository itemCartRepository;
@@ -79,7 +82,7 @@ class CartServiceImplTest {
         when(itemCartRepository.findAll()).thenReturn(mockItemCartList);
 
         // When
-        List<ViewCartResponse> result = cartService.readMemberCartByUser(findMemberName);
+        List<ViewCartResponse> result = itemCartService.readMemberCartByUser(findMemberName);
 
         // Then
         assertThat(1).isEqualTo(result.size());

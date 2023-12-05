@@ -6,6 +6,7 @@ import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.member.repository.MemberRepository;
 import com.ll.netmong.domain.park.entity.Park;
 import com.ll.netmong.domain.park.repository.ParkRepository;
+import com.ll.netmong.domain.postComment.exception.DataNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -74,4 +76,28 @@ public class LikedParkServiceImplTest {
 
         assertEquals(park, foundPark);
     }
+
+    @Test
+    @DisplayName("getMemberById() 메서드는 주어진 ID에 해당하는 Member 객체를 반환한다.")
+    void testGetMemberById() {
+        String username = "testUser";
+        UserDetails userDetails = User.withUsername(username).password("testPassword").authorities("USER").build();
+        Member member = Member.builder().username(username).build();
+        when(memberRepository.findByUsername(username)).thenReturn(Optional.of(member));
+
+        Member foundMember = likedParkService.getMemberById(userDetails);
+
+        assertEquals(member, foundMember);
+    }
+
+    @Test
+    @DisplayName("getMemberById() 메서드는 주어진 ID에 해당하는 Member가 없을 경우 DataNotFoundException을 발생시킨다.")
+    void testGetMemberByIdThrowsDataNotFoundException() {
+        String username = "testUser";
+        UserDetails userDetails = User.withUsername(username).password("testPassword").authorities("USER").build();
+        when(memberRepository.findByUsername(username)).thenReturn(Optional.empty());
+
+        assertThrows(DataNotFoundException.class, () -> likedParkService.getMemberById(userDetails));
+    }
+
 }

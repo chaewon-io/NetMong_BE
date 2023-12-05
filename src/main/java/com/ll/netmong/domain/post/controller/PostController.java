@@ -40,10 +40,11 @@ public class PostController {
     String  domain;
 
     @GetMapping("/search")
-    public RsData postsSearch(@RequestParam String category, @RequestParam String searchWord) {
-        List<PostResponse> postsSearch = postService.searchPostsByCategory(category, searchWord);
+    public RsData postsSearch(@RequestParam String category, @RequestParam String searchWord, @RequestParam(defaultValue = "1") int page) {
+        Pageable pageRequest = PageRequest.of(page - 1, 5);
+        Page<PostResponse> postsSearch = postService.searchPostsByCategory(category, searchWord, pageRequest);
 
-        return RsData.of("S-1", "게시물이 업로드되었습니다.", postsSearch);
+        return RsData.successOf(new PageResponse<>(postsSearch));
     }
 
     @GetMapping("/view")

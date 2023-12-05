@@ -17,9 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,19 +28,19 @@ public class PostServiceImpl implements PostService {
     private final MemberRepository memberRepository;
 
     @Override
-    public List<PostResponse> searchPostsByCategory(String category, String searchWord) {
-        List<Post> posts;
+    public Page<PostResponse> searchPostsByCategory(String category, String searchWord, Pageable pageable) {
+        Page<Post> posts;
         if (category.equals("작성자")) {
-            posts = postRepository.findByWriterContaining(searchWord);
+            // 아래 코드로 수정
+            posts = postRepository.findByWriterContaining(searchWord, pageable);
         } else if (category.equals("내용")) {
-            posts = postRepository.findByContentContaining(searchWord);
+            // 아래 코드로 수정
+            posts = postRepository.findByContentContaining(searchWord, pageable);
         } else {
-            return Collections.emptyList();
+            return Page.empty();
         }
 
-        return posts.stream()
-                .map(PostResponse::new)
-                .collect(Collectors.toList());
+        return posts.map(PostResponse::postsView);
     }
 
     @Override

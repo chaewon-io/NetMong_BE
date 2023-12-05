@@ -1,4 +1,4 @@
-package com.ll.netmong.domain.productCart.entity;
+package com.ll.netmong.domain.cart.entity;
 
 import com.ll.netmong.common.BaseEntity;
 import com.ll.netmong.domain.member.entity.Member;

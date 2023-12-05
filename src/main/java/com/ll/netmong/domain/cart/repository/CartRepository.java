@@ -1,6 +1,6 @@
-package com.ll.netmong.domain.productCart.repository;
+package com.ll.netmong.domain.cart.repository;
 
-import com.ll.netmong.domain.productCart.entity.Cart;
+import com.ll.netmong.domain.cart.entity.Cart;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

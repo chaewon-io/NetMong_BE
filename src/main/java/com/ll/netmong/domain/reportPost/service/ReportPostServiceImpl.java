@@ -46,7 +46,7 @@ public class ReportPostServiceImpl implements ReportPostService {
 
         reportPostRepository.save(reportPost);
 
-        return new ReportPostResponse(reportPost.getId(), reporter.getId(), reportedPost.getId(), request.getReportType(), request.getContent());
+        return reportPost.toResponse();
     }
 
     private void validateSelfReport(Member reporter, Post reportedPost) {

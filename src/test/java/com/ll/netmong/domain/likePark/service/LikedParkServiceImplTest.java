@@ -100,4 +100,18 @@ public class LikedParkServiceImplTest {
         assertThrows(DataNotFoundException.class, () -> likedParkService.getMemberById(userDetails));
     }
 
+    @Test
+    @DisplayName("countLikesToPark() 메서드는 해당 Park에 대한 좋아요 개수를 반환한다.")
+    void testCountLikesToPark() {
+        Long parkId = 1L;
+        Park park = Park.builder().id(parkId).likesCount(0L).likedParks(new ArrayList<>()).build();
+        Long expectedCount = 10L;
+        when(likedParkRepository.countLikesByPark(park)).thenReturn(expectedCount);
+
+        Long actualCount = likedParkService.countLikesToPark(park);
+
+        assertEquals(expectedCount, actualCount);
+        System.out.println("Expected: " + expectedCount + ", Actual: " + actualCount);
+    }
+
 }

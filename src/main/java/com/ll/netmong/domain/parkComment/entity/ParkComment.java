@@ -30,7 +30,7 @@ public class ParkComment extends BaseEntity {
     @Column(nullable = false)
     private Boolean isDeleted;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member memberID;
 

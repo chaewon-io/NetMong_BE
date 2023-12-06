@@ -8,6 +8,7 @@ import com.ll.netmong.domain.member.dto.LoginDto;
 import com.ll.netmong.domain.member.dto.UsernameRequest;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.member.service.MemberService;
+import com.ll.netmong.domain.cart.service.CartService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
+    private final CartService cartService;
 
     @GetMapping("/find")
     public Member findMember() {
@@ -27,9 +29,10 @@ public class MemberController {
     }
 
     @PostMapping("/join")
-    public RsData<String> join(@Valid @RequestBody JoinRequest joinRequest) {
+    public RsData<String> join(@Valid @RequestBody JoinRequest joinRequest) throws Exception {
 
         String username = memberService.createMember(joinRequest).getUsername();
+        cartService.createCart(memberService.findByUsername(joinRequest.getUsername()));
 
         return RsData.successOf(username);
     }

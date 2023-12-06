@@ -40,8 +40,9 @@ public class WebSecurityConfig {
 
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                         .requestMatchers("/api/v1/members/login",
-                                "/api/v1/members/join", "/images/**",
-                                "/api/v1/members/dup-username"
+                                "/api/v1/members/join", "/images/**", "/api/v1/products/**",
+                                         "/api/v1/members/dup-username"
+
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
@@ -57,7 +58,7 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }

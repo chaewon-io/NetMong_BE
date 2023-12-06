@@ -71,6 +71,10 @@ public class ProductServiceImpl implements ProductService {
         productRepository.deleteById(productId);
     }
 
+    public Product getProduct(Long productId) {
+        return validateExistProduct(productId);
+    }
+
     private Product initProduct(CreateRequest createRequest) {
         return productRepository.save(Product.builder()
                 .productName(createRequest.getProductName())

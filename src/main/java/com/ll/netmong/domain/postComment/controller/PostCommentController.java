@@ -52,15 +52,15 @@ public class PostCommentController {
 
     @PostMapping("/{commentId}/reply")
     @ResponseStatus(HttpStatus.CREATED)
-    public RsData<PostComment> addReplyToComment(@PathVariable Long commentId, @RequestBody PostCommentRequest request, UserDetails userDetails) {
-        PostComment childComment = service.addReplyToComment(commentId, request, userDetails);
+    public RsData<PostCommentResponse> addReplyToComment(@PathVariable Long commentId, @RequestBody PostCommentRequest request, @AuthenticationPrincipal UserDetails userDetails) {
+        PostCommentResponse childComment = service.addReplyToComment(commentId, request, userDetails);
         return RsData.successOf(childComment);
     }
 
     @PatchMapping("/replies/{replyId}")
     @ResponseStatus(HttpStatus.OK)
-    public RsData<PostComment> updateReply(@PathVariable Long replyId, @RequestBody PostCommentRequest request) {
-        PostComment updatedReply = service.updateReply(replyId, request);
+    public RsData<PostCommentResponse> updateReply(@PathVariable Long replyId, @RequestBody PostCommentRequest request) {
+        PostCommentResponse updatedReply = service.updateReply(replyId, request);
         return RsData.successOf(updatedReply);
     }
 

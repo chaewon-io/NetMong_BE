@@ -100,26 +100,30 @@ public class PostCommentServiceImpl implements PostCommentService {
 
     @Override
     @Transactional
-    public PostComment addReplyToComment(Long commentId, PostCommentRequest request, UserDetails userDetails) {
+    public PostCommentResponse addReplyToComment(Long commentId, PostCommentRequest request, @AuthenticationPrincipal UserDetails userDetails) {
         PostComment parentComment = postCommentRepository.findById(commentId)
                 .orElseThrow(() -> new DataNotFoundException("해당 댓글이 없습니다. id: " + commentId));
         Member member = memberRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new DataNotFoundException("해당하는 회원을 찾을 수 없습니다."));
+
         PostComment childComment = PostComment.builder()
                 .content(request.getContent())
                 .isDeleted(false)
-                .username(String.valueOf(member))
+                .username(member.getUsername())
                 .build();
+
         parentComment.addChildComment(childComment);
-        return postCommentRepository.save(childComment);
+        PostComment savedChildComment = postCommentRepository.save(childComment);
+        return convertToResponse(savedChildComment);
     }
 
     @Override
     @Transactional
-    public PostComment updateReply(Long replyId, PostCommentRequest request) {
+    public PostCommentResponse updateReply(Long replyId, PostCommentRequest request) {
         PostComment reply = postCommentRepository.findById(replyId)
                 .orElseThrow(() -> new DataNotFoundException("해당 대댓글이 없습니다. id: " + replyId));
         reply.updateContent(request.getContent());
-        return postCommentRepository.save(reply);
+        PostComment updatedReply = postCommentRepository.save(reply);
+        return convertToResponse(updatedReply);
     }
 }

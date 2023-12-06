@@ -2,11 +2,9 @@ package com.ll.netmong.domain.member.controller;
 
 import com.ll.netmong.base.jwt.TokenDto;
 import com.ll.netmong.common.RsData;
+import com.ll.netmong.domain.follow.dto.FollowCountDto;
 import com.ll.netmong.domain.follow.service.FollowService;
-import com.ll.netmong.domain.member.dto.ChangePasswordRequest;
-import com.ll.netmong.domain.member.dto.JoinRequest;
-import com.ll.netmong.domain.member.dto.LoginDto;
-import com.ll.netmong.domain.member.dto.UsernameRequest;
+import com.ll.netmong.domain.member.dto.*;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.member.service.MemberService;
 import jakarta.validation.Valid;
@@ -94,4 +92,14 @@ public class MemberController {
         return RsData.successOf("unfollow 성공");
     }
 
+    @GetMapping("/{username}")
+    public RsData<MemberDetailDto> showMember(@PathVariable String username, @AuthenticationPrincipal UserDetails userDetails) throws Exception {
+
+        Member loginMember = memberService.findByUsername(userDetails.getUsername());
+        Member pathMember = memberService.findByUsername(username);
+
+        FollowCountDto followCountDto = followService.countFollowerAndFollowee(pathMember);
+        Boolean following = followService.isFollowing(loginMember, pathMember);
+        return RsData.successOf(new MemberDetailDto(following, followCountDto.getFollowerCount(), followCountDto.getFolloweeCount()));
+    }
 }

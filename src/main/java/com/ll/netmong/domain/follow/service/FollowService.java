@@ -38,4 +38,8 @@ public class FollowService {
 
         return new FollowCountDto(countByFollower, countByFollowee);
     }
+
+    public Boolean isFollowing(Member loginMember, Member foundMember) {
+        return followRepository.findByFollowerAndFollowee(loginMember, foundMember).isPresent();
+    }
 }

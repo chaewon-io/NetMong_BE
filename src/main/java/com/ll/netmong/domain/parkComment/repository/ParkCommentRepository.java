@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ParkCommentRepository extends JpaRepository<ParkComment, Long>  {
-    Page<ParkComment> findByParkId(Long parkId, Pageable pageable);
+    Page<ParkComment> findByParkIdAndIsDeletedFalse(Long parkId, Pageable pageable);
 
 }

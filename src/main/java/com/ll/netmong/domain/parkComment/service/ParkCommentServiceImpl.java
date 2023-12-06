@@ -51,7 +51,7 @@ public class ParkCommentServiceImpl implements ParkCommentService {
     @Override
     @Transactional
     public Page<ParkCommentResponse> getCommentsOfPark(Long parkId, Pageable pageable) {
-        Page<ParkComment> comments = parkCommentRepository.findByParkId(parkId, pageable);
+        Page<ParkComment> comments = parkCommentRepository.findByParkIdAndIsDeletedFalse(parkId, pageable);
         return comments.map(ParkComment::toResponse);
     }
 

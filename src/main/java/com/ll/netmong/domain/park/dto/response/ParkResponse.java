@@ -17,5 +17,7 @@ public class ParkResponse {
     private String phoneNumber;
     private String state;
     private String city;
+    private Long likesCount;
+    private Boolean isLiked;
 
 }

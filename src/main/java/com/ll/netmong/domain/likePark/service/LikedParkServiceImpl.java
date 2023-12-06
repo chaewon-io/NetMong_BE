@@ -34,10 +34,7 @@ public class LikedParkServiceImpl implements LikedParkService {
             throw new DuplicateLikeException("이미 좋아요를 누른 공원입니다.");
         }
 
-        LikedPark like = LikedPark.builder()
-                .park(park)
-                .member(member)
-                .build();
+        LikedPark like = LikedPark.createLikedPark(park, member);
 
         park.addLikeToPark(like);
         likedParkRepository.save(like);

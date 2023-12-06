@@ -33,5 +33,6 @@ spring:
 logging:
   level:
     root: INFO
+    org.hibernate.orm.jdbc.bind: trace
 
 domain: '${custom.image.domain}'

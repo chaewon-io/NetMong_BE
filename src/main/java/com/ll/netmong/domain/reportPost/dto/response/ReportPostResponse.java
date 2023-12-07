@@ -1,7 +1,7 @@
 package com.ll.netmong.domain.reportPost.dto.response;
 
 
-import com.ll.netmong.domain.reportPost.util.ReportType;
+import com.ll.netmong.common.ReportType;
 import lombok.Getter;
 import lombok.Setter;
 

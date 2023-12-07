@@ -4,7 +4,7 @@ import com.ll.netmong.common.RsData;
 import com.ll.netmong.domain.reportPost.dto.request.ReportPostRequest;
 import com.ll.netmong.domain.reportPost.dto.response.ReportPostResponse;
 import com.ll.netmong.domain.reportPost.service.ReportPostService;
-import com.ll.netmong.domain.reportPost.util.ReportType;
+import com.ll.netmong.common.ReportType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;

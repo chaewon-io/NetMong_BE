@@ -7,7 +7,7 @@ import com.ll.netmong.domain.post.repository.PostRepository;
 import com.ll.netmong.domain.reportPost.dto.request.ReportPostRequest;
 import com.ll.netmong.domain.reportPost.dto.response.ReportPostResponse;
 import com.ll.netmong.domain.reportPost.repository.ReportPostRepository;
-import com.ll.netmong.domain.reportPost.util.ReportType;
+import com.ll.netmong.common.ReportType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

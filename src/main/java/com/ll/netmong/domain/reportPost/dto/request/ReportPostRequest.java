@@ -1,6 +1,6 @@
 package com.ll.netmong.domain.reportPost.dto.request;
 
-import com.ll.netmong.domain.reportPost.util.ReportType;
+import com.ll.netmong.common.ReportType;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;

@@ -2,7 +2,7 @@ package com.ll.netmong.domain.reportPost.entity;
 
 import com.ll.netmong.common.BaseEntity;
 import com.ll.netmong.domain.reportPost.dto.response.ReportPostResponse;
-import com.ll.netmong.domain.reportPost.util.ReportType;
+import com.ll.netmong.common.ReportType;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.post.entity.Post;
 import jakarta.persistence.*;

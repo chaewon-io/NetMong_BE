@@ -1,6 +1,7 @@
 package com.ll.netmong.domain.reportPostComment.entity;
 
 import com.ll.netmong.common.BaseEntity;
+import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.postComment.entity.PostComment;
 import com.ll.netmong.common.ReportType;
 import jakarta.persistence.*;
@@ -24,4 +25,8 @@ public class ReportPostComment extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private ReportType reportType;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
 }

@@ -17,7 +17,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.BiFunction;
 
 @Service
 @RequiredArgsConstructor
@@ -29,16 +32,12 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Page<PostResponse> searchPostsByCategory(String category, String searchWord, Pageable pageable) {
-        Page<Post> posts;
-        if (category.equals("작성자")) {
-            // 아래 코드로 수정
-            posts = postRepository.findByWriterContaining(searchWord, pageable);
-        } else if (category.equals("내용")) {
-            // 아래 코드로 수정
-            posts = postRepository.findByContentContaining(searchWord, pageable);
-        } else {
-            return Page.empty();
-        }
+        Map<String, BiFunction<String, Pageable, Page<Post>>> searchByCategory = new HashMap<>(); //BiFunction<String, Pageable, Page<Post>> - String, Pageable 매개변수를 받아 Page<Post> 반환
+        searchByCategory.put("작성자", (word, page) -> postRepository.findByWriterContaining(word, page));
+        searchByCategory.put("내용", (word, page) -> postRepository.findByContentContaining(word, page));
+
+        BiFunction<String, Pageable, Page<Post>> searchingPosts = searchByCategory.getOrDefault(category, (word, page) -> Page.empty());
+        Page<Post> posts = searchingPosts.apply(searchWord, pageable);
 
         return posts.map(PostResponse::postsView);
     }

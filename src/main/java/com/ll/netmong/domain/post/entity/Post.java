@@ -1,16 +1,15 @@
 package com.ll.netmong.domain.post.entity;
 
 import com.ll.netmong.common.BaseEntity;
+import com.ll.netmong.domain.likedPost.entity.LikedPost;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.postComment.entity.PostComment;
-import com.ll.netmong.domain.likedPost.entity.LikedPost;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLDelete;
 
 import java.time.LocalDateTime;
@@ -37,12 +36,6 @@ public class Post extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
-
-    //포스트 수정
-    public void update(String content, String imageUrl) {
-        this.content = content;
-        this.imageUrl = imageUrl;
-    }
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<PostComment> comments = new ArrayList<>();

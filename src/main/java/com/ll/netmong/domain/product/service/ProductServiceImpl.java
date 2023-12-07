@@ -8,6 +8,7 @@ import com.ll.netmong.domain.product.dto.response.ViewAllResponse;
 import com.ll.netmong.domain.product.dto.response.ViewSingleResponse;
 import com.ll.netmong.domain.product.entity.Product;
 import com.ll.netmong.domain.product.repository.ProductRepository;
+import com.ll.netmong.domain.product.util.Category;
 import com.ll.netmong.domain.product.util.ProductErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -41,20 +42,34 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public ViewSingleResponse findByProduct(Long productId) {
+        return new ViewSingleResponse(validateExistProduct(productId));
+    }
+
+    @Override
     public List<ViewAllResponse> viewAllProducts() {
-        return getViewAllResponse();
+        return toViewAllResponse(productRepository.findAll());
+    }
+
+    @Override
+    public List<ViewAllResponse> findByProductCategory(Category category) {
+        return toViewAllResponse(productRepository.findByCategory(category));
+    }
+
+    @Override
+    public List<ViewAllResponse> findByProductName(String productName) {
+        List<Product> products = productRepository.findByProductName(productName);
+        if (products.isEmpty()) {
+            throw new ProductException("존재 하지 않는 상품 이름 입니다.", ProductErrorCode.NOT_EXIST_PRODUCT_NAME);
+        }
+
+        return toViewAllResponse(products);
     }
 
     @Override
     public Page<ViewAllResponse> readPageByProduct(Pageable pageable) {
         Page<Product> productPage = productRepository.findAll(pageable);
-
         return productPage.map(ViewAllResponse::pageByProduct);
-    }
-
-    @Override
-    public ViewSingleResponse findByProduct(Long productId) {
-        return new ViewSingleResponse(validateExistProduct(productId));
     }
 
     @Override
@@ -89,9 +104,7 @@ public class ProductServiceImpl implements ProductService {
         return !Objects.isNull(image);
     }
 
-    private List<ViewAllResponse> getViewAllResponse() {
-        List<Product> products = productRepository.findAll();
-
+    private List<ViewAllResponse> toViewAllResponse(List<Product> products) {
         return products.stream()
                 .filter(product -> product != null)
                 .map(ViewAllResponse::new)

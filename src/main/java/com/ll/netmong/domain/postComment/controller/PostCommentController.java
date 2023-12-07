@@ -3,7 +3,9 @@ package com.ll.netmong.domain.postComment.controller;
 import com.ll.netmong.common.RsData;
 import com.ll.netmong.domain.postComment.dto.request.PostCommentRequest;
 import com.ll.netmong.common.PageResponse;
+import com.ll.netmong.domain.postComment.dto.request.ReportPostCommentRequest;
 import com.ll.netmong.domain.postComment.dto.response.PostCommentResponse;
+import com.ll.netmong.domain.postComment.dto.response.ReportPostCommentResponse;
 import com.ll.netmong.domain.postComment.entity.PostComment;
 import com.ll.netmong.domain.postComment.service.PostCommentService;
 import jakarta.validation.Valid;
@@ -62,6 +64,13 @@ public class PostCommentController {
     public RsData<PostCommentResponse> updateReply(@PathVariable Long replyId, @RequestBody PostCommentRequest request) {
         PostCommentResponse updatedReply = service.updateReply(replyId, request);
         return RsData.successOf(updatedReply);
+    }
+
+    @PostMapping("/reports/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public RsData<ReportPostCommentResponse> reportComment(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails, @RequestBody ReportPostCommentRequest reportRequest) {
+        ReportPostCommentResponse reportedComment = service.reportComment(id, userDetails.getUsername(), reportRequest.getReportType());
+        return RsData.successOf(reportedComment);
     }
 
 }

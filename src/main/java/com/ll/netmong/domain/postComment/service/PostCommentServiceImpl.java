@@ -1,14 +1,18 @@
 package com.ll.netmong.domain.postComment.service;
 
+import com.ll.netmong.common.ReportType;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.member.repository.MemberRepository;
 import com.ll.netmong.domain.postComment.dto.response.PostCommentResponse;
+import com.ll.netmong.domain.postComment.dto.response.ReportPostCommentResponse;
 import com.ll.netmong.domain.postComment.exception.DataNotFoundException;
 import com.ll.netmong.domain.post.entity.Post;
 import com.ll.netmong.domain.post.repository.PostRepository;
 import com.ll.netmong.domain.postComment.dto.request.PostCommentRequest;
 import com.ll.netmong.domain.postComment.entity.PostComment;
 import com.ll.netmong.domain.postComment.repository.PostCommentRepository;
+import com.ll.netmong.domain.reportPostComment.repository.ReportPostCommentRepository;
+import com.ll.netmong.domain.reportPostComment.entity.ReportPostComment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +34,7 @@ public class PostCommentServiceImpl implements PostCommentService {
     private final PostCommentRepository postCommentRepository;
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
+    private final ReportPostCommentRepository reportPostCommentRepository;
 
     @Override
     @Transactional
@@ -46,6 +51,7 @@ public class PostCommentServiceImpl implements PostCommentService {
                 .username(userDetails.getUsername())
                 .content(postCommentRequest.getContent())
                 .isDeleted(false)
+                .isBlinded(false)
                 .build();
         post.addComment(comment);
         PostComment savedComment = postCommentRepository.save(comment);
@@ -126,4 +132,27 @@ public class PostCommentServiceImpl implements PostCommentService {
         PostComment updatedReply = postCommentRepository.save(reply);
         return convertToResponse(updatedReply);
     }
+
+    @Override
+    @Transactional
+    public ReportPostCommentResponse reportComment(Long id, String username, ReportType reportType) {
+        PostComment comment = postCommentRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("해당 댓글이 없습니다. id: " + id));
+        if (username.equals(comment.getUsername())) {
+            throw new IllegalArgumentException("자신의 댓글은 신고할 수 없습니다.");
+        }
+
+        ReportPostComment report = ReportPostComment.builder()
+                .reportedPostComment(comment)
+                .reportType(reportType)
+                .build();
+        reportPostCommentRepository.save(report);
+
+        comment.increaseReportCount();
+        comment.checkAndBlindComment();
+        postCommentRepository.save(comment);
+
+        return ReportPostCommentResponse.of(comment);
+    }
+
 }

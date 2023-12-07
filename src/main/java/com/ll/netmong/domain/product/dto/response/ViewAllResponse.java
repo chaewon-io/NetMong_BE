@@ -1,6 +1,5 @@
 package com.ll.netmong.domain.product.dto.response;
 
-import com.ll.netmong.domain.image.entity.Image;
 import com.ll.netmong.domain.product.entity.Product;
 import com.ll.netmong.domain.product.util.Category;
 import lombok.Getter;

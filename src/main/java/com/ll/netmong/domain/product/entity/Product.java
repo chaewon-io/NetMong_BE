@@ -1,9 +1,11 @@
 package com.ll.netmong.domain.product.entity;
 
 import com.ll.netmong.common.BaseEntity;
+import com.ll.netmong.common.ProductException;
 import com.ll.netmong.domain.image.entity.Image;
 import com.ll.netmong.domain.product.dto.request.UpdateRequest;
 import com.ll.netmong.domain.product.util.Category;
+import com.ll.netmong.domain.product.util.ProductErrorCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -65,6 +67,14 @@ public class Product extends BaseEntity {
         this.count = updateRequest.getCount();
         this.content = updateRequest.getContent();
         this.category = updateRequest.getCategory();
+    }
 
+    public void removeStock(int quantity) {
+        int restStock = this.count - quantity;
+
+        if (restStock < 0) {
+            throw new ProductException("남아있는 재고가 부족합니다.", ProductErrorCode.NOT_ENOUGH_PRODUCT_STOCK);
+        }
+        this.count = restStock;
     }
 }

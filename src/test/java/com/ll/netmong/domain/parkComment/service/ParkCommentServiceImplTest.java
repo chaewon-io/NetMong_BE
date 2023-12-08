@@ -140,5 +140,32 @@ public class ParkCommentServiceImplTest {
         assertEquals(3, comments.getTotalElements());
         assertEquals(3, comments.getContent().size());
     }
+
+    @Test
+    @DisplayName("updateComment() 메서드는 댓글의 내용을 수정한다.")
+    void UpdateComment() {
+        ParkCommentRequest parkCommentRequest = new ParkCommentRequest();
+        parkCommentRequest.setContent("Test Comment");
+
+        ParkCommentResponse comment = parkCommentService.addParkComment(parkId, parkCommentRequest, userDetails);
+
+        ParkCommentRequest updateRequest = new ParkCommentRequest();
+        updateRequest.setContent("Updated Comment");
+
+        ParkCommentResponse updatedComment = parkCommentService.updateComment(comment.getId(), updateRequest, userDetails);
+
+        assertEquals("Updated Comment", updatedComment.getContent());
+    }
+
+    @Test
+    @DisplayName("updateComment() 메서드는 존재하지 않는 댓글을 수정하려 할 경우 DataNotFoundException을 발생시킨다.")
+    void testUpdateComment_WhenNonExistentCommentId_ThrowDataNotFound() {
+        Long nonExistentCommentId = 999999L;
+
+        ParkCommentRequest updateRequest = new ParkCommentRequest();
+        updateRequest.setContent("Updated Comment");
+
+        assertThrows(DataNotFoundException.class, () -> parkCommentService.updateComment(nonExistentCommentId, updateRequest, userDetails));
+    }
 }
 

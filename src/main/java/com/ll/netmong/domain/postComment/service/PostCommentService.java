@@ -25,6 +25,4 @@ public interface PostCommentService {
 
     PostCommentResponse updateReply(Long replyId, PostCommentRequest request);
 
-    ReportPostCommentResponse reportComment(Long id, Member member, ReportType reportType);
-
 }

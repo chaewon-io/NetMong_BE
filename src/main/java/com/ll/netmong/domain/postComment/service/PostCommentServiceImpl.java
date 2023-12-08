@@ -36,6 +36,10 @@ public class PostCommentServiceImpl implements PostCommentService {
     private final MemberRepository memberRepository;
     private final ReportPostCommentRepository reportPostCommentRepository;
 
+    public PostComment findByid(Long id) {
+        return postCommentRepository.findById(id).orElseThrow();
+    }
+
     @Override
     @Transactional
     public PostCommentResponse addPostComment(Long postId, PostCommentRequest postCommentRequest, @AuthenticationPrincipal UserDetails userDetails) {
@@ -131,43 +135,6 @@ public class PostCommentServiceImpl implements PostCommentService {
         reply.updateContent(request.getContent());
         PostComment updatedReply = postCommentRepository.save(reply);
         return convertToResponse(updatedReply);
-    }
-
-    @Override
-    @Transactional
-    public ReportPostCommentResponse reportComment(Long id, Member member, ReportType reportType) {
-        PostComment comment = postCommentRepository.findById(id)
-                .orElseThrow(() -> new DataNotFoundException("해당 댓글이 없습니다. id: " + id));
-
-        validateSelfReport(member, comment);
-        validateDuplicateReport(member, comment);
-
-        ReportPostComment report = ReportPostComment.builder()
-                .reportedPostComment(comment)
-                .member(member)
-                .reportType(reportType)
-                .post(comment.getPost())
-                .build();
-        reportPostCommentRepository.save(report);
-
-        comment.increaseReportCount();
-        comment.checkAndBlindComment();
-        postCommentRepository.save(comment);
-
-        return ReportPostCommentResponse.of(comment);
-    }
-
-    private void validateSelfReport(Member reporter, PostComment reportedComment) {
-        if (reportedComment.getMemberID().equals(reporter)) {
-            throw new IllegalArgumentException("자신의 댓글은 신고할 수 없습니다.");
-        }
-    }
-
-    private void validateDuplicateReport(Member member, PostComment comment) {
-        boolean alreadyReported = reportPostCommentRepository.existsByMemberAndReportedPostComment(member, comment);
-        if (alreadyReported) {
-            throw new IllegalArgumentException("이미 신고한 댓글입니다.");
-        }
     }
 
 }

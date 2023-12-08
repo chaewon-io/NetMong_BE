@@ -71,17 +71,4 @@ public class PostCommentController {
         return RsData.successOf(updatedReply);
     }
 
-
-    @PostMapping("/reports/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public RsData<ReportPostCommentResponse> reportComment(@PathVariable Long id,
-                                                   @RequestBody ReportPostCommentRequest requestDto,
-                                                   @AuthenticationPrincipal UserDetails userDetails) {
-        Member member = memberRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new DataNotFoundException("사용자를 찾을 수 없습니다."));
-        ReportPostCommentResponse responseDto = service.reportComment(id, member, requestDto.getReportType());
-
-        return RsData.successOf(responseDto);
-    }
-
 }

@@ -146,6 +146,7 @@ public class PostCommentServiceImpl implements PostCommentService {
                 .reportedPostComment(comment)
                 .member(member)
                 .reportType(reportType)
+                .post(comment.getPost())
                 .build();
         reportPostCommentRepository.save(report);
 

@@ -1,10 +1,9 @@
 package com.ll.netmong.domain.admin.controller;
 
 import com.ll.netmong.common.RsData;
+import com.ll.netmong.domain.admin.dto.reponse.ReportPostCommentDetailsResponse;
 import com.ll.netmong.domain.admin.service.AdminService;
 import com.ll.netmong.domain.reportPost.dto.response.ReportPostResponse;
-import com.ll.netmong.domain.reportPost.entity.ReportPost;
-import com.ll.netmong.domain.reportPost.repository.ReportPostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,9 +18,16 @@ public class AdminController {
 
     private final AdminService adminService;
 
-    @GetMapping("/reports")
+    @GetMapping("/reports/posts")
     public RsData<List<ReportPostResponse>> getReportedPosts() {
         List<ReportPostResponse> reports = adminService.getAllReportPosts();
         return RsData.successOf(reports);
     }
+
+    @GetMapping("/reports/comments")
+    public RsData<List<ReportPostCommentDetailsResponse>> getReportedCommentsDetails() {
+        List<ReportPostCommentDetailsResponse> reports = adminService.getAllReportedComments();
+        return RsData.successOf(reports);
+    }
+
 }

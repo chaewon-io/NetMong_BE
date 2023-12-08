@@ -2,6 +2,7 @@ package com.ll.netmong.domain.post.controller;
 
 import com.ll.netmong.common.PageResponse;
 import com.ll.netmong.common.RsData;
+import com.ll.netmong.domain.hashtag.service.HashtagService;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.member.service.MemberService;
 import com.ll.netmong.domain.post.dto.request.PostRequest;
@@ -32,6 +33,7 @@ import java.util.UUID;
 public class PostController {
     private final PostService postService;
     private final MemberService memberService;
+    private final HashtagService hashtagService;
 
     @Value("${spring.servlet.multipart.location}")
     private String postImagePath;
@@ -65,6 +67,7 @@ public class PostController {
 
         Post createdPost = postService.uploadPost(postRequest, foundMember, foundUsername);
         PostResponse postResponse = new PostResponse(createdPost);
+        hashtagService.saveHashtag(postRequest);
 
         return RsData.of("S-1", "게시물이 업로드되었습니다.", postResponse);
     }

@@ -63,5 +63,4 @@ public class Post extends BaseEntity {
         like.setPost(null);
         this.likesCount--;  // 좋아요 수 감소
     }
-
 }

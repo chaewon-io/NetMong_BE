@@ -167,5 +167,20 @@ public class ParkCommentServiceImplTest {
 
         assertThrows(DataNotFoundException.class, () -> parkCommentService.updateComment(nonExistentCommentId, updateRequest, userDetails));
     }
+
+    @Test
+    @DisplayName("deleteComment() 메서드는 댓글을 논리 삭제하며, 존재하지 않는 댓글에 대해서는 DataNotFoundException을 발생시킨다.")
+    void DeleteComment() {
+        ParkCommentRequest parkCommentRequest = new ParkCommentRequest();
+        parkCommentRequest.setContent("Test Comment");
+
+        ParkCommentResponse comment = parkCommentService.addParkComment(parkId, parkCommentRequest, userDetails);
+
+        parkCommentService.deleteComment(comment.getId(), userDetails);
+
+        ParkComment deletedComment = parkCommentRepository.findById(comment.getId())
+                .orElseThrow(() -> new DataNotFoundException("해당 댓글이 없습니다. id: " + comment.getId()));
+        assertTrue(deletedComment.getIsDeleted());
+    }
 }
 

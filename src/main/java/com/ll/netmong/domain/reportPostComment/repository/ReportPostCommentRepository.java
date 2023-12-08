@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ReportPostCommentRepository extends JpaRepository<ReportPostComment, Long> {
     boolean existsByMemberAndReportedPostComment(Member member, PostComment comment);
+
 }

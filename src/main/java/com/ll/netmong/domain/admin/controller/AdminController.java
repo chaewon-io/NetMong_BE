@@ -1,7 +1,7 @@
 package com.ll.netmong.domain.admin.controller;
 
 import com.ll.netmong.common.RsData;
-import com.ll.netmong.domain.admin.dto.reponse.ReportPostCommentDetailsResponse;
+import com.ll.netmong.domain.admin.dto.reponse.AdminReportPostCommentResponse;
 import com.ll.netmong.domain.admin.service.AdminService;
 import com.ll.netmong.domain.reportPost.dto.response.ReportPostResponse;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +25,8 @@ public class AdminController {
     }
 
     @GetMapping("/reports/comments")
-    public RsData<List<ReportPostCommentDetailsResponse>> getReportedCommentsDetails() {
-        List<ReportPostCommentDetailsResponse> reports = adminService.getAllReportedComments();
+    public RsData<List<AdminReportPostCommentResponse>> getReportedCommentsDetails() {
+        List<AdminReportPostCommentResponse> reports = adminService.getAllReportedComments();
         return RsData.successOf(reports);
     }
 

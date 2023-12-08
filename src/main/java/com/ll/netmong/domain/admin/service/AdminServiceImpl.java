@@ -1,6 +1,7 @@
 package com.ll.netmong.domain.admin.service;
 
-import com.ll.netmong.domain.admin.dto.reponse.ReportPostCommentDetailsResponse;
+import com.ll.netmong.domain.admin.dto.reponse.AdminReportPostCommentResponse;
+import com.ll.netmong.domain.postComment.entity.PostComment;
 import com.ll.netmong.domain.postComment.repository.PostCommentRepository;
 import com.ll.netmong.domain.reportPost.dto.response.ReportPostResponse;
 import com.ll.netmong.domain.reportPost.entity.ReportPost;
@@ -11,7 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -33,10 +37,16 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<ReportPostCommentDetailsResponse> getAllReportedComments() {
+    public List<AdminReportPostCommentResponse> getAllReportedComments() {
         List<ReportPostComment> reportedComments = reportPostCommentRepository.findAll();
-        return reportedComments.stream()
-                .map(ReportPostCommentDetailsResponse::of)
-                .collect(Collectors.toList());
+
+        Map<Long, AdminReportPostCommentResponse> commentsMap = new HashMap<>();
+        for (ReportPostComment report : reportedComments) {
+            AdminReportPostCommentResponse response = AdminReportPostCommentResponse.of(report);
+            commentsMap.put(response.getId(), response);
+        }
+
+        return new ArrayList<>(commentsMap.values());
     }
+
 }

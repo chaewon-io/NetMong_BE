@@ -14,6 +14,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
@@ -84,7 +87,7 @@ public class ParkCommentServiceImplTest {
 
     @Test
     @DisplayName("addParkComment() 메서드는 userDetails의 유저가 없을 경우 DataNotFoundException을 발생시킨다.")
-    void AddParkComment_When_FindByUsername_ThrowDataNotFound() {
+    void AddParkComment_WhenFindByUsername_ThrowDataNotFound() {
         ParkCommentRequest parkCommentRequest = new ParkCommentRequest();
         parkCommentRequest.setContent("Test Comment");
         UserDetails invalidUserDetails = User.withUsername("invalidUser").password("testPassword").authorities("USER").build();
@@ -92,6 +95,50 @@ public class ParkCommentServiceImplTest {
         assertThrows(DataNotFoundException.class, () -> {
             parkCommentService.addParkComment(parkId, parkCommentRequest, invalidUserDetails);
         });
+    }
+
+    @Test
+    @DisplayName("getCommentsOfPark() 메서드는 해당 공원의 댓글 페이징 처리를 검증한다.")
+    void GetCommentsOfPark() {
+        ParkCommentRequest parkCommentRequest = new ParkCommentRequest();
+        parkCommentRequest.setContent("Test Comment");
+
+        // 5개 댓글 추가
+        for (int i = 0; i < 5; i++) {
+            parkCommentService.addParkComment(parkId, parkCommentRequest, userDetails);
+        }
+
+        // 페이지에 댓글 3개 요청
+        Pageable pageable = PageRequest.of(0, 3);
+
+        Page<ParkCommentResponse> comments = parkCommentService.getCommentsOfPark(parkId, pageable);
+
+        assertEquals(5, comments.getTotalElements());
+        assertEquals(3, comments.getContent().size());
+    }
+
+    @Test
+    @DisplayName("getCommentsOfPark() 메서드는 논리 삭제된 댓글의 반환값을 보고 제공한다.")
+    void GetCommentsOfPark_WhenFindByParkIdAndIsDeletedFalse() {
+        ParkCommentRequest parkCommentRequest = new ParkCommentRequest();
+        parkCommentRequest.setContent("Test Comment");
+
+        // 5개 댓글 추가 후 2개 논리 삭제
+        for (int i = 0; i < 5; i++) {
+            ParkCommentResponse comment = parkCommentService.addParkComment(parkId, parkCommentRequest, userDetails);
+            if (i < 2) {
+                parkCommentService.deleteComment(comment.getId(), userDetails);
+            }
+        }
+
+        // 페이지에 댓글 10개 요청
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Page<ParkCommentResponse> comments = parkCommentService.getCommentsOfPark(parkId, pageable);
+
+        // 논리적으로 삭제되지 않은 댓글 : 3개, 첫 페이지 댓글 수 : 3개
+        assertEquals(3, comments.getTotalElements());
+        assertEquals(3, comments.getContent().size());
     }
 }
 

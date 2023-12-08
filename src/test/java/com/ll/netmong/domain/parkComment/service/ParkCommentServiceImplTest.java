@@ -45,6 +45,7 @@ public class ParkCommentServiceImplTest {
     private Member member;
     private UserDetails userDetails;
     private Long parkId;
+    private ParkCommentRequest parkCommentRequest;
 
     @BeforeEach
     void setUp() {
@@ -56,14 +57,14 @@ public class ParkCommentServiceImplTest {
         userDetails = User.withUsername(username).password("testPassword").authorities("USER").build();
         member = Member.builder().username(username).build();
         memberRepository.save(member);
+
+        parkCommentRequest = new ParkCommentRequest();
+        parkCommentRequest.setContent("Test Comment");
     }
 
     @Test
     @DisplayName("addParkComment() 메서드는 댓글을 추가하고 저장한다.")
     void AddParkComment() {
-        ParkCommentRequest parkCommentRequest = new ParkCommentRequest();
-        parkCommentRequest.setContent("Test Comment");
-
         ParkCommentResponse result = parkCommentService.addParkComment(parkId, parkCommentRequest, userDetails);
 
         ParkComment savedComment = parkCommentRepository.findById(result.getId())
@@ -77,8 +78,6 @@ public class ParkCommentServiceImplTest {
     @DisplayName("addParkComment() 메서드는 parkId에 해당하는 공원이 없을 경우 DataNotFoundException을 발생시킨다.")
     void AddParkComment_WhenFindById_ThrowDataNotFound() {
         Long invalidParkId = -1L;
-        ParkCommentRequest parkCommentRequest = new ParkCommentRequest();
-        parkCommentRequest.setContent("Test Comment");
 
         assertThrows(DataNotFoundException.class, () -> {
             parkCommentService.addParkComment(invalidParkId, parkCommentRequest, userDetails);
@@ -88,8 +87,6 @@ public class ParkCommentServiceImplTest {
     @Test
     @DisplayName("addParkComment() 메서드는 userDetails의 유저가 없을 경우 DataNotFoundException을 발생시킨다.")
     void AddParkComment_WhenFindByUsername_ThrowDataNotFound() {
-        ParkCommentRequest parkCommentRequest = new ParkCommentRequest();
-        parkCommentRequest.setContent("Test Comment");
         UserDetails invalidUserDetails = User.withUsername("invalidUser").password("testPassword").authorities("USER").build();
 
         assertThrows(DataNotFoundException.class, () -> {
@@ -100,9 +97,6 @@ public class ParkCommentServiceImplTest {
     @Test
     @DisplayName("getCommentsOfPark() 메서드는 해당 공원의 댓글 페이징 처리를 검증한다.")
     void GetCommentsOfPark() {
-        ParkCommentRequest parkCommentRequest = new ParkCommentRequest();
-        parkCommentRequest.setContent("Test Comment");
-
         // 5개 댓글 추가
         for (int i = 0; i < 5; i++) {
             parkCommentService.addParkComment(parkId, parkCommentRequest, userDetails);
@@ -120,9 +114,6 @@ public class ParkCommentServiceImplTest {
     @Test
     @DisplayName("getCommentsOfPark() 메서드는 논리 삭제된 댓글의 반환값을 보고 제공한다.")
     void GetCommentsOfPark_WhenFindByParkIdAndIsDeletedFalse() {
-        ParkCommentRequest parkCommentRequest = new ParkCommentRequest();
-        parkCommentRequest.setContent("Test Comment");
-
         // 5개 댓글 추가 후 2개 논리 삭제
         for (int i = 0; i < 5; i++) {
             ParkCommentResponse comment = parkCommentService.addParkComment(parkId, parkCommentRequest, userDetails);
@@ -144,9 +135,6 @@ public class ParkCommentServiceImplTest {
     @Test
     @DisplayName("updateComment() 메서드는 댓글의 내용을 수정한다.")
     void UpdateComment() {
-        ParkCommentRequest parkCommentRequest = new ParkCommentRequest();
-        parkCommentRequest.setContent("Test Comment");
-
         ParkCommentResponse comment = parkCommentService.addParkComment(parkId, parkCommentRequest, userDetails);
 
         ParkCommentRequest updateRequest = new ParkCommentRequest();
@@ -171,9 +159,6 @@ public class ParkCommentServiceImplTest {
     @Test
     @DisplayName("deleteComment() 메서드는 댓글을 논리 삭제하며, 존재하지 않는 댓글에 대해서는 DataNotFoundException을 발생시킨다.")
     void DeleteComment() {
-        ParkCommentRequest parkCommentRequest = new ParkCommentRequest();
-        parkCommentRequest.setContent("Test Comment");
-
         ParkCommentResponse comment = parkCommentService.addParkComment(parkId, parkCommentRequest, userDetails);
 
         parkCommentService.deleteComment(comment.getId(), userDetails);

@@ -39,6 +39,14 @@ public class PostController {
     @Value("${domain}")
     String  domain;
 
+    @GetMapping("/search")
+    public RsData postsSearch(@RequestParam String category, @RequestParam String searchWord, @RequestParam(defaultValue = "1") int page) {
+        Pageable pageRequest = PageRequest.of(page - 1, 5);
+        Page<PostResponse> postsSearch = postService.searchPostsByCategory(category, searchWord, pageRequest);
+
+        return RsData.successOf(new PageResponse<>(postsSearch));
+    }
+
     @GetMapping("/view")
     public RsData postsViewByPage(@RequestParam(defaultValue = "1") int page) {
         Pageable pageRequest = PageRequest.of(page - 1, 5);

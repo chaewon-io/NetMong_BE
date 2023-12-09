@@ -65,7 +65,7 @@ public class MemberController {
     }
 
     @PostMapping("/follow")
-    public RsData follow(UsernameRequest usernameRequest, @AuthenticationPrincipal UserDetails userDetails) throws Exception {
+    public RsData follow(@RequestBody UsernameRequest usernameRequest, @AuthenticationPrincipal UserDetails userDetails) throws Exception {
 
         //팔로우 하는 사람
         String followerName = userDetails.getUsername();
@@ -73,13 +73,18 @@ public class MemberController {
 
         //팔로우 받는 사람
         Member followee = memberService.findByUsername(usernameRequest.getUsername());
+
+        if (followerName.equals(usernameRequest.getUsername())) {
+            return RsData.failOf("follow 실패");
+        }
+
         followService.follow(follower, followee);
 
         return RsData.successOf("follow 성공");
     }
 
     @PostMapping("/unfollow")
-    public RsData unfollow(UsernameRequest usernameRequest, @AuthenticationPrincipal UserDetails userDetails) throws Exception {
+    public RsData unfollow(@RequestBody UsernameRequest usernameRequest, @AuthenticationPrincipal UserDetails userDetails) throws Exception {
 
         //언팔로우 하는 사람
         String followerName = userDetails.getUsername();

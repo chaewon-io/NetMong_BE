@@ -117,7 +117,7 @@ public class PostController {
         return RsData.successOf(new PageResponse<>(myPosts));
     }
 
-    @GetMapping("/{username}")
+    @GetMapping("/member/{username}")
     @ResponseStatus(HttpStatus.OK)
     public RsData<PageResponse<PostResponse>> viewMemberWrittenPosts(@PathVariable String username, @RequestParam(defaultValue = "1") int page) throws Exception {
 

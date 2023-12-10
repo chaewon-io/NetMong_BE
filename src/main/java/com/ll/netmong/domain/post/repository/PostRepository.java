@@ -14,4 +14,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Page<Post> findByMemberIdAndDeleteDateIsNullOrderByCreateDateDesc(@Param("memberId") Long memberId, Pageable pageable);
 
+    Long countByMemberIdAndDeleteDateIsNull(@Param("memberId") Long memberId);
 }

@@ -105,6 +105,8 @@ public class MemberController {
 
         FollowCountDto followCountDto = followService.countFollowerAndFollowee(pathMember);
         Boolean following = followService.isFollowing(loginMember, pathMember);
-        return RsData.successOf(new MemberDetailDto(following, followCountDto.getFollowerCount(), followCountDto.getFolloweeCount()));
+
+        Long postCount = memberService.countPostsByUsername(username);
+        return RsData.successOf(new MemberDetailDto(following, followCountDto.getFollowerCount(), followCountDto.getFolloweeCount(), postCount));
     }
 }

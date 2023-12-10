@@ -25,4 +25,9 @@ public class MemberRepositoryImpl implements MemberRepository{
     public Optional<Member> findByUsername(String username) {
         return memberJpaRepository.findByUsername(username);
     }
+
+    @Override
+    public Long countPostsByMemberUsername(String username) {
+        return memberJpaRepository.countPostsByMemberUsername(username);
+    }
 }

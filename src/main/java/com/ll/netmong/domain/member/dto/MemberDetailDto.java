@@ -11,4 +11,5 @@ public class MemberDetailDto {
     private boolean isFollowing;
     private Long followerCount;
     private Long followeeCount;
+    private Long postCount;
 }

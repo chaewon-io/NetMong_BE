@@ -3,6 +3,9 @@ package com.ll.netmong.domain.hashtag.service;
 import com.ll.netmong.domain.hashtag.entity.Hashtag;
 import com.ll.netmong.domain.hashtag.repository.HashtagRepository;
 import com.ll.netmong.domain.post.dto.request.PostRequest;
+import com.ll.netmong.domain.post.entity.Post;
+import com.ll.netmong.domain.postHashtag.entity.PostHashtag;
+import com.ll.netmong.domain.postHashtag.repository.PostHashtagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,10 +20,11 @@ import java.util.regex.Pattern;
 @Transactional(readOnly = true)
 public class HashtagServiceImpl implements HashtagService {
     private final HashtagRepository hashtagRepository;
+    private final PostHashtagRepository postHashtagRepository;
 
     @Override
     @Transactional
-    public List<Hashtag> saveHashtag(PostRequest postRequest) {
+    public List<Hashtag> saveHashtag(PostRequest postRequest, Post post) {
         List<String> tags = parsingContent(postRequest.getContent());
         List<Hashtag> hashtags = new ArrayList<>();
 
@@ -29,6 +33,8 @@ public class HashtagServiceImpl implements HashtagService {
                     .orElseGet(() -> hashtagRepository.save(new Hashtag(tag)));
 
             hashtags.add(hashtag);
+
+            postHashtagRepository.save(new PostHashtag(post, hashtag));
         }
 
         return hashtags;

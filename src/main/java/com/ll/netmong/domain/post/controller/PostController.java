@@ -67,7 +67,7 @@ public class PostController {
 
         Post createdPost = postService.uploadPost(postRequest, foundMember, foundUsername);
         PostResponse postResponse = new PostResponse(createdPost);
-        hashtagService.saveHashtag(postRequest);
+        hashtagService.saveHashtag(postRequest, createdPost);
 
         return RsData.of("S-1", "게시물이 업로드되었습니다.", postResponse);
     }

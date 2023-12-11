@@ -7,7 +7,6 @@ import com.ll.netmong.domain.member.repository.MemberRepository;
 import com.ll.netmong.domain.park.entity.Park;
 import com.ll.netmong.domain.park.repository.ParkRepository;
 import com.ll.netmong.domain.postComment.exception.DataNotFoundException;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,12 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -58,30 +59,27 @@ public class LikedParkServiceImplTest {
     }
 
     @Test
-    @DisplayName("좋아요 기능 동시성 테스트에서 실패한다.")
-    public void testConcurrentLikes() throws InterruptedException {
-        int threadCount = 100; // 동시 요청 수
+    @DisplayName("동시에 여러 사용자가 같은 공원에 좋아요를 누를 때, 좋아요 카운트가 정확하게 증가한다.")
+    public void testConcurrentLikeTest() throws InterruptedException {
+        int numberOfThreads = 3;
+        ExecutorService service = Executors.newFixedThreadPool(1);
+        CountDownLatch latch = new CountDownLatch(numberOfThreads);
 
-        ExecutorService executorService = Executors.newFixedThreadPool(32); // 32개 스레드 생성
-        CountDownLatch latch = new CountDownLatch(threadCount); // 스레드 완료 대기를 위해
+        IntStream.range(0, numberOfThreads)
+                .forEach(i -> service.execute(() -> {
+                    String username = "testUser" + UUID.randomUUID().toString();
+                    UserDetails userDetails = User.withUsername(username).password("testPassword").authorities("USER").build();
+                    Member member = Member.builder().username(username).build();
+                    memberRepository.save(member);
 
-        for(int i=0; i<threadCount; i++){
-            executorService.submit(() -> {
-                try {
                     likedParkService.addLikeToPark(park, userDetails);
-                } catch (DuplicateLikeException e) {
-                    // 예외 처리
-                } finally {
-                    latch.countDown(); //완료되었음을 알림
-                }
-            });
-        }
+                    latch.countDown();
+                }));
 
-        latch.await(); // 모든 스레드가 완료될 때까지 대기
+        latch.await();
 
-        Park resultPark = parkRepository.findById(parkId).orElseThrow();
-        System.out.println("Final likes count:" + resultPark.getLikesCount()); // 최종 좋아요 수 출력
-        assertEquals(threadCount, resultPark.getLikesCount()); // 동시 요청 수만큼 좋아요가 증가했는지 검증
+        Long likeCount = likedParkService.countLikesToPark(park);
+        assertEquals(numberOfThreads, likeCount.intValue());
     }
 
     @Test

@@ -1,18 +1,14 @@
 package com.ll.netmong.domain.postComment.service;
 
-import com.ll.netmong.common.ReportType;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.member.repository.MemberRepository;
 import com.ll.netmong.domain.postComment.dto.response.PostCommentResponse;
-import com.ll.netmong.domain.postComment.dto.response.ReportPostCommentResponse;
 import com.ll.netmong.domain.postComment.exception.DataNotFoundException;
 import com.ll.netmong.domain.post.entity.Post;
 import com.ll.netmong.domain.post.repository.PostRepository;
 import com.ll.netmong.domain.postComment.dto.request.PostCommentRequest;
 import com.ll.netmong.domain.postComment.entity.PostComment;
 import com.ll.netmong.domain.postComment.repository.PostCommentRepository;
-import com.ll.netmong.domain.reportPostComment.repository.ReportPostCommentRepository;
-import com.ll.netmong.domain.reportPostComment.entity.ReportPostComment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,7 +30,6 @@ public class PostCommentServiceImpl implements PostCommentService {
     private final PostCommentRepository postCommentRepository;
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
-    private final ReportPostCommentRepository reportPostCommentRepository;
 
     public PostComment findByid(Long id) {
         return postCommentRepository.findById(id).orElseThrow();

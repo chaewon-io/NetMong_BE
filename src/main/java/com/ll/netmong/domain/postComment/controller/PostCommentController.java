@@ -1,15 +1,10 @@
 package com.ll.netmong.domain.postComment.controller;
 
 import com.ll.netmong.common.RsData;
-import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.member.repository.MemberRepository;
 import com.ll.netmong.domain.postComment.dto.request.PostCommentRequest;
 import com.ll.netmong.common.PageResponse;
-import com.ll.netmong.domain.postComment.dto.request.ReportPostCommentRequest;
 import com.ll.netmong.domain.postComment.dto.response.PostCommentResponse;
-import com.ll.netmong.domain.postComment.dto.response.ReportPostCommentResponse;
-import com.ll.netmong.domain.postComment.entity.PostComment;
-import com.ll.netmong.domain.postComment.exception.DataNotFoundException;
 import com.ll.netmong.domain.postComment.service.PostCommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;

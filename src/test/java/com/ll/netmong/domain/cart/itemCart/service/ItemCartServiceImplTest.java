@@ -27,7 +27,7 @@ public class ItemCartServiceImplTest {
         product = Product.builder().productName("강아지 사료")
                 .price("25_000")
                 .content("유통기한 1년 남은 사료입니다.")
-                .count(20)
+                .count(1000)
                 .category(Category.PET_FEED)
                 .status("Y")
                 .build();
@@ -36,7 +36,7 @@ public class ItemCartServiceImplTest {
 
     @Test
     public void 동시에_20개_요청() throws InterruptedException {
-        int threadCount = 20;
+        int threadCount = 1000;
 
         ExecutorService executorService = Executors.newFixedThreadPool(20);
         CountDownLatch latch = new CountDownLatch(threadCount);

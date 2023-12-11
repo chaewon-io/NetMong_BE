@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 public class PostCommentController {
 
     private final PostCommentService service;
-    private final MemberRepository memberRepository;
 
     @PostMapping("/{postId}")
     @ResponseStatus(HttpStatus.CREATED)

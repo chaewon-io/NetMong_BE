@@ -18,6 +18,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -52,6 +55,33 @@ public class LikedParkServiceImplTest {
         userDetails = User.withUsername(username).password("testPassword").authorities("USER").build();
         member = Member.builder().username(username).build();
         memberRepository.save(member);
+    }
+
+    @Test
+    @DisplayName("좋아요 기능 동시성 테스트에서 실패한다.")
+    public void testConcurrentLikes() throws InterruptedException {
+        int threadCount = 100; // 동시 요청 수
+
+        ExecutorService executorService = Executors.newFixedThreadPool(32); // 32개 스레드 생성
+        CountDownLatch latch = new CountDownLatch(threadCount); // 스레드 완료 대기를 위해
+
+        for(int i=0; i<threadCount; i++){
+            executorService.submit(() -> {
+                try {
+                    likedParkService.addLikeToPark(park, userDetails);
+                } catch (DuplicateLikeException e) {
+                    // 예외 처리
+                } finally {
+                    latch.countDown(); //완료되었음을 알림
+                }
+            });
+        }
+
+        latch.await(); // 모든 스레드가 완료될 때까지 대기
+
+        Park resultPark = parkRepository.findById(parkId).orElseThrow();
+        System.out.println("Final likes count:" + resultPark.getLikesCount()); // 최종 좋아요 수 출력
+        assertEquals(threadCount, resultPark.getLikesCount()); // 동시 요청 수만큼 좋아요가 증가했는지 검증
     }
 
     @Test

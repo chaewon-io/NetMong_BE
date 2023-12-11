@@ -116,9 +116,6 @@ public class ReportServiceImpl implements ReportService {
         List<ReportComment> reportedComments = reportCommentRepository.findAll();
 
         return reportedComments.stream()
-                .collect(Collectors.toCollection(() ->
-                        new TreeSet<>(Comparator.comparing(ReportComment::getId))))
-                .stream()
                 .map(ReportCommentResponse::new)
                 .collect(Collectors.toList());
     }

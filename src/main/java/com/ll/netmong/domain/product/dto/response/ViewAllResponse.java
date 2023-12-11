@@ -8,6 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ViewAllResponse {
+    private Long productId;
     private String productName;
     private String price;
     private String content;
@@ -15,6 +16,7 @@ public class ViewAllResponse {
     private Category category;
 
     public ViewAllResponse(Product product) {
+        this.productId = product.getId();
         this.productName = product.getProductName();
         this.price = product.getPrice();
         this.content = product.getContent();

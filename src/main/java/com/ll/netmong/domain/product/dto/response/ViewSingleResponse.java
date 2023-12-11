@@ -8,14 +8,12 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ViewSingleResponse {
-    private Long productId;
     private String productName;
     private String price;
     private String content;
     private Category category;
 
     public ViewSingleResponse(Product product) {
-        this.productId = product.getId();
         this.productName = product.getProductName();
         this.price = product.getPrice();
         this.content = product.getContent();

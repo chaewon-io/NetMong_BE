@@ -1,4 +1,4 @@
-package com.ll.netmong.common;
+package com.ll.netmong.domain.reports.util;
 
 public enum ReportType {
     ABUSE("욕설"),

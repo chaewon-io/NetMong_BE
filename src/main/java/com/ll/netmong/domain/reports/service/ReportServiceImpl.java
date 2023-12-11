@@ -23,6 +23,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -95,6 +100,27 @@ public class ReportServiceImpl implements ReportService {
     private Member getMember(UserDetails userDetails) {
         return memberRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new DataNotFoundException("사용자를 찾을 수 없습니다."));
+    }
+
+    @Override
+    public List<ReportPostResponse> getReportedPosts() {
+        List<ReportPost> reportedPosts = reportPostRepository.findAll();
+
+        return reportedPosts.stream()
+                .map(ReportPostResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ReportCommentResponse> getReportedComments() {
+        List<ReportComment> reportedComments = reportCommentRepository.findAll();
+
+        return reportedComments.stream()
+                .collect(Collectors.toCollection(() ->
+                        new TreeSet<>(Comparator.comparing(ReportComment::getId))))
+                .stream()
+                .map(ReportCommentResponse::new)
+                .collect(Collectors.toList());
     }
 
 }

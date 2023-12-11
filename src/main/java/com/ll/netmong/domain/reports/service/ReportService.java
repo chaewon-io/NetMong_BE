@@ -6,7 +6,11 @@ import com.ll.netmong.domain.reports.dto.response.ReportPostResponse;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.List;
+
 public interface ReportService {
     ReportPostResponse reportPost(ReportRequest reportRequest, Long postId, UserDetails userDetails);
     ReportCommentResponse reportComment(ReportRequest reportRequest, Long commentId, UserDetails userDetails);
+    List<ReportPostResponse> getReportedPosts();
+    List<ReportCommentResponse> getReportedComments();
 }

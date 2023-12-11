@@ -1,5 +1,6 @@
 package com.ll.netmong.domain.reports.service;
 
+import com.ll.netmong.common.BaseEntity;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.member.repository.MemberRepository;
 import com.ll.netmong.domain.post.entity.Post;
@@ -12,6 +13,8 @@ import com.ll.netmong.domain.reports.dto.response.ReportCommentResponse;
 import com.ll.netmong.domain.reports.dto.response.ReportPostResponse;
 import com.ll.netmong.domain.reports.entity.ReportComment;
 import com.ll.netmong.domain.reports.entity.ReportPost;
+import com.ll.netmong.domain.reports.exception.DuplicateReportException;
+import com.ll.netmong.domain.reports.exception.InvalidReportException;
 import com.ll.netmong.domain.reports.repository.ReportCommentRepository;
 import com.ll.netmong.domain.reports.repository.ReportPostRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,8 +40,15 @@ public class ReportServiceImpl implements ReportService {
         Post reportedPost = postRepository.findById(postId)
                 .orElseThrow(() -> new DataNotFoundException("해당하는 게시물을 찾을 수 없습니다."));
 
-        Member reporter = memberRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new DataNotFoundException("사용자를 찾을 수 없습니다."));
+        Member reporter = getMember(userDetails);
+
+        if (reportedPost.getMember().equals(reporter)) {
+            throw new InvalidReportException("자신의 게시물에 대한 신고는 허용되지 않습니다.");
+        }
+
+        if (reportPostRepository.existsByReporterAndReportedPost(reporter, reportedPost)) {
+            throw new DuplicateReportException("이미 신고한 게시물에 대한 중복 신고는 허용되지 않습니다.");
+        }
 
         ReportPost reportPost = ReportPost.builder()
                 .reporter(reporter)
@@ -53,12 +63,19 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     @Transactional
-    public ReportCommentResponse reportComment(ReportRequest reportRequest, Long commentId, @AuthenticationPrincipal UserDetails userDetails) {
+    public ReportCommentResponse reportComment(ReportRequest reportRequest, Long commentId, UserDetails userDetails) {
         PostComment reportedComment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new DataNotFoundException("해당하는 댓글을 찾을 수 없습니다."));
 
-        Member reporter = memberRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new DataNotFoundException("사용자를 찾을 수 없습니다."));
+        Member reporter = getMember(userDetails);
+
+        if (reportedComment.getMemberID().equals(reporter)) {
+            throw new InvalidReportException("자신의 게시물에 대한 신고는 허용되지 않습니다.");
+        }
+
+        if (reportCommentRepository.existsByReporterAndReportedComment(reporter, reportedComment)) {
+            throw new DuplicateReportException("이미 신고한 게시물에 대한 중복 신고는 허용되지 않습니다.");
+        }
 
         ReportComment reportComment = ReportComment.builder()
                 .reporter(reporter)
@@ -73,6 +90,11 @@ public class ReportServiceImpl implements ReportService {
         reportedComment.checkAndBlindComment();
 
         return new ReportCommentResponse(reportComment);
+    }
+
+    private Member getMember(UserDetails userDetails) {
+        return memberRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new DataNotFoundException("사용자를 찾을 수 없습니다."));
     }
 
 }

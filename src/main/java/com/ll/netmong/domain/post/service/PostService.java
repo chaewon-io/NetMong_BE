@@ -15,7 +15,7 @@ public interface PostService {
     Page<PostResponse> viewPostsByPage(Pageable pageable);
     Post uploadPost(PostRequest postRequest, Member foundMember, String foundUsername);
     PostResponse getDetail(long id, UserDetails userDetails);
-    void deletePost(Long id, String foundUsername);
+    void deletePost(Long postId, String foundUsername);
     void updatePost(Long id, PostRequest updatedPostRequest, String foundUsername);
 
     List<PostResponse> viewMyPosts(Long memberId);

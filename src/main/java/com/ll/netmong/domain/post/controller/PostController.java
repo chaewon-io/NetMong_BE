@@ -9,6 +9,7 @@ import com.ll.netmong.domain.post.dto.request.PostRequest;
 import com.ll.netmong.domain.post.dto.response.PostResponse;
 import com.ll.netmong.domain.post.entity.Post;
 import com.ll.netmong.domain.post.service.PostService;
+import com.ll.netmong.domain.postHashtag.service.PostHashtagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -34,6 +35,7 @@ public class PostController {
     private final PostService postService;
     private final MemberService memberService;
     private final HashtagService hashtagService;
+    private final PostHashtagService postHashtagService;
 
     @Value("${spring.servlet.multipart.location}")
     private String postImagePath;
@@ -80,13 +82,14 @@ public class PostController {
         return RsData.of("S-1", "해당 게시물의 상세 내용입니다.", postResponse);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{postId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public RsData postDelete(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) throws Exception {
+    public RsData postDelete(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long postId) throws Exception {
         Member foundMember = memberService.findByUsername(userDetails.getUsername());
         String foundUsername = foundMember.getUsername();
 
-        postService.deletePost(id, foundUsername);
+        postService.deletePost(postId, foundUsername);
+        postHashtagService.deleteHashtag(postId);
 
         return RsData.of("S-1", "해당 게시물이 삭제되었습니다.");
     }

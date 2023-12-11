@@ -77,12 +77,12 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void deletePost(Long id, String foundUsername) {
-        Post post = postRepository.findById(id)
+    public void deletePost(Long postId, String foundUsername) {
+        Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("포스트를 찾을 수 없습니다."));
 
         if (post.getWriter().equals(foundUsername)) {
-            postRepository.deleteById(id);
+            postRepository.deleteById(postId);
         } else {
             throw new PermissionDeniedException("해당 포스트에 대한 삭제 권한이 없습니다.");
         }

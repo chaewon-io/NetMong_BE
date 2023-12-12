@@ -1,12 +1,15 @@
 package com.ll.netmong.domain.park.service;
 
 import com.ll.netmong.base.config.ApiKeys;
-
+import com.ll.netmong.domain.likePark.repository.LikedParkRepository;
+import com.ll.netmong.domain.member.entity.Member;
+import com.ll.netmong.domain.member.repository.MemberRepository;
 import com.ll.netmong.domain.park.dto.response.ParkResponse;
 import com.ll.netmong.domain.park.entity.Park;
 import com.ll.netmong.domain.park.repository.ParkRepository;
-import jakarta.annotation.PostConstruct;
+import com.ll.netmong.domain.postComment.exception.DataNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
@@ -21,7 +24,6 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,6 +35,8 @@ public class ParkServiceImpl implements ParkService {
 
     private final ParkRepository parkRepository;
     private final ApiKeys apikeys;
+    private final LikedParkRepository likedParkRepository;
+    private final MemberRepository memberRepository;
 
 // 실제 배포 시 활성화
 //    @PostConstruct
@@ -68,11 +72,19 @@ public class ParkServiceImpl implements ParkService {
     }
 
     @Override
-    public ParkResponse getPark(Long parkId) {
+    public ParkResponse getPark(Long parkId, UserDetails userDetails) {
         Park park = parkRepository.findById(parkId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 공원이 존재하지 않습니다: " + parkId));
 
-        return park.toResponse();
+        Member member = memberRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new DataNotFoundException("사용자를 찾을 수 없습니다."));
+
+        boolean isLiked = likedParkRepository.existsByMemberAndPark(member, park);
+
+        ParkResponse parkResponse = park.toResponse();
+        parkResponse.setIsLiked(isLiked);
+
+        return parkResponse;
     }
 
     @Override
@@ -168,5 +180,4 @@ public class ParkServiceImpl implements ParkService {
                 .city(city)
                 .build();
     }
-
 }

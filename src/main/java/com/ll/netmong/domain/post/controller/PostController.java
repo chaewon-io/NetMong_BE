@@ -38,6 +38,14 @@ public class PostController {
     @Value("${domain}")
     String  domain;
 
+    @GetMapping("/search")
+    public RsData postsSearch(@RequestParam String category, @RequestParam String searchWord, @RequestParam(defaultValue = "1") int page) {
+        Pageable pageRequest = PageRequest.of(page - 1, 5);
+        Page<PostResponse> postsSearch = postService.searchPostsByCategory(category, searchWord, pageRequest);
+
+        return RsData.successOf(new PageResponse<>(postsSearch));
+    }
+
     @GetMapping("/view")
     public RsData postsViewByPage(@RequestParam(defaultValue = "1") int page) {
         Pageable pageRequest = PageRequest.of(page - 1, 5);
@@ -62,8 +70,8 @@ public class PostController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public RsData postDetail(@PathVariable long id) {
-        PostResponse postResponse = postService.getDetail(id);
+    public RsData postDetail(@PathVariable long id, @AuthenticationPrincipal UserDetails userDetails) {
+        PostResponse postResponse = postService.getDetail(id, userDetails);
 
         return RsData.of("S-1", "해당 게시물의 상세 내용입니다.", postResponse);
     }

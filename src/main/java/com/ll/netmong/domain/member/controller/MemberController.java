@@ -2,6 +2,7 @@ package com.ll.netmong.domain.member.controller;
 
 import com.ll.netmong.base.jwt.TokenDto;
 import com.ll.netmong.common.RsData;
+import com.ll.netmong.domain.cart.service.CartService;
 import com.ll.netmong.domain.follow.dto.FollowCountDto;
 import com.ll.netmong.domain.follow.service.FollowService;
 import com.ll.netmong.domain.member.dto.*;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
+    private final CartService cartService;
     private final FollowService followService;
 
     @GetMapping("/find")
@@ -27,9 +29,10 @@ public class MemberController {
     }
 
     @PostMapping("/join")
-    public RsData<String> join(@Valid @RequestBody JoinRequest joinRequest) {
+    public RsData<String> join(@Valid @RequestBody JoinRequest joinRequest) throws Exception {
 
         String username = memberService.createMember(joinRequest).getUsername();
+        cartService.createCart(memberService.findByUsername(joinRequest.getUsername()));
 
         return RsData.successOf(username);
     }

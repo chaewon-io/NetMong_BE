@@ -46,6 +46,11 @@ public class FakeMemberRepository implements MemberRepository {
     }
 
     @Override
+    public Boolean existsByUsername(String username) {
+        return data.stream().anyMatch(member -> member.getUsername().equals(username));
+    }
+
+    @Override
     public Long countPostsByMemberUsername(String username) {
         return null;
     }

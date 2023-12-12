@@ -4,6 +4,8 @@ import com.ll.netmong.common.RsData;
 import com.ll.netmong.domain.park.dto.response.ParkResponse;
 import com.ll.netmong.domain.park.service.ParkService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,10 +29,9 @@ public class ParkController {
         return RsData.successOf("공원 정보가 성공적으로 저장되었습니다.");
     }
 
-    // Id로 조회 필요 없을 시 삭제 예정
     @GetMapping("/{parkId}")
-    public RsData<ParkResponse> getPark(@PathVariable Long parkId) {
-        ParkResponse park = parkService.getPark(parkId);
+    public RsData<ParkResponse> getPark(@PathVariable Long parkId, @AuthenticationPrincipal UserDetails userDetails) {
+        ParkResponse park = parkService.getPark(parkId, userDetails);
         return RsData.successOf(park);
     }
 

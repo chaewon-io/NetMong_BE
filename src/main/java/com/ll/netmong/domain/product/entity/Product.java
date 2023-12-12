@@ -5,24 +5,24 @@ import com.ll.netmong.domain.image.entity.Image;
 import com.ll.netmong.domain.product.dto.request.UpdateRequest;
 import com.ll.netmong.domain.product.util.Category;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
+@DynamicInsert
 @Table(name = "product")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuperBuilder(toBuilder = true)
-@SQLDelete(sql = "UPDATE product SET deleted_at = CURRENT_TIMESTAMP where id = ?")
+@Where(clause = "status = 'Y'")
+@SQLDelete(sql = "UPDATE product SET status = 'N' where id = ?")
 public class Product extends BaseEntity {
     @Column(name = "product_name")
     private String productName;
@@ -35,14 +35,15 @@ public class Product extends BaseEntity {
     private String content;
 
     @Column(name = "product_count")
+    @Setter
     private Integer count;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "product_category")
     private Category category;
 
-    @Column(name = "deleted_at")
-    private String deleteDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
+    @ColumnDefault("'Y'")
+    private String status;
 
     @OneToMany(
             mappedBy = "product",
@@ -65,6 +66,5 @@ public class Product extends BaseEntity {
         this.count = updateRequest.getCount();
         this.content = updateRequest.getContent();
         this.category = updateRequest.getCategory();
-
     }
 }

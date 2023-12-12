@@ -27,6 +27,11 @@ public class MemberRepositoryImpl implements MemberRepository{
     }
 
     @Override
+    public Boolean existsByUsername(String admin) {
+        return memberJpaRepository.existsByUsername(admin);
+    }
+
+    @Override
     public Long countPostsByMemberUsername(String username) {
         return memberJpaRepository.countPostsByMemberUsername(username);
     }

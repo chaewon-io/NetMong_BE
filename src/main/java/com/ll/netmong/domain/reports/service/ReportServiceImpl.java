@@ -29,9 +29,6 @@ public class ReportServiceImpl implements ReportService {
 
     private final ReportPostRepository reportPostRepository;
     private final ReportCommentRepository reportCommentRepository;
-    private final PostRepository postRepository;
-    private final PostCommentRepository commentRepository;
-    private final MemberRepository memberRepository;
 
     @Override
     @Transactional

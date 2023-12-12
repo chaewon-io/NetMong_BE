@@ -132,4 +132,9 @@ public class PostCommentServiceImpl implements PostCommentService {
         return convertToResponse(updatedReply);
     }
 
+    @Override
+    public PostComment findByCommentId(Long commentId) {
+        return postCommentRepository.findById(commentId)
+                .orElseThrow(() -> new DataNotFoundException("해당하는 댓글을 찾을 수 없습니다."));
+    }
 }

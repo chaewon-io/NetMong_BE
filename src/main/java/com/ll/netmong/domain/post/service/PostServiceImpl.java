@@ -114,4 +114,11 @@ public class PostServiceImpl implements PostService {
                 .map(PostResponse::new)
                 .toList();
     }
+
+    @Override
+    public Post findByPostId(Long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new DataNotFoundException("해당하는 게시물을 찾을 수 없습니다."));
+    }
+
 }

@@ -41,12 +41,7 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     @Transactional
-    public ReportPostResponse reportPost(ReportRequest reportRequest, Long postId, UserDetails userDetails) {
-        Post reportedPost = postRepository.findById(postId)
-                .orElseThrow(() -> new DataNotFoundException("해당하는 게시물을 찾을 수 없습니다."));
-
-        Member reporter = getMember(userDetails);
-
+    public ReportPostResponse reportPost(ReportRequest reportRequest, Post reportedPost, Member reporter) {
         if (reportedPost.getMember().equals(reporter)) {
             throw new InvalidReportException("자신의 게시물에 대한 신고는 허용되지 않습니다.");
         }
@@ -68,12 +63,7 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     @Transactional
-    public ReportCommentResponse reportComment(ReportRequest reportRequest, Long commentId, UserDetails userDetails) {
-        PostComment reportedComment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new DataNotFoundException("해당하는 댓글을 찾을 수 없습니다."));
-
-        Member reporter = getMember(userDetails);
-
+    public ReportCommentResponse reportComment(ReportRequest reportRequest, PostComment reportedComment, Member reporter) {
         if (reportedComment.getMemberID().equals(reporter)) {
             throw new InvalidReportException("자신의 게시물에 대한 신고는 허용되지 않습니다.");
         }
@@ -95,11 +85,6 @@ public class ReportServiceImpl implements ReportService {
         reportedComment.checkAndBlindComment();
 
         return new ReportCommentResponse(reportComment);
-    }
-
-    private Member getMember(UserDetails userDetails) {
-        return memberRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new DataNotFoundException("사용자를 찾을 수 없습니다."));
     }
 
     @Override

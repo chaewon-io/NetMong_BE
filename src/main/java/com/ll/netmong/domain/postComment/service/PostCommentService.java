@@ -2,6 +2,7 @@ package com.ll.netmong.domain.postComment.service;
 
 import com.ll.netmong.domain.postComment.dto.request.PostCommentRequest;
 import com.ll.netmong.domain.postComment.dto.response.PostCommentResponse;
+import com.ll.netmong.domain.postComment.entity.PostComment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,4 +21,5 @@ public interface PostCommentService {
 
     PostCommentResponse updateReply(Long replyId, PostCommentRequest request);
 
+    PostComment findByCommentId(Long commentId);
 }

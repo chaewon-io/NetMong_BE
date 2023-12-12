@@ -3,6 +3,7 @@ package com.ll.netmong.domain.cart.service;
 import com.ll.netmong.common.ProductException;
 import com.ll.netmong.domain.cart.dto.request.ProductCountRequest;
 import com.ll.netmong.domain.cart.entity.Cart;
+import com.ll.netmong.domain.cart.itemCart.entity.ItemCart;
 import com.ll.netmong.domain.cart.itemCart.service.ItemCartService;
 import com.ll.netmong.domain.cart.repository.CartRepository;
 import com.ll.netmong.domain.member.entity.Member;
@@ -10,6 +11,8 @@ import com.ll.netmong.domain.product.util.ProductErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +31,15 @@ public class CartServiceImpl implements CartService {
     @Override
     @Transactional
     public void addProductByCart(String findByMemberName, Long productId, ProductCountRequest productCountRequest) {
-        itemCartService.addProductByCart(validateExistMember(findByMemberName), productId, productCountRequest);
+        Cart cart = validateExistMember(findByMemberName);
+
+        Optional<ItemCart> findItemCart = Optional.ofNullable(itemCartService.getItemCart(cart, productId));
+
+        if (findItemCart.isEmpty()) {
+            itemCartService.addToCartForNewProduct(cart, productId, productCountRequest);
+            return;
+        }
+        itemCartService.addToCartForExistingProduct(findItemCart.get(), cart, productCountRequest);
     }
 
     private Cart validateExistMember(String findByMemberName) {

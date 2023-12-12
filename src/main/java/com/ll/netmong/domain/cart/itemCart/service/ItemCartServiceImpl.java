@@ -30,17 +30,6 @@ public class ItemCartServiceImpl implements ItemCartService {
     private final TransactionTemplate transactionTemplate;
 
     @Override
-    public void addProductByCart(Cart cart, Long productId, ProductCountRequest productCountRequest) {
-        ItemCart findItemCart = itemCartRepository.findByCartIdAndProductId(cart.getId(), productId);
-
-        if (findItemCart == null) {
-            addToCartForNewProduct(cart, productId, productCountRequest);
-            return;
-        }
-        addToCartForExistingProduct(findItemCart, cart, productCountRequest);
-    }
-
-    @Override
     public List<ViewCartResponse> readMemberCartByUser(String findMemberName) {
         List<ItemCart> findItemCart = itemCartRepository.findAll();
         List<ViewCartResponse> memberProducts = new ArrayList<>();
@@ -59,15 +48,22 @@ public class ItemCartServiceImpl implements ItemCartService {
         return memberProducts;
     }
 
-    public void addToCartForNewProduct(Cart cart, Long productId, ProductCountRequest productCountRequest) {
-        Product product = productService.getProduct(productId);
-        cart.addCount(productCountRequest.getCount());
-        ItemCart itemCart = ItemCart.createItemCart(cart, product, productCountRequest.getCount());
-        removeStock(productId, productCountRequest.getCount());
-        itemCartRepository.saveAndFlush(itemCart);
 
+    @Override
+    public ItemCart getItemCart(Cart cart, Long productId) {
+        return itemCartRepository.findByCartIdAndProductId(cart.getId(), productId);
     }
 
+    @Override
+    public void addToCartForNewProduct(Cart cart, Long productId, ProductCountRequest productCountRequest) {
+        Product product = productService.getProduct(productId);
+        removeStock(productId, productCountRequest.getCount());
+        cart.addCount(productCountRequest.getCount());
+        ItemCart itemCart = ItemCart.createItemCart(cart, product, productCountRequest.getCount());
+        itemCartRepository.save(itemCart);
+    }
+
+    @Override
     public void addToCartForExistingProduct(ItemCart findItemCart, Cart cart, ProductCountRequest productCountRequest) {
         Long productId = findItemCart.getProduct().getId();
         removeStock(productId, productCountRequest.getCount());

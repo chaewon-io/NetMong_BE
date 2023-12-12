@@ -1,9 +1,8 @@
 package com.ll.netmong.domain.postComment.controller;
 
-import com.ll.netmong.common.RsData;
-import com.ll.netmong.domain.member.repository.MemberRepository;
-import com.ll.netmong.domain.postComment.dto.request.PostCommentRequest;
 import com.ll.netmong.common.PageResponse;
+import com.ll.netmong.common.RsData;
+import com.ll.netmong.domain.postComment.dto.request.PostCommentRequest;
 import com.ll.netmong.domain.postComment.dto.response.PostCommentResponse;
 import com.ll.netmong.domain.postComment.service.PostCommentService;
 import jakarta.validation.Valid;

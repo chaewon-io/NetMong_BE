@@ -1,9 +1,9 @@
 package com.ll.netmong.domain.reports.entity;
 
 import com.ll.netmong.common.BaseEntity;
-import com.ll.netmong.domain.reports.util.ReportType;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.postComment.entity.PostComment;
+import com.ll.netmong.domain.reports.util.ReportType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

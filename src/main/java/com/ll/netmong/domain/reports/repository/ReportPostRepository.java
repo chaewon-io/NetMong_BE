@@ -1,6 +1,5 @@
 package com.ll.netmong.domain.reports.repository;
 
-import com.ll.netmong.common.BaseEntity;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.post.entity.Post;
 import com.ll.netmong.domain.reports.entity.ReportPost;

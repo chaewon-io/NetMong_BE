@@ -1,11 +1,8 @@
 package com.ll.netmong.domain.reports.service;
 
 import com.ll.netmong.domain.member.entity.Member;
-import com.ll.netmong.domain.member.repository.MemberRepository;
 import com.ll.netmong.domain.post.entity.Post;
-import com.ll.netmong.domain.post.repository.PostRepository;
 import com.ll.netmong.domain.postComment.entity.PostComment;
-import com.ll.netmong.domain.postComment.repository.PostCommentRepository;
 import com.ll.netmong.domain.reports.dto.request.ReportRequest;
 import com.ll.netmong.domain.reports.dto.response.ReportCommentResponse;
 import com.ll.netmong.domain.reports.dto.response.ReportPostResponse;

@@ -1,12 +1,10 @@
 package com.ll.netmong.domain.reports.service;
 
-import com.ll.netmong.common.BaseEntity;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.member.repository.MemberRepository;
 import com.ll.netmong.domain.post.entity.Post;
 import com.ll.netmong.domain.post.repository.PostRepository;
 import com.ll.netmong.domain.postComment.entity.PostComment;
-import com.ll.netmong.domain.postComment.exception.DataNotFoundException;
 import com.ll.netmong.domain.postComment.repository.PostCommentRepository;
 import com.ll.netmong.domain.reports.dto.request.ReportRequest;
 import com.ll.netmong.domain.reports.dto.response.ReportCommentResponse;
@@ -18,14 +16,10 @@ import com.ll.netmong.domain.reports.exception.InvalidReportException;
 import com.ll.netmong.domain.reports.repository.ReportCommentRepository;
 import com.ll.netmong.domain.reports.repository.ReportPostRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 @Service

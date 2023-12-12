@@ -19,4 +19,5 @@ public interface PostService {
     void updatePost(Long id, PostRequest updatedPostRequest, String foundUsername);
 
     List<PostResponse> viewMyPosts(Long memberId);
+    Post findByPostId(Long postId);
 }

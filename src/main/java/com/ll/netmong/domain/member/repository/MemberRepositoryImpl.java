@@ -25,4 +25,9 @@ public class MemberRepositoryImpl implements MemberRepository{
     public Optional<Member> findByUsername(String username) {
         return memberJpaRepository.findByUsername(username);
     }
+
+    @Override
+    public Boolean existsByUsername(String admin) {
+        return memberJpaRepository.existsByUsername(admin);
+    }
 }

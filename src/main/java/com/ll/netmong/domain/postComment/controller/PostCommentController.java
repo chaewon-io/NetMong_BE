@@ -1,10 +1,10 @@
 package com.ll.netmong.domain.postComment.controller;
 
 import com.ll.netmong.common.RsData;
+import com.ll.netmong.domain.member.repository.MemberRepository;
 import com.ll.netmong.domain.postComment.dto.request.PostCommentRequest;
 import com.ll.netmong.common.PageResponse;
 import com.ll.netmong.domain.postComment.dto.response.PostCommentResponse;
-import com.ll.netmong.domain.postComment.entity.PostComment;
 import com.ll.netmong.domain.postComment.service.PostCommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -52,15 +52,15 @@ public class PostCommentController {
 
     @PostMapping("/{commentId}/reply")
     @ResponseStatus(HttpStatus.CREATED)
-    public RsData<PostComment> addReplyToComment(@PathVariable Long commentId, @RequestBody PostCommentRequest request, UserDetails userDetails) {
-        PostComment childComment = service.addReplyToComment(commentId, request, userDetails);
+    public RsData<PostCommentResponse> addReplyToComment(@PathVariable Long commentId, @RequestBody PostCommentRequest request, @AuthenticationPrincipal UserDetails userDetails) {
+        PostCommentResponse childComment = service.addReplyToComment(commentId, request, userDetails);
         return RsData.successOf(childComment);
     }
 
     @PatchMapping("/replies/{replyId}")
     @ResponseStatus(HttpStatus.OK)
-    public RsData<PostComment> updateReply(@PathVariable Long replyId, @RequestBody PostCommentRequest request) {
-        PostComment updatedReply = service.updateReply(replyId, request);
+    public RsData<PostCommentResponse> updateReply(@PathVariable Long replyId, @RequestBody PostCommentRequest request) {
+        PostCommentResponse updatedReply = service.updateReply(replyId, request);
         return RsData.successOf(updatedReply);
     }
 

@@ -1,8 +1,9 @@
-package com.ll.netmong.domain.reportPost.repository;
+package com.ll.netmong.domain.reports.repository;
 
+import com.ll.netmong.common.BaseEntity;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.post.entity.Post;
-import com.ll.netmong.domain.reportPost.entity.ReportPost;
+import com.ll.netmong.domain.reports.entity.ReportPost;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

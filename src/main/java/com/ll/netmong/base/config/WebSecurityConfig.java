@@ -44,6 +44,7 @@ public class WebSecurityConfig {
                                          "/api/v1/members/dup-username"
 
                         ).permitAll()
+                        .requestMatchers("/api/v1/admin/**").hasAnyRole("ADMIN")
                         .anyRequest().authenticated()
                 )
 

@@ -35,7 +35,7 @@ public class ItemCartServiceImplTest {
     }
 
     @Test
-    public void 동시에_20개_요청() throws InterruptedException {
+    public void 동시에_1000개_요청() throws InterruptedException {
         int threadCount = 1000;
 
         ExecutorService executorService = Executors.newFixedThreadPool(20);

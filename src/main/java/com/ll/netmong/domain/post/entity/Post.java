@@ -4,6 +4,7 @@ import com.ll.netmong.common.BaseEntity;
 import com.ll.netmong.domain.likedPost.entity.LikedPost;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.postComment.entity.PostComment;
+import com.ll.netmong.domain.postHashtag.entity.PostHashtag;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -63,4 +64,7 @@ public class Post extends BaseEntity {
         like.setPost(null);
         this.likesCount--;  // 좋아요 수 감소
     }
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<PostHashtag> names = new ArrayList<>();
 }

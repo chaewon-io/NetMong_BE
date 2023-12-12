@@ -31,6 +31,12 @@ public class PostServiceImpl implements PostService {
     private final MemberRepository memberRepository;
 
     @Override
+    public Page<PostResponse> searchPostsByHashtag (String hashtag, Pageable pageable) {
+        Page<Post> postsHashtag = postRepository.findByHashtagName(hashtag, pageable);
+        return postsHashtag.map(PostResponse::postsView);
+    }
+
+    @Override
     public Page<PostResponse> searchPostsByCategory(String category, String searchWord, Pageable pageable) {
         Map<String, BiFunction<String, Pageable, Page<Post>>> searchByCategory = new HashMap<>(); //BiFunction<String, Pageable, Page<Post>> - String, Pageable 매개변수를 받아 Page<Post> 반환
         searchByCategory.put("작성자", (word, page) -> postRepository.findByWriterContaining(word, page));

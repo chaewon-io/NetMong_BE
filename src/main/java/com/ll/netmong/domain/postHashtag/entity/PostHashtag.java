@@ -26,11 +26,11 @@ public class PostHashtag extends BaseEntity {
     private Hashtag hashtag;
 
     @Column(name = "hashtag_name")
-    private String hashtagName;
+    private String name;
 
     public PostHashtag(Post post, Hashtag hashtag) {
         this.post = post;
         this.hashtag = hashtag;
-        this.hashtagName = hashtag.getName();
+        this.name = hashtag.getName();
     }
 }

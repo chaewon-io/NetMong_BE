@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.List;
 
 public interface PostService {
+    Page<PostResponse> searchPostsByHashtag (String hashtag, Pageable pageable);
     Page<PostResponse> searchPostsByCategory(String category, String searchWord, Pageable pageable);
     Page<PostResponse> viewPostsByPage(Pageable pageable);
     Post uploadPost(PostRequest postRequest, Member foundMember, String foundUsername);

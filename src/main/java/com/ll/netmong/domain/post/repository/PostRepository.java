@@ -4,6 +4,7 @@ import com.ll.netmong.domain.post.entity.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
@@ -17,4 +18,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Page<Post> findByWriterContaining(String searchWord, Pageable pageable);
     Page<Post> findByContentContaining(String searchWord, Pageable pageable);
+
+    @Query("SELECT p FROM Post p JOIN p.names ph WHERE ph.name = :hashtag")
+    Page<Post> findByHashtagName(@Param("hashtag") String hashtag, Pageable pageable);
 }

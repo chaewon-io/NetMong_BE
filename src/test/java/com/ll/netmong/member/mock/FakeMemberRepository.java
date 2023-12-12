@@ -44,4 +44,9 @@ public class FakeMemberRepository implements MemberRepository {
     public Optional<Member> findByUsername(String username) {
         return data.stream().filter(i->i.getUsername().equals(username)).findAny();
     }
+
+    @Override
+    public Long countPostsByMemberUsername(String username) {
+        return null;
+    }
 }

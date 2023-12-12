@@ -42,4 +42,8 @@ public class FollowService {
     public Boolean isFollowing(Member loginMember, Member foundMember) {
         return followRepository.findByFollowerAndFollowee(loginMember, foundMember).isPresent();
     }
+
+    public Follow findById(long id) {
+        return followRepository.findById(id).orElseThrow(() -> new NotFollowedException("팔로우 중인 상태가 아닙니다."));
+    }
 }

@@ -83,7 +83,7 @@ public class LikedParkServiceImplTest {
         };
 
         // '좋아요' 1000번
-        for(int i=0; i<1000; i++) {
+        for (int i = 0; i < 1000; i++) {
             executorService.submit(likeTask);
         }
 
@@ -123,12 +123,12 @@ public class LikedParkServiceImplTest {
         };
 
         // '좋아요' 작업을 60번 실행함
-        for(int i=0; i<60; i++) {
+        for (int i = 0; i < 60; i++) {
             executorService.submit(likeTask);
         }
 
         // '좋아요 취소' 작업을 40번 실행함
-        for(int i=0; i<40; i++) {
+        for (int i = 0; i < 40; i++) {
             executorService.submit(dislikeTask);
         }
 

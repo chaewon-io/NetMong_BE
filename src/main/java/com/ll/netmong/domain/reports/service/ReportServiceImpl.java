@@ -53,11 +53,11 @@ public class ReportServiceImpl implements ReportService {
     @Transactional
     public ReportCommentResponse reportComment(ReportRequest reportRequest, PostComment reportedComment, Member reporter) {
         if (reportedComment.getMemberID().equals(reporter)) {
-            throw new InvalidReportException("자신의 게시물에 대한 신고는 허용되지 않습니다.");
+            throw new InvalidReportException("자신의 댓글에 대한 신고는 허용되지 않습니다.");
         }
 
         if (reportCommentRepository.existsByReporterAndReportedComment(reporter, reportedComment)) {
-            throw new DuplicateReportException("이미 신고한 게시물에 대한 중복 신고는 허용되지 않습니다.");
+            throw new DuplicateReportException("이미 신고한 댓글에 대한 중복 신고는 허용되지 않습니다.");
         }
 
         ReportComment reportComment = ReportComment.builder()

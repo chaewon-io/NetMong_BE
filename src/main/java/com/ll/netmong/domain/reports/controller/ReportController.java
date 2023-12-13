@@ -11,10 +11,15 @@ import com.ll.netmong.domain.reports.dto.request.ReportRequest;
 import com.ll.netmong.domain.reports.dto.response.ReportCommentResponse;
 import com.ll.netmong.domain.reports.dto.response.ReportPostResponse;
 import com.ll.netmong.domain.reports.service.ReportService;
+import com.ll.netmong.domain.reports.util.ReportType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,5 +46,13 @@ public class ReportController {
         ReportCommentResponse reportCommentResponse = reportService.reportComment(reportRequest, reportedComment, reporter);
 
         return RsData.successOf(reportCommentResponse);
+    }
+
+    @GetMapping("/types")
+    public RsData<List<String>> getReportTypes() {
+        List<String> reportTypes = Arrays.stream(ReportType.values())
+                .map(Enum::name)
+                .collect(Collectors.toList());
+        return RsData.successOf(reportTypes);
     }
 }

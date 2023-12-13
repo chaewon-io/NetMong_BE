@@ -69,6 +69,81 @@ public class LikedParkServiceImplTest {
     }
 
     @Test
+    @DisplayName("여러 스레드에서 동시에 같은 공원에 '좋아요'를 누르는 상황에서, 이로 인해 OptimisticLockingFailureException가 발생한다.")
+    public void testConcurrentLikes3() {
+        ExecutorService executorService = Executors.newFixedThreadPool(20);
+
+        // '좋아요'를 누르는 작업을 정의
+        Runnable likeTask = () -> {
+            String username = "testUser" + UUID.randomUUID().toString();
+            UserDetails userDetails = User.withUsername(username).password("testPassword").authorities("USER").build();
+
+            assertThatThrownBy(() -> likedParkService.addLikeToPark(park, userDetails))
+                    .isInstanceOf(OptimisticLockingFailureException.class);
+        };
+
+        // '좋아요' 1000번
+        for(int i=0; i<1000; i++) {
+            executorService.submit(likeTask);
+        }
+
+        // 모든 작업이 완료될 때까지 대기
+        executorService.shutdown();
+        try {
+            if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+                // 60초 동안 작업이 완료되지 않으면 에러를 출력하고 종료
+                executorService.shutdownNow();
+            }
+        } catch (InterruptedException ex) {
+            executorService.shutdownNow();
+        }
+    }
+
+    @Test
+    @DisplayName("여러 스레드에서 동시에 같은 공원에 '좋아요'를 누르고 취소하는 상황에서, 이로 인해 OptimisticLockingFailureException가 발생한다.")
+    public void testConcurrentLikesAndDislikes() {
+        ExecutorService executorService = Executors.newFixedThreadPool(100);
+
+        // '좋아요'를 누르는 작업을 정의
+        Runnable likeTask = () -> {
+            String username = "testUser" + UUID.randomUUID().toString();
+            UserDetails userDetails = User.withUsername(username).password("testPassword").authorities("USER").build();
+
+            assertThatThrownBy(() -> likedParkService.addLikeToPark(park, userDetails))
+                    .isInstanceOf(OptimisticLockingFailureException.class);
+        };
+
+        // '좋아요'를 취소하는 작업을 정의
+        Runnable dislikeTask = () -> {
+            String username = "testUser" + UUID.randomUUID().toString();
+            UserDetails userDetails = User.withUsername(username).password("testPassword").authorities("USER").build();
+
+            assertThatThrownBy(() -> likedParkService.removeLikeFromPark(park, userDetails))
+                    .isInstanceOf(OptimisticLockingFailureException.class);
+        };
+
+        // '좋아요' 작업을 60번 실행함
+        for(int i=0; i<60; i++) {
+            executorService.submit(likeTask);
+        }
+
+        // '좋아요 취소' 작업을 40번 실행함
+        for(int i=0; i<40; i++) {
+            executorService.submit(dislikeTask);
+        }
+
+        // 모든 작업이 완료될 때까지 대기
+        executorService.shutdown();
+        try {
+            if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+                executorService.shutdownNow();
+            }
+        } catch (InterruptedException ex) {
+            executorService.shutdownNow();
+        }
+    }
+
+    @Test
     @DisplayName("addLikeToPark() 메서드는 해당 공원, userDetails를 통해 좋아요를 추가하고 저장한다.")
     void testAddLikeToPark() {
         likedParkService.addLikeToPark(park, userDetails);

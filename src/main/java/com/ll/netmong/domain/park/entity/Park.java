@@ -48,6 +48,9 @@ public class Park extends BaseEntity {
 
     @OneToMany(mappedBy = "park", cascade = CascadeType.ALL)
     private List<LikedPark> likedParks = new ArrayList<>();
+    @Builder.Default
+    @Column(name = "likes_count", nullable = false)
+    private Long likesCount = 0L;
 
     public ParkResponse toResponse() {
         return ParkResponse.builder()
@@ -67,10 +70,6 @@ public class Park extends BaseEntity {
         this.comments.add(comment);
         comment.setPark(this);
     }
-
-    @Builder.Default
-    @Column(name = "likes_count", nullable = false)
-    private Long likesCount = 0L;
 
     public void addLikeToPark(LikedPark like) {
         this.likedParks.add(like);

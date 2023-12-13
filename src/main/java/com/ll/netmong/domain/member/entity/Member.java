@@ -1,7 +1,10 @@
 package com.ll.netmong.domain.member.entity;
 
 import com.ll.netmong.common.BaseEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -35,11 +38,11 @@ public class Member extends BaseEntity {
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
 
         // 모든 멤버는 member 권한을 가진다.
-        grantedAuthorities.add(new SimpleGrantedAuthority("member"));
+        grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_MEMBER"));
 
         // username이 admin인 회원은 추가로 admin 권한도 가진다.
         if ("admin".equals(username)) {
-            grantedAuthorities.add(new SimpleGrantedAuthority("admin"));
+            grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
         }
 
         return grantedAuthorities;

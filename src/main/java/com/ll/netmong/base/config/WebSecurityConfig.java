@@ -41,9 +41,10 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                         .requestMatchers("/api/v1/members/login",
                                 "/api/v1/members/join", "/images/**", "/api/v1/products/**",
-                                         "/api/v1/members/dup-username"
+                                "/api/v1/members/dup-username"
 
                         ).permitAll()
+                        .requestMatchers("/api/v1/admin/**").hasAnyRole("ADMIN")
                         .anyRequest().authenticated()
                 )
 

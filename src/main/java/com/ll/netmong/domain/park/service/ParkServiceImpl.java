@@ -1,7 +1,6 @@
 package com.ll.netmong.domain.park.service;
 
 import com.ll.netmong.base.config.ApiKeys;
-
 import com.ll.netmong.domain.likePark.repository.LikedParkRepository;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.member.repository.MemberRepository;
@@ -25,7 +24,6 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;

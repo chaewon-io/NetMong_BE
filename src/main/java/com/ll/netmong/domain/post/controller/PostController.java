@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -38,6 +37,14 @@ public class PostController {
 
     @Value("${domain}")
     String  domain;
+
+    @GetMapping("/search")
+    public RsData postsSearch(@RequestParam String category, @RequestParam String searchWord, @RequestParam(defaultValue = "1") int page) {
+        Pageable pageRequest = PageRequest.of(page - 1, 5);
+        Page<PostResponse> postsSearch = postService.searchPostsByCategory(category, searchWord, pageRequest);
+
+        return RsData.successOf(new PageResponse<>(postsSearch));
+    }
 
     @GetMapping("/view")
     public RsData postsViewByPage(@RequestParam(defaultValue = "1") int page) {
@@ -109,11 +116,23 @@ public class PostController {
 
     @GetMapping("/my-posts")
     @ResponseStatus(HttpStatus.OK)
-    public RsData<List<PostResponse>> viewMyPage(@AuthenticationPrincipal UserDetails userDetails) throws Exception {
+    public RsData<PageResponse<PostResponse>> viewMyPage(@RequestParam(defaultValue = "1") int page, @AuthenticationPrincipal UserDetails userDetails) throws Exception {
         String username = userDetails.getUsername();
         Long memberId = memberService.findByUsername(username).getId();
 
-        List<PostResponse> myPosts = postService.viewMyPosts(memberId);
-        return RsData.successOf(myPosts);
+        Pageable pageRequest = PageRequest.of(page - 1, 5);
+        Page<PostResponse> myPosts = postService.viewPostsByMemberId(memberId, pageRequest);
+        return RsData.successOf(new PageResponse<>(myPosts));
+    }
+
+    @GetMapping("/member/{username}")
+    @ResponseStatus(HttpStatus.OK)
+    public RsData<PageResponse<PostResponse>> viewMemberWrittenPosts(@PathVariable String username, @RequestParam(defaultValue = "1") int page) throws Exception {
+
+        Long memberId = memberService.findByUsername(username).getId();
+
+        Pageable pageRequest = PageRequest.of(page - 1, 5);
+        Page<PostResponse> myPosts = postService.viewPostsByMemberId(memberId, pageRequest);
+        return RsData.successOf(new PageResponse<>(myPosts));
     }
 }

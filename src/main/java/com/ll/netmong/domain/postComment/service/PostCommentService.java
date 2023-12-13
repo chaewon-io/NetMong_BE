@@ -7,8 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.List;
-
 public interface PostCommentService {
 
     PostCommentResponse addPostComment(Long postId, PostCommentRequest postCommentRequest, UserDetails userDetails);
@@ -19,9 +17,9 @@ public interface PostCommentService {
 
     Page<PostCommentResponse> getCommentsOfPost(Long postId, Pageable pageable);
 
-    PostComment addReplyToComment(Long commentId, PostCommentRequest request, UserDetails userDetails);
+    PostCommentResponse addReplyToComment(Long commentId, PostCommentRequest request, UserDetails userDetails);
 
+    PostCommentResponse updateReply(Long replyId, PostCommentRequest request);
 
-    PostComment updateReply(Long replyId, PostCommentRequest request);
-
+    PostComment findByCommentId(Long commentId);
 }

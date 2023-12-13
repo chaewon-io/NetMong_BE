@@ -1,12 +1,15 @@
 package com.ll.netmong.domain.product.controller;
 
 import com.ll.netmong.common.PageResponse;
+import com.ll.netmong.common.ProductException;
 import com.ll.netmong.common.RsData;
 import com.ll.netmong.domain.product.dto.request.CreateRequest;
 import com.ll.netmong.domain.product.dto.request.UpdateRequest;
 import com.ll.netmong.domain.product.dto.response.ViewAllResponse;
 import com.ll.netmong.domain.product.dto.response.ViewSingleResponse;
 import com.ll.netmong.domain.product.service.ProductService;
+import com.ll.netmong.domain.product.util.Category;
+import com.ll.netmong.domain.product.util.ProductErrorCode;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -42,6 +46,23 @@ public class ProductController {
     public RsData findByProduct(@PathVariable(name = "id") Long productId) {
         ViewSingleResponse viewSingleProduct = productService.findByProduct(productId);
         return RsData.of("S-1", FIND_SUCCESS_PRODUCT, viewSingleProduct);
+    }
+
+    @GetMapping("/category/{category}")
+    public RsData findByProductCategory(@PathVariable(name = "category") String category) {
+        List<ViewAllResponse> viewAllByProductCategory = new ArrayList<>();
+        try {
+            viewAllByProductCategory.addAll(productService.findByProductCategory(Category.valueOf(category)));
+        } catch (IllegalArgumentException e) {
+            throw new ProductException("카테고리가 지정되지 않았습니다.", ProductErrorCode.NOT_EXIST_PRODUCT_CATEGORY);
+        }
+
+        return RsData.successOf(viewAllByProductCategory);
+    }
+
+    @GetMapping("/name/{name}")
+    public RsData findByProductName(@PathVariable(name = "name") String name) {
+        return RsData.successOf(productService.findByProductName(name));
     }
 
     @GetMapping("/all")

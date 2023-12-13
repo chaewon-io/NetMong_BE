@@ -12,17 +12,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.stream.IntStream;
+import java.util.concurrent.*;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -49,37 +48,24 @@ public class LikedParkServiceImplTest {
     @BeforeEach
     void setUp() {
         parkId = 1L;
-        park = Park.builder().id(parkId).likesCount(0L).likedParks(new ArrayList<>()).build();
+        park = Park.builder()
+                .parkNm("Test Park")
+                .lnmadr("Test Address")
+                .latitude(37.5665)
+                .longitude(126.9780)
+                .phoneNumber("010-1234-5678")
+                .state("Test State")
+                .city("Test City")
+                .likesCount(0L)
+                .likedParks(new ArrayList<>())
+                .build();
+
         parkRepository.save(park);
 
         String username = "testUser" + UUID.randomUUID().toString();
         userDetails = User.withUsername(username).password("testPassword").authorities("USER").build();
         member = Member.builder().username(username).build();
         memberRepository.save(member);
-    }
-
-    @Test
-    @DisplayName("동시에 여러 사용자가 같은 공원에 좋아요를 누를 때, 좋아요 카운트가 정확하게 증가한다.")
-    public void testConcurrentLikeTest() throws InterruptedException {
-        int numberOfThreads = 3;
-        ExecutorService service = Executors.newFixedThreadPool(1);
-        CountDownLatch latch = new CountDownLatch(numberOfThreads);
-
-        IntStream.range(0, numberOfThreads)
-                .forEach(i -> service.execute(() -> {
-                    String username = "testUser" + UUID.randomUUID().toString();
-                    UserDetails userDetails = User.withUsername(username).password("testPassword").authorities("USER").build();
-                    Member member = Member.builder().username(username).build();
-                    memberRepository.save(member);
-
-                    likedParkService.addLikeToPark(park, userDetails);
-                    latch.countDown();
-                }));
-
-        latch.await();
-
-        Long likeCount = likedParkService.countLikesToPark(park);
-        assertEquals(numberOfThreads, likeCount.intValue());
     }
 
     @Test

@@ -22,7 +22,7 @@ public class HashtagServiceImpl implements HashtagService {
     private final HashtagRepository hashtagRepository;
     private final PostHashtagRepository postHashtagRepository;
 
-    private final Pattern pattern = Pattern.compile("#(\\S+)");
+    private static final Pattern CONTENT_PATTERN = Pattern.compile("#(\\S+)");
 
     @Override
     @Transactional
@@ -43,7 +43,7 @@ public class HashtagServiceImpl implements HashtagService {
     }
 
     public List<String> parsingContent(String content) {
-        Matcher matcher = pattern.matcher(content);
+        Matcher matcher = CONTENT_PATTERN.matcher(content);
         List<String> tags = new ArrayList<>();
 
         while (matcher.find()) {

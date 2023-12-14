@@ -30,6 +30,12 @@ public class PostServiceImpl implements PostService {
     private final MemberRepository memberRepository;
 
     @Override
+    public Page<PostResponse> searchPostsByHashtag (String hashtag, Pageable pageable) {
+        Page<Post> postsHashtag = postRepository.findByHashtagName(hashtag, pageable);
+        return postsHashtag.map(PostResponse::postsView);
+    }
+
+    @Override
     public Page<PostResponse> searchPostsByCategory(String category, String searchWord, Pageable pageable) {
         Map<String, BiFunction<String, Pageable, Page<Post>>> searchByCategory = new HashMap<>(); //BiFunction<String, Pageable, Page<Post>> - String, Pageable 매개변수를 받아 Page<Post> 반환
         searchByCategory.put("작성자", (word, page) -> postRepository.findByWriterContaining(word, page));
@@ -61,14 +67,14 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostResponse getDetail(long id, UserDetails userDetails) {
-        Post post = postRepository.findById(id)
+        Post originPost = postRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("포스트를 찾을 수 없습니다."));
 
         Member member = memberRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new DataNotFoundException("사용자를 찾을 수 없습니다."));
-        boolean isLiked = likedPostRepository.existsByMemberAndPost(member, post);
+        boolean isLiked = likedPostRepository.existsByMemberAndPost(member, originPost);
 
-        PostResponse postResponse = new PostResponse(post);
+        PostResponse postResponse = new PostResponse(originPost);
         postResponse.setIsLiked(isLiked);
 
         return postResponse;
@@ -76,12 +82,12 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void deletePost(Long id, String foundUsername) {
-        Post post = postRepository.findById(id)
+    public void deletePost(Long postId, String foundUsername) {
+        Post originPost = postRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("포스트를 찾을 수 없습니다."));
 
-        if (post.getWriter().equals(foundUsername)) {
-            postRepository.deleteById(id);
+        if (originPost.getWriter().equals(foundUsername)) {
+            postRepository.deleteById(postId);
         } else {
             throw new PermissionDeniedException("해당 포스트에 대한 삭제 권한이 없습니다.");
         }

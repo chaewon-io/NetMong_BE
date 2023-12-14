@@ -22,6 +22,8 @@ public class HashtagServiceImpl implements HashtagService {
     private final HashtagRepository hashtagRepository;
     private final PostHashtagRepository postHashtagRepository;
 
+    private final Pattern pattern = Pattern.compile("#(\\S+)");
+
     @Override
     @Transactional
     public List<Hashtag> saveHashtag(PostRequest postRequest, Post post) {
@@ -41,7 +43,6 @@ public class HashtagServiceImpl implements HashtagService {
     }
 
     public List<String> parsingContent(String content) {
-        Pattern pattern = Pattern.compile("#(\\S+)");
         Matcher matcher = pattern.matcher(content);
         List<String> tags = new ArrayList<>();
 

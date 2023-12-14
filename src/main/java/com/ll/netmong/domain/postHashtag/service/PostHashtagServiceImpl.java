@@ -25,6 +25,8 @@ public class PostHashtagServiceImpl implements PostHashtagService {
     private final PostRepository postRepository;
     private final HashtagRepository hashtagRepository;
 
+    private final Pattern pattern = Pattern.compile("#(\\S+)");
+
     @Override
     @Transactional
     public void deleteHashtag(Long postId) {
@@ -62,7 +64,6 @@ public class PostHashtagServiceImpl implements PostHashtagService {
     }
 
     public List<String> parsingContent(String content) {
-        Pattern pattern = Pattern.compile("#(\\S+)");
         Matcher matcher = pattern.matcher(content);
         List<String> tags = new ArrayList<>();
 

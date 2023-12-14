@@ -111,6 +111,7 @@ public class PostController {
         saveImage(image, updatedPostRequest);
 
         postService.updatePost(id, updatedPostRequest, foundUsername);
+        postHashtagService.updateHashtag(id, updatedPostRequest);
 
         return RsData.of("S-1", "해당 게시물이 수정되었습니다.", updatedPostRequest);
     }

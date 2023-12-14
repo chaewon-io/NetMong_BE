@@ -65,6 +65,16 @@ public class Post extends BaseEntity {
         this.likesCount--;  // 좋아요 수 감소
     }
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<PostHashtag> names = new ArrayList<>();
+
+    public void addPostHashtag(PostHashtag postHashtag) {
+        this.names.add(postHashtag);
+        postHashtag.setPost(this);
+    }
+
+    public void removePostHashtag(PostHashtag postHashtag) {
+        this.names.remove(postHashtag);
+        postHashtag.setPost(null);
+    }
 }

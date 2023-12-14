@@ -39,3 +39,6 @@ out/
 ### Custom ###
 application-secret.yml
 src/main/generated
+
+### macOS ###
+.DS_Store

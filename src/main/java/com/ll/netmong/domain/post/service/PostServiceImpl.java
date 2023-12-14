@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 
@@ -113,11 +112,16 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostResponse> viewMyPosts(Long memberId) {
-        List<Post> posts = postRepository.findByMemberIdAndDeleteDateIsNullOrderByCreateDateDesc(memberId);
+    public Page<PostResponse> viewPostsByMemberId(Long memberId, Pageable pageable) {
+        Page<Post> posts = postRepository.findByMemberIdAndDeleteDateIsNullOrderByCreateDateDesc(memberId, pageable);
 
-        return posts.stream()
-                .map(PostResponse::new)
-                .toList();
+        return posts.map(PostResponse::new);
     }
+
+    @Override
+    public Post findByPostId(Long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new DataNotFoundException("해당하는 게시물을 찾을 수 없습니다."));
+    }
+
 }

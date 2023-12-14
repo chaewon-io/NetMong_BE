@@ -5,8 +5,9 @@ import com.ll.netmong.common.RsData;
 import com.ll.netmong.domain.likedPost.exception.DuplicateLikeException;
 import com.ll.netmong.domain.member.exception.NotMatchPasswordException;
 import com.ll.netmong.domain.product.dto.response.ErrorResponse;
-import com.ll.netmong.domain.reportPost.exception.DuplicateReportException;
-import com.ll.netmong.domain.reportPost.exception.InvalidReportException;
+import com.ll.netmong.domain.reports.exception.DuplicateReportException;
+import com.ll.netmong.domain.reports.exception.InvalidReportException;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -84,5 +85,11 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public RsData handleDuplicateReport(DuplicateReportException e) {
         return RsData.failOf(e.getMessage());
+    }
+
+    @ExceptionHandler(OptimisticLockingFailureException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public RsData handleOptimisticLockingFailure(OptimisticLockingFailureException e) {
+        return RsData.of("F-2", "다른 사용자가 동시에 좋아요를 눌렀습니다. 다시 시도해주세요.");
     }
 }

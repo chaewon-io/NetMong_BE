@@ -4,6 +4,7 @@ import com.ll.netmong.domain.product.dto.request.CreateRequest;
 import com.ll.netmong.domain.product.dto.request.UpdateRequest;
 import com.ll.netmong.domain.product.dto.response.ViewAllResponse;
 import com.ll.netmong.domain.product.dto.response.ViewSingleResponse;
+import com.ll.netmong.domain.product.util.Category;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +18,10 @@ public interface ProductService {
     List<ViewAllResponse> viewAllProducts();
 
     ViewSingleResponse findByProduct(Long productId);
+
+    List<ViewAllResponse> findByProductCategory(Category category);
+
+    List<ViewAllResponse> findByProductName(String productName);
 
     Page<ViewAllResponse> readPageByProduct(Pageable pageable);
 

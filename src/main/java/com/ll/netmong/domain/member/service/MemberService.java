@@ -71,6 +71,7 @@ public class MemberService {
                 .orElseThrow(() -> new AccountNotFoundException("User not Found"));
     }
 
+    @Transactional
     public String changePassword(UserDetails userDetails, String oldPassword, String newPassword) throws Exception {
 
         Member member = findByUsername(userDetails.getUsername());
@@ -80,5 +81,9 @@ public class MemberService {
             member.encryptPassword(passwordEncoder);
         }
         return memberRepository.save(member).getUsername();
+    }
+
+    public Long countPostsByUsername(String username) {
+        return memberRepository.countPostsByMemberUsername(username);
     }
 }

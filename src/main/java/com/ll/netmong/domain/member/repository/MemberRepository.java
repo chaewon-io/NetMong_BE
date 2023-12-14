@@ -11,4 +11,8 @@ public interface MemberRepository {
     Member save(Member member);
 
     Optional<Member> findByUsername(String username);
+
+    Boolean existsByUsername(String admin);
+
+    Long countPostsByMemberUsername(String username);
 }

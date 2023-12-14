@@ -11,7 +11,10 @@ import lombok.experimental.SuperBuilder;
 
 @Entity
 @Getter
-@Table(name = "product_item_cart")
+@Table(name = "product_item_cart", indexes = {
+        @Index(name = "idx_cart_id", columnList = "cart_id"),
+        @Index(name = "idx_product_id", columnList = "product_id")
+})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuperBuilder(toBuilder = true)
 public class ItemCart extends BaseEntity {
@@ -37,9 +40,5 @@ public class ItemCart extends BaseEntity {
 
     public void addCount(int number) {
         this.stackCount += number;
-    }
-
-    public void removeStock(Product product, Integer count) {
-        product.removeStock(count);
     }
 }

@@ -1,6 +1,8 @@
 server:
   port: 9000
 spring:
+  transaction:
+    default-timeout: '${custom.transaction.default-timeout}'
   spring:
     config:
       activate:
@@ -9,6 +11,9 @@ spring:
     active:
     include: secret
   datasource:
+    hikari:
+      maximum-pool-size: '${custom.hikari.maximum-pool-size}'
+      idle-timeout: '${custom.hikari.idle-timeout}'
     driver-class-name: org.mariadb.jdbc.Driver
     url: '${custom.db.url}'
     username: '${custom.db.username}'
@@ -33,5 +38,6 @@ spring:
 logging:
   level:
     root: INFO
+    org.hibernate.orm.jdbc.bind: trace
 
 domain: '${custom.image.domain}'

@@ -38,6 +38,7 @@ public class ItemCartServiceImpl implements ItemCartService {
             if (itemCart.getCart().getMember().getUsername().equals(findMemberName)) {
                 ViewCartResponse viewCartResponse = new ViewCartResponse();
 
+                viewCartResponse.setProductId(itemCart.getProduct().getId());
                 viewCartResponse.setProductName(itemCart.getProduct().getProductName());
                 viewCartResponse.setPrice(itemCart.getProduct().getPrice());
                 viewCartResponse.setCount(itemCart.getStackCount());

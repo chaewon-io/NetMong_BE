@@ -6,6 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ViewCartResponse {
+    private Long productId;
     private String productName;
     private String price;
     private Integer count;

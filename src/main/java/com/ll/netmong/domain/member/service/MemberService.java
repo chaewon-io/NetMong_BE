@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.security.auth.login.AccountNotFoundException;
+import java.util.Optional;
 
 @Service
 @Builder
@@ -85,5 +86,21 @@ public class MemberService {
 
     public Long countPostsByUsername(String username) {
         return memberRepository.countPostsByMemberUsername(username);
+    }
+
+    @Transactional
+    public Member socialLogin(ProviderTypeCode providerTypeCode, String username) {
+
+        Optional<Member> opMember = memberRepository.findByUsername(username);
+
+        return opMember.orElseGet(() -> {
+            Member member = Member.builder().username(username)
+                    .password("")
+                    .providerTypeCode(providerTypeCode)
+                    .authLevel(AuthLevel.MEMBER)
+                    .build();
+
+            return memberRepository.save(member);
+        });
     }
 }

@@ -34,6 +34,16 @@ spring:
       location: '${custom.image.url}'
       max-request-size: 500MB
       max-file-size: 500MB
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-name: Google
+            redirect-uri: '${custom.site.baseUrl}/oauth2/code/{registrationId}'
+            scope:
+              - email
+              - profile
 
 logging:
   level:

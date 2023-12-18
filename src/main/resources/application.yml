@@ -35,6 +35,16 @@ spring:
       max-request-size: 500MB
       max-file-size: 500MB
 
+cloud:
+  aws:
+    s3:
+      bucket: '${cloud.aws.s3.bucket}'
+    stack.auto: false
+    region.static: ap-northeast-2
+    credentials:
+      accessKey: '${cloud.aws.s3.credentials.accessKey}'
+      secretKey: '${cloud.aws.s3.credentials.secretKey}'
+
 logging:
   level:
     root: INFO

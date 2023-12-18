@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
-import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -45,14 +44,12 @@ public class ParkCommentServiceImplTest {
     private Park park;
     private Member member;
     private UserDetails userDetails;
-    private Long parkId;
     private ParkCommentRequest parkCommentRequest;
 
     @BeforeEach
     void setUp() {
-        parkId = 1L;
-        park = Park.builder().id(parkId).comments(new ArrayList<>()).build();
-        parkRepository.save(park);
+        park = Park.builder().comments(new ArrayList<>()).build();
+        park = parkRepository.save(park);
 
         String username = "testUser" + UUID.randomUUID().toString();
         userDetails = User.withUsername(username).password("testPassword").authorities("USER").build();
@@ -66,7 +63,7 @@ public class ParkCommentServiceImplTest {
     @Test
     @DisplayName("addParkComment() 메서드는 댓글을 추가하고 저장한다.")
     void AddParkComment() {
-        ParkCommentResponse result = parkCommentService.addParkComment(parkId, parkCommentRequest, userDetails);
+        ParkCommentResponse result = parkCommentService.addParkComment(park.getId(), parkCommentRequest, userDetails);
 
         ParkComment savedComment = parkCommentRepository.findById(result.getId())
                 .orElseThrow(() -> new DataNotFoundException("댓글을 찾을 수 없습니다."));
@@ -78,20 +75,20 @@ public class ParkCommentServiceImplTest {
     @Test
     @DisplayName("addParkComment() 메서드는 parkId에 해당하는 공원이 없을 경우 DataNotFoundException을 발생시킨다.")
     void AddParkComment_WhenFindById_ThrowDataNotFound() {
-        Long invalidParkId = -1L;
+        Long ParkId = park.getId() + 1;
 
         assertThrows(DataNotFoundException.class, () -> {
-            parkCommentService.addParkComment(invalidParkId, parkCommentRequest, userDetails);
+            parkCommentService.addParkComment(ParkId, parkCommentRequest, userDetails);
         });
     }
 
     @Test
     @DisplayName("addParkComment() 메서드는 userDetails의 유저가 없을 경우 DataNotFoundException을 발생시킨다.")
     void AddParkComment_WhenFindByUsername_ThrowDataNotFound() {
-        UserDetails invalidUserDetails = User.withUsername("invalidUser").password("testPassword").authorities("USER").build();
+        UserDetails UserDetails = User.withUsername("invalidUser").password("testPassword").authorities("USER").build();
 
         assertThrows(DataNotFoundException.class, () -> {
-            parkCommentService.addParkComment(parkId, parkCommentRequest, invalidUserDetails);
+            parkCommentService.addParkComment(park.getId(), parkCommentRequest, UserDetails);
         });
     }
 
@@ -100,13 +97,13 @@ public class ParkCommentServiceImplTest {
     void GetCommentsOfPark() {
         // 5개 댓글 추가
         for (int i = 0; i < 5; i++) {
-            parkCommentService.addParkComment(parkId, parkCommentRequest, userDetails);
+            parkCommentService.addParkComment(park.getId(), parkCommentRequest, userDetails);
         }
 
         // 페이지에 댓글 3개 요청
         Pageable pageable = PageRequest.of(0, 3);
 
-        Page<ParkCommentResponse> comments = parkCommentService.getCommentsOfPark(parkId, pageable);
+        Page<ParkCommentResponse> comments = parkCommentService.getCommentsOfPark(park.getId(), pageable);
 
         assertEquals(5, comments.getTotalElements());
         assertEquals(3, comments.getContent().size());
@@ -117,7 +114,7 @@ public class ParkCommentServiceImplTest {
     void GetCommentsOfPark_WhenFindByParkIdAndIsDeletedFalse() {
         // 5개 댓글 추가 후 2개 논리 삭제
         for (int i = 0; i < 5; i++) {
-            ParkCommentResponse comment = parkCommentService.addParkComment(parkId, parkCommentRequest, userDetails);
+            ParkCommentResponse comment = parkCommentService.addParkComment(park.getId(), parkCommentRequest, userDetails);
             if (i < 2) {
                 parkCommentService.deleteComment(comment.getId(), userDetails);
             }
@@ -126,7 +123,7 @@ public class ParkCommentServiceImplTest {
         // 페이지에 댓글 10개 요청
         Pageable pageable = PageRequest.of(0, 10);
 
-        Page<ParkCommentResponse> comments = parkCommentService.getCommentsOfPark(parkId, pageable);
+        Page<ParkCommentResponse> comments = parkCommentService.getCommentsOfPark(park.getId(), pageable);
 
         // 논리적으로 삭제되지 않은 댓글 : 3개, 첫 페이지 댓글 수 : 3개
         assertEquals(3, comments.getTotalElements());
@@ -136,7 +133,7 @@ public class ParkCommentServiceImplTest {
     @Test
     @DisplayName("updateComment() 메서드는 댓글의 내용을 수정한다.")
     void UpdateComment() {
-        ParkCommentResponse comment = parkCommentService.addParkComment(parkId, parkCommentRequest, userDetails);
+        ParkCommentResponse comment = parkCommentService.addParkComment(park.getId(), parkCommentRequest, userDetails);
 
         ParkCommentRequest updateRequest = new ParkCommentRequest();
         updateRequest.setContent("Updated Comment");
@@ -160,7 +157,7 @@ public class ParkCommentServiceImplTest {
     @Test
     @DisplayName("deleteComment() 메서드는 댓글을 논리 삭제하며, 존재하지 않는 댓글에 대해서는 DataNotFoundException을 발생시킨다.")
     void DeleteComment() {
-        ParkCommentResponse comment = parkCommentService.addParkComment(parkId, parkCommentRequest, userDetails);
+        ParkCommentResponse comment = parkCommentService.addParkComment(park.getId(), parkCommentRequest, userDetails);
 
         parkCommentService.deleteComment(comment.getId(), userDetails);
 

@@ -16,6 +16,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -74,22 +76,25 @@ public class ProductController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public RsData createProduct(@ModelAttribute @Valid CreateRequest createRequest,
+    public RsData createProduct(@AuthenticationPrincipal UserDetails userDetails,
+                                @ModelAttribute @Valid CreateRequest createRequest,
                                 @ModelAttribute(name = "images") MultipartFile images) throws IOException {
-        productService.createProductWithImage(createRequest, images);
+        productService.createProductWithImage(userDetails, createRequest, images);
         return RsData.of("S-1", POST_SUCCESS_PRODUCT, "create");
     }
 
     @PatchMapping("/{id}")
-    public RsData updateProduct(@PathVariable(name = "id") Long productId,
+    public RsData updateProduct(@AuthenticationPrincipal UserDetails userDetails,
+                                @PathVariable(name = "id") Long productId,
                                 @ModelAttribute @Valid UpdateRequest updateRequest) {
-        productService.updateProduct(productId, updateRequest);
+        productService.updateProduct(userDetails, productId, updateRequest);
         return RsData.of(MODIFY_SUCCESS_PRODUCT, "modify");
     }
 
     @DeleteMapping("/{id}")
-    public RsData softDeleteProduct(@PathVariable(name = "id") Long productId) {
-        productService.softDeleteProduct(productId);
+    public RsData softDeleteProduct(@AuthenticationPrincipal UserDetails userDetails,
+                                    @PathVariable(name = "id") Long productId) {
+        productService.softDeleteProduct(userDetails, productId);
         return RsData.of(DELETE_SUCCESS_PRODUCT, "delete");
     }
 }

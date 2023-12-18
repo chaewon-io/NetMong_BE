@@ -2,6 +2,7 @@ package com.ll.netmong.domain.product.entity;
 
 import com.ll.netmong.common.BaseEntity;
 import com.ll.netmong.domain.image.entity.Image;
+import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.product.dto.request.UpdateRequest;
 import com.ll.netmong.domain.product.util.Category;
 import jakarta.persistence.*;
@@ -45,9 +46,11 @@ public class Product extends BaseEntity {
     @ColumnDefault("'Y'")
     private String status;
 
-    @OneToMany(
-            mappedBy = "product",
-            orphanRemoval = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    @OneToMany(orphanRemoval = true)
     @Builder.Default
     private List<Image> productImages = new ArrayList<>();
 
@@ -57,7 +60,6 @@ public class Product extends BaseEntity {
 
     public void addProductImage(Image productImage) {
         productImages.add(productImage);
-        productImage.setProduct(this);
     }
 
     public void modifyProduct(UpdateRequest updateRequest) {

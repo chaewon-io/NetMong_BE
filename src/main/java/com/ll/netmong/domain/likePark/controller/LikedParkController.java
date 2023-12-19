@@ -5,7 +5,6 @@ import com.ll.netmong.domain.likePark.dto.response.LikedParkResponse;
 import com.ll.netmong.domain.likePark.service.LikedParkService;
 import com.ll.netmong.domain.park.entity.Park;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +16,6 @@ public class LikedParkController {
     private final LikedParkService likedParkService;
 
     @PostMapping("/{parkId}")
-    @ResponseStatus(HttpStatus.CREATED)
     public RsData addLikeToPark(@PathVariable Long parkId, @AuthenticationPrincipal UserDetails userDetails) {
         Park park = likedParkService.getParkById(parkId);
         likedParkService.addLikeToPark(park, userDetails);

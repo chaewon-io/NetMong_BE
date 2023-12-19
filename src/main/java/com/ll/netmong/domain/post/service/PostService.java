@@ -9,12 +9,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public interface PostService {
+    Page<PostResponse> searchPostsByHashtag (String hashtag, Pageable pageable);
     Page<PostResponse> searchPostsByCategory(String category, String searchWord, Pageable pageable);
     Page<PostResponse> viewPostsByPage(Pageable pageable);
     Post uploadPost(PostRequest postRequest, Member foundMember, String foundUsername);
 
     PostResponse getDetail(long id, UserDetails userDetails);
-    void deletePost(Long id, String foundUsername);
+    void deletePost(Long postId, String foundUsername);
     void updatePost(Long id, PostRequest updatedPostRequest, String foundUsername);
 
     Post findByPostId(Long postId);

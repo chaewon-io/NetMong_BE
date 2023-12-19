@@ -33,7 +33,7 @@ public class ParkCommentServiceImpl implements ParkCommentService {
         Park park = parkRepository.findById(parkId)
                 .orElseThrow(() -> new DataNotFoundException("해당하는 공원을 찾을 수 없습니다."));
 
-        Member member = memberRepository.findByUsername(userDetails.getUsername())
+        Member member = memberRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new DataNotFoundException("사용자를 찾을 수 없습니다."));
 
         ParkComment comment = ParkComment.builder()

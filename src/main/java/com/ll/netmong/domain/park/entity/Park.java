@@ -4,10 +4,7 @@ import com.ll.netmong.common.BaseEntity;
 import com.ll.netmong.domain.likePark.entity.LikedPark;
 import com.ll.netmong.domain.park.dto.response.ParkResponse;
 import com.ll.netmong.domain.parkComment.entity.ParkComment;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,6 +39,9 @@ public class Park extends BaseEntity {
 
     @Column(name = "city")
     private String city;
+
+    @Version
+    private Long version;
 
     @OneToMany(mappedBy = "park", cascade = CascadeType.ALL)
     private List<ParkComment> comments = new ArrayList<>();
@@ -80,5 +80,4 @@ public class Park extends BaseEntity {
         this.likedParks.remove(like);
         this.likesCount--;
     }
-
 }

@@ -14,6 +14,7 @@ public class ViewAllResponse {
     private String content;
     private Integer count;
     private Category category;
+    private String imageUrl;
 
     public ViewAllResponse(Product product) {
         this.productId = product.getId();
@@ -22,6 +23,7 @@ public class ViewAllResponse {
         this.content = product.getContent();
         this.count = product.getCount();
         this.category = product.getCategory();
+        this.imageUrl = product.getImage().getImageUrl();
     }
 
     public static ViewAllResponse pageByProduct(Product product) {

@@ -30,11 +30,15 @@ public class ItemCart extends BaseEntity {
     @Column(name = "item_stack_count")
     private Integer stackCount;
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
     public static ItemCart createItemCart(Cart cart, Product product, Integer count) {
         return ItemCart.builder()
                 .cart(cart)
                 .product(product)
                 .stackCount(count)
+                .imageUrl(product.getImage().getImageUrl())
                 .build();
     }
 

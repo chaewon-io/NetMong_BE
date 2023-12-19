@@ -2,6 +2,7 @@ package com.ll.netmong.domain.member.service;
 
 import com.ll.netmong.base.jwt.TokenDto;
 import com.ll.netmong.base.jwt.TokenService;
+import com.ll.netmong.domain.member.dto.EmailRequest;
 import com.ll.netmong.domain.member.dto.JoinRequest;
 import com.ll.netmong.domain.member.dto.LoginDto;
 import com.ll.netmong.domain.member.dto.UsernameRequest;
@@ -53,9 +54,13 @@ public class MemberService {
         return memberRepository.findByUsername(username).isPresent();
     }
 
+    public boolean isDuplicateEmail(EmailRequest emailRequest) {
+        return memberRepository.findByEmail(emailRequest.getEmail()).isPresent();
+    }
+
     public TokenDto login(LoginDto loginDto) throws Exception {
 
-        Member member = memberRepository.findByUsername(loginDto.getUsername())
+        Member member = memberRepository.findByEmail(loginDto.getEmail())
                 .orElseThrow(() -> new AccountNotFoundException("아이디/비밀번호가 잘못되었습니다."));
 
         boolean matches = passwordEncoder.matches(loginDto.getPassword(), member.getPassword());
@@ -64,6 +69,11 @@ public class MemberService {
         }
 
         return tokenService.provideTokenWithLoginDto(loginDto);
+    }
+
+    public Member findByEmail(String email) throws Exception {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new AccountNotFoundException("User not Found"));
     }
 
 
@@ -75,7 +85,7 @@ public class MemberService {
     @Transactional
     public String changePassword(UserDetails userDetails, String oldPassword, String newPassword) throws Exception {
 
-        Member member = findByUsername(userDetails.getUsername());
+        Member member = findByEmail(userDetails.getUsername());
 
         if (passwordEncoder.matches(oldPassword, member.getPassword())) {
             member.changePassword(newPassword);

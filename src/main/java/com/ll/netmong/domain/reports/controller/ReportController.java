@@ -11,10 +11,15 @@ import com.ll.netmong.domain.reports.dto.request.ReportRequest;
 import com.ll.netmong.domain.reports.dto.response.ReportCommentResponse;
 import com.ll.netmong.domain.reports.dto.response.ReportPostResponse;
 import com.ll.netmong.domain.reports.service.ReportService;
+import com.ll.netmong.domain.reports.util.ReportType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,7 +34,7 @@ public class ReportController {
     @PostMapping("/post/{postId}")
     public RsData<ReportPostResponse> reportPost(@RequestBody ReportRequest reportRequest, @PathVariable Long postId, @AuthenticationPrincipal UserDetails userDetails) throws Exception {
         Post reportedPost = postService.findByPostId(postId);
-        Member reporter = memberService.findByUsername(userDetails.getUsername());
+        Member reporter = memberService.findByEmail(userDetails.getUsername());
         ReportPostResponse reportPostResponse = reportService.reportPost(reportRequest, reportedPost, reporter);
         return RsData.successOf(reportPostResponse);
     }
@@ -37,9 +42,17 @@ public class ReportController {
     @PostMapping("/comment/{commentId}")
     public RsData<ReportCommentResponse> reportComment(@RequestBody ReportRequest reportRequest, @PathVariable Long commentId, @AuthenticationPrincipal UserDetails userDetails) throws Exception {
         PostComment reportedComment = postCommentService.findByCommentId(commentId);
-        Member reporter = memberService.findByUsername(userDetails.getUsername());
+        Member reporter = memberService.findByEmail(userDetails.getUsername());
         ReportCommentResponse reportCommentResponse = reportService.reportComment(reportRequest, reportedComment, reporter);
 
         return RsData.successOf(reportCommentResponse);
+    }
+
+    @GetMapping("/types")
+    public RsData<List<String>> getReportTypes() {
+        List<String> reportTypes = Arrays.stream(ReportType.values())
+                .map(Enum::name)
+                .collect(Collectors.toList());
+        return RsData.successOf(reportTypes);
     }
 }

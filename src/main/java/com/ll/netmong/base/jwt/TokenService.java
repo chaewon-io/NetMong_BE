@@ -18,7 +18,7 @@ public class TokenService {
     public TokenDto provideTokenWithLoginDto(LoginDto loginDto){
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(
-                        loginDto.getUsername(),
+                        loginDto.getEmail(),
                         loginDto.getPassword());
 
         Authentication authentication =

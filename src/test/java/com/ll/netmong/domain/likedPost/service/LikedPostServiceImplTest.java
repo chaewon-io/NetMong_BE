@@ -19,7 +19,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -66,7 +67,7 @@ class LikedPostServiceImplTest {
                 .member(member)
                 .build();
 
-        when(memberRepository.findByUsername(any())).thenReturn(Optional.of(member));
+        when(memberRepository.findByEmail(any())).thenReturn(Optional.of(member));
         when(postRepository.findById(any())).thenReturn(Optional.of(post));
     }
 

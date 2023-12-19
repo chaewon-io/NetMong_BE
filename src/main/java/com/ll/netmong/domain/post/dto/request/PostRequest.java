@@ -8,7 +8,6 @@ import lombok.Setter;
 public class PostRequest {
     private String title;
     private String content;
-    private String imageUrl;
 
     private String category; //카테고리
     private String searchWord; //검색어

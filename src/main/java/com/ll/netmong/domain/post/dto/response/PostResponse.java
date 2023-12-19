@@ -14,7 +14,6 @@ public class PostResponse {
     private String writer;
     private String content;
     String createDate;
-    private String imageUrl;
     private Long likesCount;
     private Boolean isLiked;
 
@@ -24,7 +23,6 @@ public class PostResponse {
         this.writer = post.getWriter();
         this.content = post.getContent();
         this.createDate = post.getCreateDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        this.imageUrl = post.getImageUrl();
         this.likesCount = post.getLikesCount();
     }
 

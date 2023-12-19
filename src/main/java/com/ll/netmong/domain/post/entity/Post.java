@@ -1,6 +1,7 @@
 package com.ll.netmong.domain.post.entity;
 
 import com.ll.netmong.common.BaseEntity;
+import com.ll.netmong.domain.image.entity.Image;
 import com.ll.netmong.domain.likedPost.entity.LikedPost;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.postComment.entity.PostComment;
@@ -31,7 +32,9 @@ public class Post extends BaseEntity {
     private String writer;
     @Column(length=100)
     private String content;
-    private String imageUrl;
+    public static Image createProductImage(String imageUrl) {
+        return new Image(imageUrl);
+    }
 
     @Column(name = "deleted_at")
     private String deleteDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));

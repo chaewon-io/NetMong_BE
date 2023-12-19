@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.ll.netmong.domain.image.entity.Image;
 import com.ll.netmong.domain.image.repository.ImageRepository;
+import com.ll.netmong.domain.post.entity.Post;
 import com.ll.netmong.domain.product.entity.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,6 +43,12 @@ public class ImageServiceImpl implements ImageService {
             Image productImage = Product.createProductImage(imagePath);
             product.addProductImage(productImage);
             imageRepository.save(productImage);
+            createS3Bucket(fileName, image);
+        }
+
+        if (requestType instanceof Post) {
+            Image postImage = Post.createProductImage(imagePath);
+            imageRepository.save(postImage);
             createS3Bucket(fileName, image);
         }
     }

@@ -46,8 +46,9 @@ public class ImageServiceImpl implements ImageService {
             createS3Bucket(fileName, image);
         }
 
-        if (requestType instanceof Post) {
+        if (requestType instanceof Post post) {
             Image postImage = Post.createProductImage(imagePath);
+            post.addPostImage(postImage);
             imageRepository.save(postImage);
             createS3Bucket(fileName, image);
         }

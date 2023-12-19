@@ -24,22 +24,20 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @SuperBuilder(toBuilder = true)
-@SQLDelete(sql = "UPDATE post SET is_deleted = TRUE where id = ?")
-@Where(clause = "is_deleted = FALSE")
+@SQLDelete(sql = "UPDATE post SET status = 'N' where id = ?")
+@Where(clause = "status = 'Y'")
 public class Post extends BaseEntity {
     @Column(length=100)
     private String title;
     private String writer;
     @Column(length=100)
     private String content;
-    public static Image createProductImage(String imageUrl) {
-        return new Image(imageUrl);
-    }
 
     @Column(name = "deleted_at")
     private String deleteDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
     @Builder.Default
-    private Boolean isDeleted = Boolean.FALSE;
+    @Column(nullable = false)
+    private String status = "Y";
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -83,5 +81,17 @@ public class Post extends BaseEntity {
     public void removePostHashtag(PostHashtag postHashtag) {
         this.names.remove(postHashtag);
         postHashtag.setPost(null);
+    }
+
+    @OneToOne(orphanRemoval = true)
+    @JoinColumn(name = "image_id")
+    private Image image;
+
+    public static Image createProductImage(String imageUrl) {
+        return new Image(imageUrl);
+    }
+
+    public void addPostImage(Image postImage) {
+        this.image = postImage;
     }
 }

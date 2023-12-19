@@ -14,4 +14,6 @@ public interface MemberJpaRepository extends JpaRepository<Member, Long> {
 
     @Query("select count(p) from Post p where p.member= (select m from Member m where m.username = :username)")
     Long countPostsByMemberUsername(@Param("username") String username);
+
+    Optional<Member> findByEmail(String email);
 }

@@ -32,7 +32,7 @@ public class MemberController {
     public RsData<String> join(@Valid @RequestBody JoinRequest joinRequest) throws Exception {
 
         String username = memberService.createMember(joinRequest).getUsername();
-        cartService.createCart(memberService.findByUsername(joinRequest.getUsername()));
+        cartService.createCart(memberService.findByEmail(joinRequest.getEmail()));
 
         return RsData.successOf(username);
     }
@@ -45,6 +45,16 @@ public class MemberController {
         }
 
         return RsData.of("S-1", "사용가능한 아이디입니다.");
+    }
+
+    @PostMapping("/dup-email")
+    public RsData checkDupUsername(@Valid @RequestBody EmailRequest emailRequest) {
+
+        if (memberService.isDuplicateEmail(emailRequest)) {
+            return RsData.of("F-1", "이미 중복된 이메일이 있습니다.");
+        }
+
+        return RsData.of("S-1", "사용가능한 이메일입니다.");
     }
 
     @PostMapping("/login")

@@ -86,7 +86,7 @@ public class MemberController {
 
         //팔로우 하는 사람
         String followerName = userDetails.getUsername();
-        Member follower = memberService.findByUsername(followerName);
+        Member follower = memberService.findByEmail(followerName);
 
         //팔로우 받는 사람
         Member followee = memberService.findByUsername(usernameRequest.getUsername());
@@ -105,7 +105,7 @@ public class MemberController {
 
         //언팔로우 하는 사람
         String followerName = userDetails.getUsername();
-        Member follower = memberService.findByUsername(followerName);
+        Member follower = memberService.findByEmail(followerName);
 
         //언팔로우 받는 사람
         Member followee = memberService.findByUsername(usernameRequest.getUsername());
@@ -117,7 +117,7 @@ public class MemberController {
     @GetMapping("/{username}")
     public RsData<MemberDetailDto> showMember(@PathVariable String username, @AuthenticationPrincipal UserDetails userDetails) throws Exception {
 
-        Member loginMember = memberService.findByUsername(userDetails.getUsername());
+        Member loginMember = memberService.findByEmail(userDetails.getUsername());
         Member pathMember = memberService.findByUsername(username);
 
         FollowCountDto followCountDto = followService.countFollowerAndFollowee(pathMember);

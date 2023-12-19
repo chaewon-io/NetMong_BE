@@ -21,7 +21,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -53,7 +54,7 @@ public class ParkCommentServiceImplTest {
 
         String username = "testUser" + UUID.randomUUID().toString();
         userDetails = User.withUsername(username).password("testPassword").authorities("USER").build();
-        member = Member.builder().username(username).build();
+        member = Member.builder().email(username).build();
         memberRepository.save(member);
 
         parkCommentRequest = new ParkCommentRequest();

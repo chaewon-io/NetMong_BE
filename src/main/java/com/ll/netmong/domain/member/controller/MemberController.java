@@ -32,7 +32,7 @@ public class MemberController {
     public RsData<String> join(@Valid @RequestBody JoinRequest joinRequest) throws Exception {
 
         String username = memberService.createMember(joinRequest).getUsername();
-        cartService.createCart(memberService.findByUsername(joinRequest.getUsername()));
+        cartService.createCart(memberService.findByEmail(joinRequest.getEmail()));
 
         return RsData.successOf(username);
     }

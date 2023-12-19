@@ -75,7 +75,6 @@ class ItemCartServiceImplTest {
         when(mockItemCart.getCart()).thenReturn(mockCart);
     }
 
-
     @DisplayName("저장된 아이템카트 가져오기")
     @Test
     public void 저장된_아이템카트_가져오기() {

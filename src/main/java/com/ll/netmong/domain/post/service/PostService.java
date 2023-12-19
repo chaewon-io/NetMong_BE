@@ -7,14 +7,17 @@ import com.ll.netmong.domain.post.entity.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 public interface PostService {
     Page<PostResponse> searchPostsByHashtag (String hashtag, Pageable pageable);
     Page<PostResponse> searchPostsByCategory(String category, String searchWord, Pageable pageable);
     Page<PostResponse> viewPostsByPage(Pageable pageable);
-    Post uploadPost(PostRequest postRequest, Member foundMember, String foundUsername);
+    Post uploadPostWithImage(PostRequest postRequest, MultipartFile image, Member foundMember) throws IOException;
 
-    PostResponse getDetail(long id, UserDetails userDetails);
+    PostResponse getDetail(Long id, UserDetails userDetails);
     void deletePost(Long postId, String foundUsername);
     void updatePost(Long id, PostRequest updatedPostRequest, String foundUsername);
 

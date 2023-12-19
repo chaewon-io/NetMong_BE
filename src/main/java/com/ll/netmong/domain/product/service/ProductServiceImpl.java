@@ -54,7 +54,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ViewAllResponse> viewAllProducts() {
-        return toViewAllResponse(productRepository.findAll());
+        return toViewAllResponse(productRepository.findAllWithImage());
     }
 
     @Override

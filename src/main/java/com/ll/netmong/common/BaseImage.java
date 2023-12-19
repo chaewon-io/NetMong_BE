@@ -6,6 +6,7 @@ import jakarta.persistence.MappedSuperclass;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.ColumnDefault;
 
@@ -15,6 +16,7 @@ import org.hibernate.annotations.ColumnDefault;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class BaseImage extends BaseEntity {
     @Column(name = "image_url")
+    @Setter
     private String imageUrl;
 
     @ColumnDefault("'Y'")

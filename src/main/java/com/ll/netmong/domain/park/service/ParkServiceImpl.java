@@ -76,7 +76,7 @@ public class ParkServiceImpl implements ParkService {
         Park park = parkRepository.findById(parkId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 공원이 존재하지 않습니다: " + parkId));
 
-        Member member = memberRepository.findByUsername(userDetails.getUsername())
+        Member member = memberRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new DataNotFoundException("사용자를 찾을 수 없습니다."));
 
         boolean isLiked = likedParkRepository.existsByMemberAndPark(member, park);

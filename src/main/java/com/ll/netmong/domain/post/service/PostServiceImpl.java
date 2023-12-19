@@ -70,7 +70,7 @@ public class PostServiceImpl implements PostService {
         Post originPost = postRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("포스트를 찾을 수 없습니다."));
 
-        Member member = memberRepository.findByUsername(userDetails.getUsername())
+        Member member = memberRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new DataNotFoundException("사용자를 찾을 수 없습니다."));
         boolean isLiked = likedPostRepository.existsByMemberAndPost(member, originPost);
 

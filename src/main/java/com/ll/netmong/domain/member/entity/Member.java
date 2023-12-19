@@ -27,11 +27,13 @@ public class Member extends BaseEntity {
     private ProviderTypeCode providerTypeCode;
 
     @Column(unique = true)
-    private String username;
+    private String email;
     private String password;
 
+    @Column(unique = true)
+    private String username;
+
     private String realName;
-    private String email;
 
     // 스프링 시큐리티 규격
     public List<? extends GrantedAuthority> getGrantedAuthorities() {

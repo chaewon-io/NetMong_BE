@@ -15,4 +15,6 @@ public interface MemberRepository {
     Boolean existsByUsername(String admin);
 
     Long countPostsByMemberUsername(String username);
+
+    Optional<Member> findByEmail(String email);
 }

@@ -6,6 +6,7 @@ import com.ll.netmong.domain.likedPost.repository.LikedPostRepository;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.member.repository.MemberRepository;
 import com.ll.netmong.domain.post.dto.request.PostRequest;
+import com.ll.netmong.domain.post.dto.request.UpdatePostRequest;
 import com.ll.netmong.domain.post.dto.response.PostResponse;
 import com.ll.netmong.domain.post.entity.Post;
 import com.ll.netmong.domain.post.repository.PostRepository;
@@ -109,22 +110,29 @@ public class PostServiceImpl implements PostService {
         }
     }
 
-    @Override
-    @Transactional
-    public void updatePost(Long id, PostRequest updatedPostRequest, String foundUsername) {
+    private Post updatePost(Long id, UpdatePostRequest updatePostRequest) {
         Post originPost = postRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("포스트를 찾을 수 없습니다."));
 
-        if (originPost.getWriter().equals(foundUsername)) {
-            Post updatedPost = originPost.toBuilder()
-                    .title(updatedPostRequest.getTitle())
-                    .content(updatedPostRequest.getContent())
-                    .build();
-
-            postRepository.save(updatedPost);
+        if (originPost.getWriter().equals(updatePostRequest.getFoundUsername())) {
+            originPost.updatePost(updatePostRequest);
+            postRepository.save(originPost);
         } else {
             throw new PermissionDeniedException("해당 포스트에 대한 수정 권한이 없습니다.");
         }
+
+        return originPost;
+    }
+
+    @Override
+    @Transactional
+    public void updatePostWithImage(Long id, UpdatePostRequest updatePostRequest, MultipartFile image) throws IOException {
+        if (Objects.isNull(image) || image.isEmpty()) {
+            throw new IllegalArgumentException("이미지 파일이 없습니다.");
+        }
+
+        Post post = updatePost(id, updatePostRequest);
+        imageService.uploadImage(post, image);
     }
 
     @Override

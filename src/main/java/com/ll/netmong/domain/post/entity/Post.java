@@ -4,6 +4,7 @@ import com.ll.netmong.common.BaseEntity;
 import com.ll.netmong.domain.image.entity.Image;
 import com.ll.netmong.domain.likedPost.entity.LikedPost;
 import com.ll.netmong.domain.member.entity.Member;
+import com.ll.netmong.domain.post.dto.request.UpdatePostRequest;
 import com.ll.netmong.domain.postComment.entity.PostComment;
 import com.ll.netmong.domain.postHashtag.entity.PostHashtag;
 import jakarta.persistence.*;
@@ -70,7 +71,7 @@ public class Post extends BaseEntity {
         this.likesCount--;  // 좋아요 수 감소
     }
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "post")
     private List<PostHashtag> names = new ArrayList<>();
 
     public void addPostHashtag(PostHashtag postHashtag) {
@@ -93,5 +94,10 @@ public class Post extends BaseEntity {
 
     public void addPostImage(Image postImage) {
         this.image = postImage;
+    }
+
+    public void updatePost(UpdatePostRequest updatePostRequest) {
+        this.title = updatePostRequest.getTitle();
+        this.content = updatePostRequest.getContent();
     }
 }

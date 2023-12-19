@@ -2,7 +2,7 @@ package com.ll.netmong.domain.postHashtag.service;
 
 import com.ll.netmong.domain.hashtag.entity.Hashtag;
 import com.ll.netmong.domain.hashtag.repository.HashtagRepository;
-import com.ll.netmong.domain.post.dto.request.PostRequest;
+import com.ll.netmong.domain.post.dto.request.UpdatePostRequest;
 import com.ll.netmong.domain.post.entity.Post;
 import com.ll.netmong.domain.post.repository.PostRepository;
 import com.ll.netmong.domain.postHashtag.entity.PostHashtag;
@@ -39,15 +39,16 @@ public class PostHashtagServiceImpl implements PostHashtagService {
 
     @Override
     @Transactional
-    public void updateHashtag(Long postId, PostRequest updatedPostRequest) {
+    public void updateHashtag(Long postId, UpdatePostRequest updatePostRequest) {
         Post originPost = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
 
         List<String> originNames = originPost.getNames().stream()
                 .map(postHashtag -> postHashtag.getHashtag().getName())
                 .collect(Collectors.toList());
 
-        List<String> names = parsingContent(updatedPostRequest.getContent());
+        List<String> names = parsingContent(updatePostRequest.getContent());
 
+        //새로운 해시태그(name)를 추가
         for (String name : names) {
             if (!originNames.contains(name)) {
                 Hashtag hashtag = hashtagRepository.findByName(name).orElseGet(() -> hashtagRepository.save(new Hashtag(name)));
@@ -55,6 +56,7 @@ public class PostHashtagServiceImpl implements PostHashtagService {
             }
         }
 
+        //사라진 해시태그(originName)를 삭제
         for (String originName : originNames) {
             if (!names.contains(originName)) {
                 PostHashtag postHashtag = postHashtagRepository.findByPostAndName(originPost, originName);

@@ -112,8 +112,11 @@ public class PostCommentServiceImpl implements PostCommentService {
                 .orElseThrow(() -> new DataNotFoundException("해당하는 회원을 찾을 수 없습니다."));
 
         PostComment childComment = PostComment.builder()
+                .post(parentComment.getPost())
+                .memberID(member)
                 .content(request.getContent())
                 .isDeleted(false)
+                .isBlinded(false)
                 .username(member.getUsername())
                 .build();
 

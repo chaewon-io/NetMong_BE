@@ -19,7 +19,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -48,7 +49,6 @@ class LikedPostServiceImplTest {
                 .title("곧 크리스마스당")
                 .writer("네트멍의 익명 누군가")
                 .content("연말이라닛.. 크리스마스 좋아")
-                .imageUrl("http://127.0.0.1:9000/images/netmongisgoat")
                 .likes(new ArrayList<>())
                 .build();
 

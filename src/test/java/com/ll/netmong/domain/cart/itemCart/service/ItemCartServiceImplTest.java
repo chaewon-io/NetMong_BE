@@ -1,61 +1,115 @@
 package com.ll.netmong.domain.cart.itemCart.service;
 
+import com.ll.netmong.domain.cart.dto.request.ProductCountRequest;
+import com.ll.netmong.domain.cart.entity.Cart;
+import com.ll.netmong.domain.cart.itemCart.entity.ItemCart;
+import com.ll.netmong.domain.cart.itemCart.repository.ItemCartRepository;
+import com.ll.netmong.domain.image.entity.Image;
+import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.product.entity.Product;
-import com.ll.netmong.domain.product.repository.ProductRepository;
-import com.ll.netmong.domain.product.util.Category;
-import org.assertj.core.api.Assertions;
+import com.ll.netmong.domain.product.service.ProductServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.transaction.support.TransactionTemplate;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 
-@SpringBootTest
-public class ItemCartServiceImplTest {
-    @Autowired
-    private ProductRepository productRepository;
-    @Autowired
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+class ItemCartServiceImplTest {
+
+    @InjectMocks
     private ItemCartServiceImpl itemCartService;
 
-    private Product product;
+    @Mock
+    private ItemCartRepository itemCartRepository;
+
+    @Mock
+    private ProductServiceImpl productService;
+
+    @Mock
+    private TransactionTemplate transactionTemplate;
+
+    private String findMemberName;
+    private Member mockMember;
+    private Cart mockCart;
+    private Product mockProduct;
+    private ItemCart mockItemCart;
+    private Image image;
 
     @BeforeEach
-    void init() {
-        product = Product.builder().productName("강아지 사료")
-                .price("25_000")
-                .content("유통기한 1년 남은 사료입니다.")
-                .count(1000)
-                .category(Category.PET_FEED)
-                .status("Y")
-                .build();
-        productRepository.save(product);
+    public void setUp() {
+        findMemberName = "shin";
+        mockMember = Mockito.mock(Member.class);
+        mockCart = Mockito.mock(Cart.class);
+        mockProduct = Mockito.mock(Product.class);
+        mockItemCart = Mockito.mock(ItemCart.class);
+        image = Mockito.mock(Image.class);
+
+        when(mockCart.getMember()).thenReturn(mockMember);
+        when(mockMember.getUsername()).thenReturn(findMemberName);
+
+        when(mockProduct.getId()).thenReturn(1L);
+        when(mockProduct.getProductName()).thenReturn("강아지 간식");
+        when(mockProduct.getContent()).thenReturn("1년 남은 간식 입니다.");
+        when(mockProduct.getCount()).thenReturn(10);
+        when(mockProduct.getImage()).thenReturn(image);
+
+        when(itemCartRepository.findByCartIdAndProductId(anyLong(), anyLong()))
+                .thenReturn(mockItemCart);
+        when(mockItemCart.getProduct()).thenReturn(mockProduct);
+        when(mockItemCart.getCart()).thenReturn(mockCart);
     }
 
+    @DisplayName("저장된 아이템카트 가져오기")
     @Test
-    public void 동시에_1000개_요청() throws InterruptedException {
-        int threadCount = 1000;
+    public void 저장된_아이템카트_가져오기() {
+        ItemCart itemCart = itemCartService.getItemCart(mockCart, mockProduct.getId());
+        assertThat(itemCart.getId()).isEqualTo(mockItemCart.getId());
+    }
 
-        ExecutorService executorService = Executors.newFixedThreadPool(20);
-        CountDownLatch latch = new CountDownLatch(threadCount);
+    @DisplayName("저장된 아이템 카트의 상품 이름 확인")
+    @Test
+    public void 저장된_아이템카트의_상품_이름_확인() {
+        ItemCart itemCart = itemCartService.getItemCart(mockCart, mockProduct.getId());
+        assertThat(itemCart.getProduct().getProductName()).isEqualTo("강아지 간식");
+    }
 
-        for (int i = 0; i < threadCount; i++) {
-            executorService.submit(() -> {
-                try {
-                    itemCartService.removeStock(product.getId(), 1);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    latch.countDown();
-                }
-            });
-        }
-        latch.await();
+    @DisplayName("저장된 아이템 카트의 상품 내용 확인")
+    @Test
+    public void 저장된_아이템_카트의_상품_내용_확인() {
+        ItemCart itemCart = itemCartService.getItemCart(mockCart, mockProduct.getId());
+        assertThat(itemCart.getProduct().getContent()).isEqualTo("1년 남은 간식 입니다.");
+    }
 
-        Product updatedProduct = productRepository.findById(product.getId()).orElse(null);
-        Assertions.assertThat(updatedProduct).isNotNull();
-        Assertions.assertThat(updatedProduct.getCount()).isEqualTo(0);
+    @DisplayName("새로운 상품을 장바구니에 담을 경우 확인")
+    @Test
+    public void addToCartForNewProductTest() {
+        ProductCountRequest productCountRequest = new ProductCountRequest();
+        productCountRequest.setCount(1);
+
+        when(productService.getProduct(mockProduct.getId())).thenReturn(mockProduct);
+
+        ReflectionTestUtils.setField(itemCartService, "transactionTemplate", transactionTemplate);
+
+        // When
+        itemCartService.addToCartForNewProduct(mockCart, mockProduct.getId(), productCountRequest);
+
+        // Then
+        verify(itemCartRepository, times(1)).save(any(ItemCart.class));
     }
 }

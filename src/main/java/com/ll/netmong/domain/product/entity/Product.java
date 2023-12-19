@@ -2,18 +2,15 @@ package com.ll.netmong.domain.product.entity;
 
 import com.ll.netmong.common.BaseEntity;
 import com.ll.netmong.domain.image.entity.Image;
+import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.product.dto.request.UpdateRequest;
 import com.ll.netmong.domain.product.util.Category;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -42,22 +39,24 @@ public class Product extends BaseEntity {
     @Column(name = "product_category")
     private Category category;
 
-    @ColumnDefault("'Y'")
-    private String status;
-
-    @OneToMany(
-            mappedBy = "product",
-            orphanRemoval = true)
     @Builder.Default
-    private List<Image> productImages = new ArrayList<>();
+    @Column(nullable = false)
+    private String status = "Y";
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    @OneToOne(orphanRemoval = true)
+    @JoinColumn(name = "image_id")
+    private Image image;
 
     public static Image createProductImage(String imageUrl) {
         return new Image(imageUrl);
     }
 
     public void addProductImage(Image productImage) {
-        productImages.add(productImage);
-        productImage.setProduct(this);
+        this.image = productImage;
     }
 
     public void modifyProduct(UpdateRequest updateRequest) {

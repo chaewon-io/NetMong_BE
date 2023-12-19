@@ -43,7 +43,7 @@ public class ProductServiceImpl implements ProductService {
         }
         if (isImageExists(images)) {
             Product product = initProduct(currentUser, createRequest);
-            imageService.uploadImage(product, images);
+            product.addProductImage(imageService.uploadImage(product, images).orElseThrow());
         }
     }
 

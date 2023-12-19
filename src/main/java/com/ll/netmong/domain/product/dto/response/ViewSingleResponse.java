@@ -12,11 +12,13 @@ public class ViewSingleResponse {
     private String price;
     private String content;
     private Category category;
+    private String imageUrl;
 
     public ViewSingleResponse(Product product) {
         this.productName = product.getProductName();
         this.price = product.getPrice();
         this.content = product.getContent();
         this.category = product.getCategory();
+        this.imageUrl = product.getImage().getImageUrl();
     }
 }

@@ -8,13 +8,9 @@ import com.ll.netmong.domain.product.util.Category;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -43,23 +39,24 @@ public class Product extends BaseEntity {
     @Column(name = "product_category")
     private Category category;
 
-    @ColumnDefault("'Y'")
-    private String status;
+    @Builder.Default
+    @Column(nullable = false)
+    private String status = "Y";
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(orphanRemoval = true)
-    @Builder.Default
-    private List<Image> productImages = new ArrayList<>();
+    @OneToOne(orphanRemoval = true)
+    @JoinColumn(name = "image_id")
+    private Image image;
 
     public static Image createProductImage(String imageUrl) {
         return new Image(imageUrl);
     }
 
     public void addProductImage(Image productImage) {
-        productImages.add(productImage);
+        this.image = productImage;
     }
 
     public void modifyProduct(UpdateRequest updateRequest) {

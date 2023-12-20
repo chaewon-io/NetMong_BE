@@ -146,7 +146,7 @@ public class MemberController {
         LocalDateTime usernameUpdatedTime = member.getUsernameUpdatedTime();
 
         if (usernameUpdatedTime.plusDays(1L).isAfter(LocalDateTime.now())) {
-            RsData.failOf("닉네임 변경 후 24시간 후에 재변경 가능합니다.");
+            return RsData.failOf("닉네임 변경 후 24시간 후에 재변경 가능합니다.");
         }
         String username = memberService.changeUsername(member,
                 changeUsernameRequest.getNewUsername());

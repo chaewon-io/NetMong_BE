@@ -102,7 +102,7 @@ class ItemCartServiceImplTest {
         ProductCountRequest productCountRequest = new ProductCountRequest();
         productCountRequest.setCount(1);
 
-        when(productService.getProduct(mockProduct.getId())).thenReturn(mockProduct);
+        when(productService.findProduct(mockProduct.getId())).thenReturn(mockProduct);
 
         ReflectionTestUtils.setField(itemCartService, "transactionTemplate", transactionTemplate);
 

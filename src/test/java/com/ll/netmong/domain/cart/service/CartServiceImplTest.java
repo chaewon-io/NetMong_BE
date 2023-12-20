@@ -69,7 +69,7 @@ class CartServiceImplTest {
         when(mockItemCart.getCart()).thenReturn(mockCart);
 
         when(mockCart.getMember()).thenReturn(mockMember);
-        when(mockMember.getUsername()).thenReturn(findMemberName);
+        when(mockMember.getEmail()).thenReturn(findMemberName);
 
         when(mockProduct.getProductName()).thenReturn("강아지 간식");
         when(mockProduct.getPrice()).thenReturn("25_000");

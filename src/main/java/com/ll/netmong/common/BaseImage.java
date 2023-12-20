@@ -6,7 +6,6 @@ import jakarta.persistence.MappedSuperclass;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.ColumnDefault;
 
@@ -28,7 +27,7 @@ public abstract class BaseImage extends BaseEntity {
         this.imageUrl = imageUrl;
     }
 
-    public BaseImage(String imageUrl, String s3ImageUrl){
+    public BaseImage(String imageUrl, String s3ImageUrl) {
         this.imageUrl = imageUrl;
         this.s3ImageUrl = s3ImageUrl;
     }

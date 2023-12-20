@@ -19,8 +19,8 @@ public class CartController {
 
     @GetMapping
     public RsData readProductCartByUser(@AuthenticationPrincipal UserDetails userDetails) {
-        String findMemberName = userDetails.getUsername();
-        return RsData.successOf(itemCartService.readMemberCartByUser(findMemberName));
+        String findMemberEmail = userDetails.getUsername();
+        return RsData.successOf(itemCartService.readMemberCartByUser(findMemberEmail));
     }
 
     @PostMapping("{productId}")

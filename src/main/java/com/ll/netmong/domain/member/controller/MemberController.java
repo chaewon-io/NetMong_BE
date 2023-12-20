@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Map;
 
@@ -136,5 +137,19 @@ public class MemberController {
     public RsData<String> getUsername(@AuthenticationPrincipal UserDetails userDetails) throws Exception {
         String username = memberService.findByEmail(userDetails.getUsername()).getUsername();
         return RsData.successOf(username);
+    }
+
+    @PatchMapping("/change-username")
+    public RsData<String> changeUsername(@Valid @RequestBody ChangeUsernameRequest changeUsernameRequest, @AuthenticationPrincipal UserDetails userDetails) throws Exception {
+
+        Member member = memberService.findByEmail(userDetails.getUsername());
+        LocalDateTime usernameUpdatedTime = member.getUsernameUpdatedTime();
+
+        if (usernameUpdatedTime.plusDays(1L).isAfter(LocalDateTime.now())) {
+            RsData.failOf("닉네임 변경 후 24시간 후에 재변경 가능합니다.");
+        }
+        String username = memberService.changeUsername(member,
+                changeUsernameRequest.getNewUsername());
+        return RsData.successOf(username + " 으로 닉네임이 변경되었습니다.");
     }
 }

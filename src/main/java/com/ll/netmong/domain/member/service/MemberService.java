@@ -9,6 +9,7 @@ import com.ll.netmong.domain.member.dto.UsernameRequest;
 import com.ll.netmong.domain.member.entity.AuthLevel;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.member.entity.ProviderTypeCode;
+import com.ll.netmong.domain.member.exception.AlreadyUsedException;
 import com.ll.netmong.domain.member.exception.NotMatchPasswordException;
 import com.ll.netmong.domain.member.repository.MemberRepository;
 import lombok.Builder;
@@ -112,5 +113,13 @@ public class MemberService {
 
             return memberRepository.save(member);
         });
+    }
+
+    @Transactional
+    public String changeUsername(Member member, String newUsername) {
+        memberRepository.findByUsername(newUsername)
+                .orElseThrow(() -> new AlreadyUsedException("이미 사용중인 닉네임입니다."));
+        member.changeUsername(newUsername);
+        return member.getUsername();
     }
 }

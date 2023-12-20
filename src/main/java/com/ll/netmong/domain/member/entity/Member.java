@@ -12,6 +12,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +33,7 @@ public class Member extends BaseEntity {
 
     @Column(unique = true)
     private String username;
+    private LocalDateTime usernameUpdatedTime;
 
     private String realName;
 
@@ -56,5 +58,9 @@ public class Member extends BaseEntity {
 
     public void changePassword(String newPassword) {
         this.password = newPassword;
+    }
+
+    public void changeUsername(String newUsername) {
+        this.username = newUsername;
     }
 }

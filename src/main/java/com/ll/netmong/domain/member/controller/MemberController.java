@@ -12,7 +12,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/members")
@@ -82,7 +87,7 @@ public class MemberController {
 
         //팔로우 하는 사람
         String followerName = userDetails.getUsername();
-        Member follower = memberService.findByUsername(followerName);
+        Member follower = memberService.findByEmail(followerName);
 
         //팔로우 받는 사람
         Member followee = memberService.findByUsername(usernameRequest.getUsername());
@@ -101,7 +106,7 @@ public class MemberController {
 
         //언팔로우 하는 사람
         String followerName = userDetails.getUsername();
-        Member follower = memberService.findByUsername(followerName);
+        Member follower = memberService.findByEmail(followerName);
 
         //언팔로우 받는 사람
         Member followee = memberService.findByUsername(usernameRequest.getUsername());
@@ -113,7 +118,7 @@ public class MemberController {
     @GetMapping("/{username}")
     public RsData<MemberDetailDto> showMember(@PathVariable String username, @AuthenticationPrincipal UserDetails userDetails) throws Exception {
 
-        Member loginMember = memberService.findByUsername(userDetails.getUsername());
+        Member loginMember = memberService.findByEmail(userDetails.getUsername());
         Member pathMember = memberService.findByUsername(username);
 
         FollowCountDto followCountDto = followService.countFollowerAndFollowee(pathMember);
@@ -121,5 +126,30 @@ public class MemberController {
 
         Long postCount = memberService.countPostsByUsername(username);
         return RsData.successOf(new MemberDetailDto(following, followCountDto.getFollowerCount(), followCountDto.getFolloweeCount(), postCount));
+    }
+
+    @GetMapping("/user")
+    public Map<String, Object> user(@AuthenticationPrincipal OAuth2User principal) {
+        return Collections.singletonMap("name", principal.getAttribute("name"));
+    }
+
+    @GetMapping("/username")
+    public RsData<String> getUsername(@AuthenticationPrincipal UserDetails userDetails) throws Exception {
+        String username = memberService.findByEmail(userDetails.getUsername()).getUsername();
+        return RsData.successOf(username);
+    }
+
+    @PatchMapping("/change-username")
+    public RsData<String> changeUsername(@Valid @RequestBody ChangeUsernameRequest changeUsernameRequest, @AuthenticationPrincipal UserDetails userDetails) throws Exception {
+
+        Member member = memberService.findByEmail(userDetails.getUsername());
+        LocalDateTime usernameUpdatedTime = member.getUsernameUpdatedTime();
+
+        if (usernameUpdatedTime.plusDays(1L).isAfter(LocalDateTime.now())) {
+            RsData.failOf("닉네임 변경 후 24시간 후에 재변경 가능합니다.");
+        }
+        String username = memberService.changeUsername(member,
+                changeUsernameRequest.getNewUsername());
+        return RsData.successOf(username + " 으로 닉네임이 변경되었습니다.");
     }
 }

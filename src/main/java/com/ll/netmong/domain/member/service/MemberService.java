@@ -9,6 +9,7 @@ import com.ll.netmong.domain.member.dto.UsernameRequest;
 import com.ll.netmong.domain.member.entity.AuthLevel;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.member.entity.ProviderTypeCode;
+import com.ll.netmong.domain.member.exception.AlreadyUsedException;
 import com.ll.netmong.domain.member.exception.NotMatchPasswordException;
 import com.ll.netmong.domain.member.repository.MemberRepository;
 import lombok.Builder;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.security.auth.login.AccountNotFoundException;
+import java.util.Optional;
 
 @Service
 @Builder
@@ -95,5 +97,29 @@ public class MemberService {
 
     public Long countPostsByUsername(String username) {
         return memberRepository.countPostsByMemberUsername(username);
+    }
+
+    @Transactional
+    public Member socialLogin(ProviderTypeCode providerTypeCode, String username) {
+
+        Optional<Member> opMember = memberRepository.findByUsername(username);
+
+        return opMember.orElseGet(() -> {
+            Member member = Member.builder().username(username)
+                    .password("")
+                    .providerTypeCode(providerTypeCode)
+                    .authLevel(AuthLevel.MEMBER)
+                    .build();
+
+            return memberRepository.save(member);
+        });
+    }
+
+    @Transactional
+    public String changeUsername(Member member, String newUsername) {
+        memberRepository.findByUsername(newUsername)
+                .orElseThrow(() -> new AlreadyUsedException("이미 사용중인 닉네임입니다."));
+        member.changeUsername(newUsername);
+        return member.getUsername();
     }
 }

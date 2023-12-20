@@ -4,6 +4,8 @@ import com.ll.netmong.base.jwt.JwtAccessDeniedHandler;
 import com.ll.netmong.base.jwt.JwtAuthenticationEntryPoint;
 import com.ll.netmong.base.jwt.JwtSecurityConfig;
 import com.ll.netmong.base.jwt.TokenProvider;
+import com.ll.netmong.base.security.CustomAuthenticationSuccessHandler;
+import com.ll.netmong.base.security.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +26,8 @@ public class WebSecurityConfig {
     private final CorsFilter corsFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -54,6 +58,21 @@ public class WebSecurityConfig {
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+                .oauth2Login(oauth2 -> oauth2
+                        .authorizationEndpoint(authorization -> authorization
+                                .baseUri("/oauth2/authorization")
+                        )
+                        .redirectionEndpoint(redirection -> redirection
+                                .baseUri("/oauth2/code/**")
+                        )
+
+                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService)
+
+                        )
+                        .successHandler(customAuthenticationSuccessHandler)
+
+                )
+
 
                 .apply(new JwtSecurityConfig(tokenProvider));
 

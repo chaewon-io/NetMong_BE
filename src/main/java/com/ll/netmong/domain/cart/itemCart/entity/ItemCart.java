@@ -2,12 +2,15 @@ package com.ll.netmong.domain.cart.itemCart.entity;
 
 import com.ll.netmong.common.BaseEntity;
 import com.ll.netmong.domain.cart.entity.Cart;
+import com.ll.netmong.domain.image.entity.Image;
 import com.ll.netmong.domain.product.entity.Product;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -34,11 +37,15 @@ public class ItemCart extends BaseEntity {
     private String imageUrl;
 
     public static ItemCart createItemCart(Cart cart, Product product, Integer count) {
+        String imageUrl = Optional.ofNullable(product.getImage())
+                .map(Image::getImageUrl)
+                .orElse(null);
+
         return ItemCart.builder()
                 .cart(cart)
                 .product(product)
                 .stackCount(count)
-                .imageUrl(product.getImage().getImageUrl())
+                .imageUrl(imageUrl)
                 .build();
     }
 

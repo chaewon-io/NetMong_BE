@@ -41,7 +41,7 @@ public class PostCommentServiceImpl implements PostCommentService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new DataNotFoundException("해당하는 게시물을 찾을 수 없습니다."));
 
-        Member member = memberRepository.findByUsername(userDetails.getUsername())
+        Member member = memberRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new DataNotFoundException("사용자를 찾을 수 없습니다."));
 
         PostComment comment = PostComment.builder()
@@ -108,12 +108,15 @@ public class PostCommentServiceImpl implements PostCommentService {
     public PostCommentResponse addReplyToComment(Long commentId, PostCommentRequest request, @AuthenticationPrincipal UserDetails userDetails) {
         PostComment parentComment = postCommentRepository.findById(commentId)
                 .orElseThrow(() -> new DataNotFoundException("해당 댓글이 없습니다. id: " + commentId));
-        Member member = memberRepository.findByUsername(userDetails.getUsername())
+        Member member = memberRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new DataNotFoundException("해당하는 회원을 찾을 수 없습니다."));
 
         PostComment childComment = PostComment.builder()
+                .post(parentComment.getPost())
+                .memberID(member)
                 .content(request.getContent())
                 .isDeleted(false)
+                .isBlinded(false)
                 .username(member.getUsername())
                 .build();
 

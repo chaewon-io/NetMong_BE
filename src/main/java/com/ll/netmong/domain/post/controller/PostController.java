@@ -64,7 +64,7 @@ public class PostController {
     @PostMapping("/upload")
     @ResponseStatus(HttpStatus.CREATED)
     public RsData postUpload(@AuthenticationPrincipal UserDetails userDetails, MultipartFile image, PostRequest postRequest) throws Exception {
-        Member foundMember = memberService.findByUsername(userDetails.getUsername());
+        Member foundMember = memberService.findByEmail(userDetails.getUsername());
 
         Post createdPost = postService.uploadPostWithImage(postRequest, image, foundMember);
         PostResponse postResponse = new PostResponse(createdPost);
@@ -84,7 +84,7 @@ public class PostController {
     @DeleteMapping("/{postId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public RsData postDelete(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long postId) throws Exception {
-        Member foundMember = memberService.findByUsername(userDetails.getUsername());
+        Member foundMember = memberService.findByEmail(userDetails.getUsername());
         String foundUsername = foundMember.getUsername();
 
         postService.deletePost(postId, foundUsername);
@@ -97,6 +97,7 @@ public class PostController {
     @ResponseStatus(HttpStatus.OK)
     public RsData postUpdate(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id, UpdatePostRequest updatePostRequest, MultipartFile image) throws Exception {
         Member foundMember = memberService.findByUsername(userDetails.getUsername());
+
         String foundUsername = foundMember.getUsername();
         updatePostRequest.setFoundUsername(foundUsername);
 
@@ -109,8 +110,7 @@ public class PostController {
     @GetMapping("/my-posts")
     @ResponseStatus(HttpStatus.OK)
     public RsData<PageResponse<PostResponse>> viewMyPage(@RequestParam(defaultValue = "1") int page, @AuthenticationPrincipal UserDetails userDetails) throws Exception {
-        String username = userDetails.getUsername();
-        Long memberId = memberService.findByUsername(username).getId();
+        Long memberId = memberService.findByEmail(userDetails.getUsername()).getId();
 
         Pageable pageRequest = PageRequest.of(page - 1, 5);
         Page<PostResponse> myPosts = postService.viewPostsByMemberId(memberId, pageRequest);

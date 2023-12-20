@@ -89,7 +89,7 @@ class ParkServiceImplTest {
         when(parkRepository.findById(parkId)).thenReturn(Optional.ofNullable(existingPark));
 
         Member mockMember = mock(Member.class);
-        when(memberRepository.findByUsername(mockUserDetails.getUsername())).thenReturn(Optional.of(mockMember));
+        when(memberRepository.findByEmail(mockUserDetails.getUsername())).thenReturn(Optional.of(mockMember));
 
         when(likedParkRepository.existsByMemberAndPark(mockMember, existingPark)).thenReturn(true);
 
@@ -128,7 +128,7 @@ class ParkServiceImplTest {
         when(mockUserDetails.getUsername()).thenReturn("nonExistingUsername");
 
         when(parkRepository.findById(parkId)).thenReturn(Optional.ofNullable(existingPark));
-        when(memberRepository.findByUsername(mockUserDetails.getUsername())).thenReturn(Optional.empty());
+        when(memberRepository.findByEmail(mockUserDetails.getUsername())).thenReturn(Optional.empty());
 
         assertThrows(DataNotFoundException.class, () -> parkService.getPark(parkId, mockUserDetails));
     }

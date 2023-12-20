@@ -66,7 +66,7 @@ class LikedPostServiceImplTest {
                 .member(member)
                 .build();
 
-        when(memberRepository.findByUsername(any())).thenReturn(Optional.of(member));
+        when(memberRepository.findByEmail(any())).thenReturn(Optional.of(member));
         when(postRepository.findById(any())).thenReturn(Optional.of(post));
     }
 

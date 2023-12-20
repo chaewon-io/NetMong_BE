@@ -2,6 +2,9 @@ package com.ll.netmong.domain.product.service;
 
 import com.ll.netmong.common.ProductException;
 import com.ll.netmong.domain.image.service.ImageService;
+import com.ll.netmong.domain.member.entity.Member;
+import com.ll.netmong.domain.member.repository.MemberRepository;
+import com.ll.netmong.domain.postComment.exception.DataNotFoundException;
 import com.ll.netmong.domain.product.dto.request.CreateRequest;
 import com.ll.netmong.domain.product.dto.request.UpdateRequest;
 import com.ll.netmong.domain.product.dto.response.ViewAllResponse;
@@ -13,6 +16,7 @@ import com.ll.netmong.domain.product.util.ProductErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,17 +31,19 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
+    private final MemberRepository memberRepository;
     private final ImageService imageService;
 
     @Override
     @Transactional
-    public void createProductWithImage(CreateRequest createRequest, MultipartFile images) throws IOException {
+    public void createProductWithImage(UserDetails currentUser,
+                                       CreateRequest createRequest, MultipartFile images) throws IOException {
         if (!isImageExists(images)) {
-            initProduct(createRequest);
+            initProduct(currentUser, createRequest);
         }
         if (isImageExists(images)) {
-            Product product = initProduct(createRequest);
-            imageService.uploadImage(product, images);
+            Product product = initProduct(currentUser, createRequest);
+            product.addProductImage(imageService.uploadImage(product, images).orElseThrow());
         }
     }
 
@@ -48,7 +54,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ViewAllResponse> viewAllProducts() {
-        return toViewAllResponse(productRepository.findAll());
+        return toViewAllResponse(productRepository.findAllWithImage());
     }
 
     @Override
@@ -74,15 +80,20 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public void updateProduct(Long productId, UpdateRequest updateRequest) {
+    public void updateProduct(UserDetails currentUser,
+                              Long productId, UpdateRequest updateRequest) {
         Product findProduct = validateExistProduct(productId);
+        validateCurrentUser(currentUser, findProduct);
+
         findProduct.modifyProduct(updateRequest);
     }
 
     @Override
     @Transactional
-    public void softDeleteProduct(Long productId) {
-        validateExistProduct(productId);
+    public void softDeleteProduct(UserDetails currentUser,
+                                  Long productId) {
+        validateCurrentUser(currentUser, validateExistProduct(productId));
+
         productRepository.deleteById(productId);
     }
 
@@ -90,13 +101,17 @@ public class ProductServiceImpl implements ProductService {
         return validateExistProduct(productId);
     }
 
-    private Product initProduct(CreateRequest createRequest) {
+    private Product initProduct(UserDetails currentUser, CreateRequest createRequest) {
+        Member findMember = memberRepository.findByUsername(currentUser.getUsername()).orElseThrow(()
+                -> new DataNotFoundException("사용자를 찾을 수 없습니다."));
+
         return productRepository.save(Product.builder()
                 .productName(createRequest.getProductName())
                 .price(createRequest.getPrice())
                 .content(createRequest.getContent())
                 .count(createRequest.getCount())
                 .category(createRequest.getCategory())
+                .member(findMember)
                 .build());
     }
 
@@ -109,6 +124,12 @@ public class ProductServiceImpl implements ProductService {
                 .filter(product -> product != null)
                 .map(ViewAllResponse::new)
                 .collect(Collectors.toList());
+    }
+
+    private void validateCurrentUser(UserDetails currentUser, Product findProduct) {
+        if (!findProduct.getMember().getUsername().equals(currentUser.getUsername())) {
+            throw new ProductException("등록한 사용자가 아니면 변경 할 수 없습니다.", ProductErrorCode.NOT_CHANGE_PRODUCT);
+        }
     }
 
     private Product validateExistProduct(Long productId) {

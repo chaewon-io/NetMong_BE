@@ -34,7 +34,7 @@ public class ReportController {
     @PostMapping("/post/{postId}")
     public RsData<ReportPostResponse> reportPost(@RequestBody ReportRequest reportRequest, @PathVariable Long postId, @AuthenticationPrincipal UserDetails userDetails) throws Exception {
         Post reportedPost = postService.findByPostId(postId);
-        Member reporter = memberService.findByUsername(userDetails.getUsername());
+        Member reporter = memberService.findByEmail(userDetails.getUsername());
         ReportPostResponse reportPostResponse = reportService.reportPost(reportRequest, reportedPost, reporter);
         return RsData.successOf(reportPostResponse);
     }
@@ -42,7 +42,7 @@ public class ReportController {
     @PostMapping("/comment/{commentId}")
     public RsData<ReportCommentResponse> reportComment(@RequestBody ReportRequest reportRequest, @PathVariable Long commentId, @AuthenticationPrincipal UserDetails userDetails) throws Exception {
         PostComment reportedComment = postCommentService.findByCommentId(commentId);
-        Member reporter = memberService.findByUsername(userDetails.getUsername());
+        Member reporter = memberService.findByEmail(userDetails.getUsername());
         ReportCommentResponse reportCommentResponse = reportService.reportComment(reportRequest, reportedComment, reporter);
 
         return RsData.successOf(reportCommentResponse);

@@ -4,8 +4,6 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 public class UpdatePostRequest {
@@ -13,7 +11,6 @@ public class UpdatePostRequest {
     private String title;
     @NotBlank(message = "내용은 필수 입니다.")
     private String content;
-    private List<String> hashtags;
 
     private String foundUsername;
 }

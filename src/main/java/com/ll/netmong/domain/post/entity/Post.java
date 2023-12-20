@@ -88,8 +88,8 @@ public class Post extends BaseEntity {
     @JoinColumn(name = "image_id")
     private Image image;
 
-    public static Image createProductImage(String imageUrl) {
-        return new Image(imageUrl);
+    public static Image createProductImage(String imageUrl, String s3ImageUrl) {
+        return new Image(imageUrl, s3ImageUrl);
     }
 
     public void addPostImage(Image postImage) {

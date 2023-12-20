@@ -19,7 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.UUID;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
@@ -64,7 +66,7 @@ public class LikedParkServiceImplTest {
 
         String username = "testUser" + UUID.randomUUID().toString();
         userDetails = User.withUsername(username).password("testPassword").authorities("USER").build();
-        member = Member.builder().username(username).build();
+        member = Member.builder().email(username).build();
         memberRepository.save(member);
     }
 
@@ -191,7 +193,7 @@ public class LikedParkServiceImplTest {
         for (int i = 0; i < 10; i++) {
             String username = "liker" + UUID.randomUUID().toString();
             UserDetails userDetails = User.withUsername(username).password("testPassword").authorities("USER").build();
-            Member liker = Member.builder().username(username).build();
+            Member liker = Member.builder().email(username).build();
             memberRepository.save(liker);
             likedParkService.addLikeToPark(park, userDetails);
         }

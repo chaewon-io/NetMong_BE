@@ -10,4 +10,5 @@ public class ViewCartResponse {
     private String productName;
     private String price;
     private Integer count;
+    private String imageUrl;
 }

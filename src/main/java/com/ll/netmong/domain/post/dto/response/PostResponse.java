@@ -1,10 +1,12 @@
 package com.ll.netmong.domain.post.dto.response;
 
+import com.ll.netmong.domain.image.entity.Image;
 import com.ll.netmong.domain.post.entity.Post;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 @Getter
 @Setter
@@ -23,7 +25,9 @@ public class PostResponse {
         this.title = post.getTitle();
         this.writer = post.getWriter();
         this.content = post.getContent();
-        this.imageUrl = post.getImage().getImageUrl();
+        this.imageUrl = Optional.ofNullable(post.getImage())
+                .map(Image::getImageUrl)
+                .orElse(null);
         this.createDate = post.getCreateDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         this.likesCount = post.getLikesCount();
     }

@@ -56,7 +56,7 @@ public class LikedParkServiceImpl implements LikedParkService {
     @Override
     @Transactional(readOnly = true)
     public Member getMemberById(@AuthenticationPrincipal UserDetails userDetails) {
-        return memberRepository.findByUsername(userDetails.getUsername())
+        return memberRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new DataNotFoundException("사용자를 찾을 수 없습니다."));
     }
 

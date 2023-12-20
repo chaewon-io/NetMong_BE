@@ -2,6 +2,7 @@ package com.ll.netmong.domain.post.service;
 
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.member.repository.MemberRepository;
+import com.ll.netmong.domain.member.service.MemberService;
 import com.ll.netmong.domain.post.dto.request.PostRequest;
 import com.ll.netmong.domain.post.dto.request.UpdatePostRequest;
 import com.ll.netmong.domain.post.dto.response.PostResponse;
@@ -30,12 +31,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @Transactional
 class PostServiceImplTest {
     String username;
+    String email;
     Member member;
     UserDetails userDetails;
     Post post;
     PostRequest postRequest;
     MockMultipartFile image;
 
+
+    @Autowired
+    private MemberService memberService;
     @Autowired
     private PostService postService;
     @Autowired
@@ -48,10 +53,11 @@ class PostServiceImplTest {
     @BeforeEach
     void setUp() {
         username = "username150";
+        email = "user150@naver.com";
 
-        member = Member.builder().username(username).build();
+        member = Member.builder().username(username).email(email).build();
         memberRepository.save(member);
-        userDetails = User.withUsername(username).password("password150").authorities("USER").build();
+        userDetails = User.withUsername(email).password("password150").authorities("USER").build();
 
         postRequest = new PostRequest();
         postRequest.setTitle("테스트1");
@@ -96,11 +102,13 @@ class PostServiceImplTest {
 
     @Test
     @DisplayName("postId, foundUsername 받아 해당 post를 삭제한다.")
-    public void testDeletePost() {
+    public void testDeletePost() throws Exception {
         // given
+        Member foundMember = memberService.findByEmail(userDetails.getUsername());
+        String foundUsername = foundMember.getUsername();
 
         // when
-        postService.deletePost(post.getId(), userDetails.getUsername());
+        postService.deletePost(post.getId(), foundUsername);
         em.flush();
         em.clear();
 

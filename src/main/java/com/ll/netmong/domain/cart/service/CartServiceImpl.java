@@ -43,7 +43,7 @@ public class CartServiceImpl implements CartService {
     }
 
     private Cart validateExistMember(String findByMemberName) {
-        return cartRepository.findByMemberUsername(findByMemberName)
+        return cartRepository.findByMemberEmail(findByMemberName)
                 .orElseThrow(() -> new ProductException("회원이 존재하지 않습니다.", ProductErrorCode.NOT_EXIST_PRODUCT));
     }
 }

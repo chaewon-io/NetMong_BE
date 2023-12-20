@@ -31,7 +31,7 @@ public class PostCommentServiceImpl implements PostCommentService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
 
-    public PostComment findByid(Long id) {
+    public PostComment findById(Long id) {
         return postCommentRepository.findById(id).orElseThrow();
     }
 
@@ -47,7 +47,7 @@ public class PostCommentServiceImpl implements PostCommentService {
         PostComment comment = PostComment.builder()
                 .post(post)
                 .memberID(member)
-                .username(userDetails.getUsername())
+                .username(member.getUsername())
                 .content(postCommentRequest.getContent())
                 .isDeleted(false)
                 .isBlinded(false)

@@ -30,9 +30,11 @@ public class ImageServiceImpl implements ImageService {
     public <T> Optional<Image> uploadImage(T requestType, MultipartFile file) throws IOException {
         String imageLocation = bucketUrl;
         String imageName = file.getOriginalFilename();
-        String imagePath = imageLocation + imageName;
+        String requestTypeSimpleName = requestType.getClass().getSimpleName() + "/";
 
-        String fileName = requestType.getClass().getSimpleName() + "/" + file.getOriginalFilename();
+        String imagePath = imageLocation + requestTypeSimpleName + imageName;
+
+        String fileName = requestTypeSimpleName + file.getOriginalFilename();
 
         Optional<Image> image = Optional.empty();
 

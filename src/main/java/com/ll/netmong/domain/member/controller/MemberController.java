@@ -86,13 +86,13 @@ public class MemberController {
     public RsData follow(@RequestBody UsernameRequest usernameRequest, @AuthenticationPrincipal UserDetails userDetails) throws Exception {
 
         //팔로우 하는 사람
-        String followerName = userDetails.getUsername();
-        Member follower = memberService.findByEmail(followerName);
+        String followerEmail = userDetails.getUsername();
+        Member follower = memberService.findByEmail(followerEmail);
 
         //팔로우 받는 사람
         Member followee = memberService.findByUsername(usernameRequest.getUsername());
 
-        if (followerName.equals(usernameRequest.getUsername())) {
+        if (follower.getUsername().equals(usernameRequest.getUsername())) {
             return RsData.failOf("follow 실패");
         }
 
@@ -105,8 +105,8 @@ public class MemberController {
     public RsData unfollow(@RequestBody UsernameRequest usernameRequest, @AuthenticationPrincipal UserDetails userDetails) throws Exception {
 
         //언팔로우 하는 사람
-        String followerName = userDetails.getUsername();
-        Member follower = memberService.findByEmail(followerName);
+        String followerEmail = userDetails.getUsername();
+        Member follower = memberService.findByEmail(followerEmail);
 
         //언팔로우 받는 사람
         Member followee = memberService.findByUsername(usernameRequest.getUsername());

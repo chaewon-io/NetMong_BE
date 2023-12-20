@@ -97,7 +97,7 @@ public class ProductServiceImpl implements ProductService {
         productRepository.deleteById(productId);
     }
 
-    public Product getProduct(Long productId) {
+    public Product findProduct(Long productId) {
         return validateExistProduct(productId);
     }
 

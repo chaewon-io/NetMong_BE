@@ -44,6 +44,7 @@ class CartServiceImplTest {
     void create_Cart() {
         Member member = Member.builder()
                 .username("shin")
+                .email("shin@shin.com")
                 .password("qwer1234")
                 .build();
 
@@ -55,7 +56,7 @@ class CartServiceImplTest {
     @DisplayName("유저의 장바구니 조회 확인")
     @Test
     public void read_Member_Cart_ByUser() {
-        String findMemberName = "shin";
+        String findMemberEmail = "shin@shin.com";
         List<ItemCart> mockItemCartList = new ArrayList<>();
 
         // Mockito.mock(사용할 클래스.class) -> 객체 생성, 의존성 주입
@@ -82,7 +83,7 @@ class CartServiceImplTest {
         when(itemCartRepository.findAll()).thenReturn(mockItemCartList);
 
         // When
-        List<ViewCartResponse> result = itemCartService.readMemberCartByUser(findMemberName);
+        List<ViewCartResponse> result = itemCartService.readMemberCartByUser(findMemberEmail);
 
         // Then
         assertThat(1).isEqualTo(result.size());

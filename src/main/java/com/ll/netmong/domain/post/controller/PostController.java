@@ -96,7 +96,7 @@ public class PostController {
     @PatchMapping ("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public RsData postUpdate(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id, UpdatePostRequest updatePostRequest, MultipartFile image) throws Exception {
-        Member foundMember = memberService.findByUsername(userDetails.getUsername());
+        Member foundMember = memberService.findByEmail(userDetails.getUsername());
 
         String foundUsername = foundMember.getUsername();
         updatePostRequest.setFoundUsername(foundUsername);

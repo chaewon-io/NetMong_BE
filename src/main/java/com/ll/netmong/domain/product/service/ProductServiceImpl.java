@@ -74,7 +74,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Page<ViewAllResponse> readPageByProduct(Pageable pageable) {
-        Page<Product> productPage = productRepository.findAll(pageable);
+        Page<Product> productPage = productRepository.findAllPageWithImage(pageable);
         return productPage.map(ViewAllResponse::pageByProduct);
     }
 
@@ -102,7 +102,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private Product initProduct(UserDetails currentUser, CreateRequest createRequest) {
-        Member findMember = memberRepository.findByUsername(currentUser.getUsername()).orElseThrow(()
+        Member findMember = memberRepository.findByEmail(currentUser.getUsername()).orElseThrow(()
                 -> new DataNotFoundException("사용자를 찾을 수 없습니다."));
 
         return productRepository.save(Product.builder()
@@ -127,7 +127,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private void validateCurrentUser(UserDetails currentUser, Product findProduct) {
-        if (!findProduct.getMember().getUsername().equals(currentUser.getUsername())) {
+        if (!findProduct.getMember().getEmail().equals(currentUser.getUsername())) {
             throw new ProductException("등록한 사용자가 아니면 변경 할 수 없습니다.", ProductErrorCode.NOT_CHANGE_PRODUCT);
         }
     }

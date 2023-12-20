@@ -51,7 +51,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         final String email = (String) oAuth2User.getAttributes().get("email");
 
-        Optional<Member> opMember = memberRepository.findByUsername(username);
+        Optional<Member> opMember = memberRepository.findByEmail(email);
 
         final Member member = opMember.orElseGet(() -> {
             Member build = Member.builder().username(username)
@@ -64,8 +64,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             return memberRepository.save(build);
         });
-
-        System.out.println("member = " + member);
 
         return new CustomOAuth2User(member.getUsername(), member.getPassword(), member.getGrantedAuthorities());
     }

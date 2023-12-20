@@ -131,4 +131,10 @@ public class MemberController {
     public Map<String, Object> user(@AuthenticationPrincipal OAuth2User principal) {
         return Collections.singletonMap("name", principal.getAttribute("name"));
     }
+
+    @GetMapping("/username")
+    public RsData<String> getUsername(@AuthenticationPrincipal UserDetails userDetails) throws Exception {
+        String username = memberService.findByEmail(userDetails.getUsername()).getUsername();
+        return RsData.successOf(username);
+    }
 }

@@ -24,8 +24,6 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
 
-        System.out.println("authentication = " + authentication);
-
         TokenDto token = tokenProvider.createToken(authentication);
         String url = makeRedirectUrl(token.getAccess_token());
         getRedirectStrategy().sendRedirect(request, response, url);

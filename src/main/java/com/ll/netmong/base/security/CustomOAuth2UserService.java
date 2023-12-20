@@ -65,7 +65,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             return memberRepository.save(build);
         });
 
-        return new CustomOAuth2User(member.getUsername(), member.getPassword(), member.getGrantedAuthorities());
+        return new CustomOAuth2User(member.getEmail(), member.getPassword(), member.getGrantedAuthorities());
     }
 }
 

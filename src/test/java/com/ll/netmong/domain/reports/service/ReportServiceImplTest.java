@@ -66,7 +66,6 @@ public class ReportServiceImplTest {
                 .title("곧 크리스마스당")
                 .writer("네트멍의 익명 누군가")
                 .content("연말이라닛.. 크리스마스 좋아")
-                .imageUrl("http://127.0.0.1:9000/images/netmongisgoat")
                 .likes(new ArrayList<>())
                 .member(postMember)
                 .build();

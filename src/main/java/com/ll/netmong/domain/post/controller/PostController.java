@@ -6,6 +6,7 @@ import com.ll.netmong.domain.hashtag.service.HashtagService;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.member.service.MemberService;
 import com.ll.netmong.domain.post.dto.request.PostRequest;
+import com.ll.netmong.domain.post.dto.request.UpdatePostRequest;
 import com.ll.netmong.domain.post.dto.response.PostResponse;
 import com.ll.netmong.domain.post.entity.Post;
 import com.ll.netmong.domain.post.service.PostService;
@@ -20,12 +21,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -70,11 +65,8 @@ public class PostController {
     @ResponseStatus(HttpStatus.CREATED)
     public RsData postUpload(@AuthenticationPrincipal UserDetails userDetails, MultipartFile image, PostRequest postRequest) throws Exception {
         Member foundMember = memberService.findByEmail(userDetails.getUsername());
-        String foundUsername = foundMember.getUsername();
 
-        saveImage(image, postRequest);
-
-        Post createdPost = postService.uploadPost(postRequest, foundMember, foundUsername);
+        Post createdPost = postService.uploadPostWithImage(postRequest, image, foundMember);
         PostResponse postResponse = new PostResponse(createdPost);
         hashtagService.saveHashtag(postRequest, createdPost);
 
@@ -103,30 +95,16 @@ public class PostController {
 
     @PatchMapping ("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public RsData postUpdate(@AuthenticationPrincipal UserDetails userDetails, MultipartFile image, @PathVariable Long id, PostRequest updatedPostRequest) throws Exception {
+    public RsData postUpdate(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id, UpdatePostRequest updatePostRequest, MultipartFile image) throws Exception {
         Member foundMember = memberService.findByEmail(userDetails.getUsername());
+
         String foundUsername = foundMember.getUsername();
+        updatePostRequest.setFoundUsername(foundUsername);
 
-        saveImage(image, updatedPostRequest);
+        postService.updatePostWithImage(id, updatePostRequest, image);
+        postHashtagService.updateHashtag(id, updatePostRequest);
 
-        postService.updatePost(id, updatedPostRequest, foundUsername);
-        postHashtagService.updateHashtag(id, updatedPostRequest);
-
-        return RsData.of("S-1", "해당 게시물이 수정되었습니다.", updatedPostRequest);
-    }
-
-    public void saveImage(MultipartFile image, PostRequest postRequest) {
-        String imageName = UUID.randomUUID() + "_" + image.getOriginalFilename(); //동일한 이미지명의 이미지가 업로드되지 않도록
-
-        try {
-            Path imagePath = Path.of(postImagePath, imageName);
-
-            Files.copy(image.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException ex) {
-            throw new RuntimeException("이미지 업로드 실패");
-        }
-
-        postRequest.setImageUrl(domain + "/" + postImagePath + imageName);
+        return RsData.of("S-1", "해당 게시물이 수정되었습니다.", updatePostRequest);
     }
 
     @GetMapping("/my-posts")

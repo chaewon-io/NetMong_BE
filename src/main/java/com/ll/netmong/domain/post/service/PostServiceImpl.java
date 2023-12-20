@@ -1,10 +1,12 @@
 package com.ll.netmong.domain.post.service;
 
 import com.ll.netmong.common.PermissionDeniedException;
+import com.ll.netmong.domain.image.service.ImageService;
 import com.ll.netmong.domain.likedPost.repository.LikedPostRepository;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.member.repository.MemberRepository;
 import com.ll.netmong.domain.post.dto.request.PostRequest;
+import com.ll.netmong.domain.post.dto.request.UpdatePostRequest;
 import com.ll.netmong.domain.post.dto.response.PostResponse;
 import com.ll.netmong.domain.post.entity.Post;
 import com.ll.netmong.domain.post.repository.PostRepository;
@@ -16,9 +18,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiFunction;
 
 @Service
@@ -28,6 +33,7 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final LikedPostRepository likedPostRepository;
     private final MemberRepository memberRepository;
+    private final ImageService imageService;
 
     @Override
     public Page<PostResponse> searchPostsByHashtag (String hashtag, Pageable pageable) {
@@ -54,19 +60,30 @@ public class PostServiceImpl implements PostService {
         return postsPage.map(PostResponse::postsView);
     }
 
-    @Override
-    @Transactional
-    public Post uploadPost(PostRequest postRequest, Member foundMember, String foundUsername) {
+    private Post uploadPost(PostRequest postRequest, Member foundMember) {
         return postRepository.save(Post.builder()
                 .title(postRequest.getTitle())
                 .member(foundMember)
-                .writer(foundUsername)
+                .writer(foundMember.getUsername())
                 .content(postRequest.getContent())
-                .imageUrl(postRequest.getImageUrl()).build());
+                .build());
     }
 
     @Override
-    public PostResponse getDetail(long id, UserDetails userDetails) {
+    @Transactional
+    public Post uploadPostWithImage(PostRequest postRequest, MultipartFile image, Member foundMember) throws IOException {
+        if (Objects.isNull(image) || image.isEmpty()) {
+            throw new IllegalArgumentException("이미지 파일이 없습니다.");
+        }
+
+        Post post = uploadPost(postRequest, foundMember);
+        post.addPostImage(imageService.uploadImage(post, image).orElseThrow());
+
+        return post;
+    }
+
+    @Override
+    public PostResponse getDetail(Long id, UserDetails userDetails) {
         Post originPost = postRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("포스트를 찾을 수 없습니다."));
 
@@ -93,22 +110,29 @@ public class PostServiceImpl implements PostService {
         }
     }
 
-    @Override
-    @Transactional
-    public void updatePost(Long id, PostRequest updatedPostRequest, String foundUsername) {
+    private Post updatePost(Long id, UpdatePostRequest updatePostRequest) {
         Post originPost = postRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("포스트를 찾을 수 없습니다."));
 
-        if (originPost.getWriter().equals(foundUsername)) {
-            Post updatedPost = originPost.toBuilder()
-                    .title(updatedPostRequest.getTitle())
-                    .content(updatedPostRequest.getContent())
-                    .imageUrl(updatedPostRequest.getImageUrl()).build();
-
-            postRepository.save(updatedPost);
+        if (originPost.getWriter().equals(updatePostRequest.getFoundUsername())) {
+            originPost.updatePost(updatePostRequest);
+            postRepository.save(originPost);
         } else {
             throw new PermissionDeniedException("해당 포스트에 대한 수정 권한이 없습니다.");
         }
+
+        return originPost;
+    }
+
+    @Override
+    @Transactional
+    public void updatePostWithImage(Long id, UpdatePostRequest updatePostRequest, MultipartFile image) throws IOException {
+        if (Objects.isNull(image) || image.isEmpty()) {
+            throw new IllegalArgumentException("이미지 파일이 없습니다.");
+        }
+
+        Post post = updatePost(id, updatePostRequest);
+        post.addPostImage(imageService.uploadImage(post, image).orElseThrow());
     }
 
     @Override

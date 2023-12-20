@@ -6,9 +6,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class PostRequest {
+public class UpdatePostRequest {
     @NotBlank(message = "제목은 필수 입니다.")
     private String title;
     @NotBlank(message = "내용은 필수 입니다.")
     private String content;
+
+    private String foundUsername;
 }

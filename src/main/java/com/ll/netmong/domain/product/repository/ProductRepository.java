@@ -12,9 +12,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    List<Product> findByCategory(Category category);
 
-    List<Product> findByProductName(String productName);
+    @Query("select p from Product p join fetch p.image")
+    List<Product> findAllWithImage();
+
+    @Query("select p from Product p join fetch p.image where p.category = :category")
+    List<Product> findByCategory(@Param("category") Category category);
+
+    @Query("select p from Product p join fetch p.image where p.productName = :productName")
+    List<Product> findByProductName(@Param("productName") String productName);
 
     @Lock(value = LockModeType.PESSIMISTIC_WRITE)
     @Query("select s from Product s where s.id = :id")

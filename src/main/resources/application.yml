@@ -39,6 +39,7 @@ cloud:
   aws:
     s3:
       bucket: '${cloud.aws.s3.bucket}'
+      url: '${cloud.aws.s3.url}'
     stack.auto: false
     region.static: ap-northeast-2
     credentials:

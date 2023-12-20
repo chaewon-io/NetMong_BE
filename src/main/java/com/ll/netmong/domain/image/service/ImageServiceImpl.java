@@ -12,8 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,29 +20,35 @@ public class ImageServiceImpl implements ImageService {
     private final AmazonS3Client amazonS3Client;
     private final ImageRepository imageRepository;
 
-    @Value("${spring.servlet.multipart.location}")
-    private String imagePath;
-
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
+    @Value("${cloud.aws.s3.url}")
+    private String bucketUrl;
+
     @Transactional
-    public <T> void uploadImage(T requestType, MultipartFile image) throws IOException {
-        String imageLocation = imagePath;
-        String imageName = image.getOriginalFilename();
-        String imagePath = imageLocation + imageName;
+    public <T> Optional<Image> uploadImage(T requestType, MultipartFile file) throws IOException {
+        String imageLocation = bucketUrl;
+        String imageName = file.getOriginalFilename();
+        String requestTypeSimpleName = requestType.getClass().getSimpleName() + "/";
 
-        validateCreateDirectory(imageLocation);
-        validateTransferImage(imagePath, image);
+        String imagePath = imageLocation + requestTypeSimpleName + imageName;
 
-        String fileName = requestType.getClass().getSimpleName() + "/" + image.getOriginalFilename();
+        String fileName = requestTypeSimpleName + file.getOriginalFilename();
 
-        if (requestType instanceof Product product) {
-            Image productImage = Product.createProductImage(imagePath);
-            product.addProductImage(productImage);
-            imageRepository.save(productImage);
-            createS3Bucket(fileName, image);
+        Optional<Image> image = Optional.empty();
+
+        if (requestType instanceof Product) {
+            Image productImage = Product.createProductImage(fileName, imagePath);
+            image = Optional.of(productImage);
         }
+
+        if (image.isPresent()) {
+            imageRepository.save(image.get());
+            createS3Bucket(fileName, file);
+        }
+
+        return image;
     }
 
     private void createS3Bucket(String fileName, MultipartFile image) throws IOException {
@@ -51,13 +56,5 @@ public class ImageServiceImpl implements ImageService {
         metadata.setContentType(image.getContentType());
         metadata.setContentLength(image.getSize());
         amazonS3Client.putObject(bucket, fileName, image.getInputStream(), metadata);
-    }
-
-    private void validateCreateDirectory(String imageLocation) throws IOException {
-        Files.createDirectories(Path.of(imageLocation));
-    }
-
-    private void validateTransferImage(String imagePath, MultipartFile image) throws IOException {
-        image.transferTo(Path.of(imagePath));
     }
 }

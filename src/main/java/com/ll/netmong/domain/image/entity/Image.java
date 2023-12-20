@@ -20,4 +20,8 @@ public class Image extends BaseImage {
     public Image(String imageUrl) {
         super(imageUrl);
     }
+
+    public Image(String imageUrl, String s3ImageUrl) {
+        super(imageUrl, s3ImageUrl);
+    }
 }

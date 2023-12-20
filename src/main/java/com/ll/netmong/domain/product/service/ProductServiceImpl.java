@@ -43,7 +43,7 @@ public class ProductServiceImpl implements ProductService {
         }
         if (isImageExists(images)) {
             Product product = initProduct(currentUser, createRequest);
-            imageService.uploadImage(product, images);
+            product.addProductImage(imageService.uploadImage(product, images).orElseThrow());
         }
     }
 
@@ -54,7 +54,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ViewAllResponse> viewAllProducts() {
-        return toViewAllResponse(productRepository.findAll());
+        return toViewAllResponse(productRepository.findAllWithImage());
     }
 
     @Override

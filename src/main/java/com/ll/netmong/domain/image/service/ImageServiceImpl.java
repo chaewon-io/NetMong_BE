@@ -40,9 +40,12 @@ public class ImageServiceImpl implements ImageService {
 
         if (requestType instanceof Product) {
             Image productImage = Product.createProductImage(fileName, imagePath);
-            imageRepository.save(productImage);
-            createS3Bucket(fileName, file);
             image = Optional.of(productImage);
+        }
+
+        if (image.isPresent()) {
+            imageRepository.save(image.get());
+            createS3Bucket(fileName, file);
         }
 
         return image;

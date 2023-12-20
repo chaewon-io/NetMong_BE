@@ -30,12 +30,12 @@ public class ItemCartServiceImpl implements ItemCartService {
     private final TransactionTemplate transactionTemplate;
 
     @Override
-    public List<ViewCartResponse> readMemberCartByUser(String findMemberName) {
+    public List<ViewCartResponse> readMemberCartByUser(String findMemberEmail) {
         List<ItemCart> findItemCart = itemCartRepository.findAll();
         List<ViewCartResponse> memberProducts = new ArrayList<>();
 
         for (ItemCart itemCart : findItemCart) {
-            if (itemCart.getCart().getMember().getUsername().equals(findMemberName)) {
+            if (itemCart.getCart().getMember().getEmail().equals(findMemberEmail)) {
                 ViewCartResponse viewCartResponse = new ViewCartResponse();
 
                 viewCartResponse.setProductId(itemCart.getProduct().getId());

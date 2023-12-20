@@ -58,7 +58,7 @@ public class ItemCartServiceImpl implements ItemCartService {
 
     @Override
     public void addToCartForNewProduct(Cart cart, Long productId, ProductCountRequest productCountRequest) {
-        Product product = productService.getProduct(productId);
+        Product product = productService.findProduct(productId);
         removeStock(productId, productCountRequest.getCount());
         cart.addCount(productCountRequest.getCount());
         ItemCart itemCart = ItemCart.createItemCart(cart, product, productCountRequest.getCount());
@@ -102,5 +102,11 @@ public class ItemCartServiceImpl implements ItemCartService {
         if (restStock < MINIMUM_STOCK_COUNT) {
             throw new ProductException("남아있는 재고가 부족합니다.", ProductErrorCode.NOT_ENOUGH_PRODUCT_STOCK);
         }
+    }
+
+    @Override
+    public String findMemberEmailByProductId(Long productId) {
+        Product findProduct = productService.findProduct(productId);
+        return findProduct.getMember().getEmail();
     }
 }

@@ -15,4 +15,6 @@ public interface ItemCartService {
     void addToCartForExistingProduct(ItemCart findItemCart, Cart cart, ProductCountRequest productCountRequest);
 
     ItemCart getItemCart(Cart cart, Long productId);
+
+    String findMemberEmailByProductId(Long productId);
 }

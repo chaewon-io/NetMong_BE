@@ -82,7 +82,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DuplicateReportException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.CONFLICT)
     public RsData handleDuplicateReport(DuplicateReportException e) {
         return RsData.failOf(e.getMessage());
     }

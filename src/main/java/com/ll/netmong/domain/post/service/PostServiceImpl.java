@@ -103,7 +103,7 @@ public class PostServiceImpl implements PostService {
         Post originPost = postRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("포스트를 찾을 수 없습니다."));
 
-        if (originPost.getWriter().equals(foundUsername)) {
+        if (originPost.getMember().getUsername().equals(foundUsername)) {
             postRepository.deleteById(postId);
         } else {
             throw new PermissionDeniedException("해당 포스트에 대한 삭제 권한이 없습니다.");
@@ -114,7 +114,7 @@ public class PostServiceImpl implements PostService {
         Post originPost = postRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("포스트를 찾을 수 없습니다."));
 
-        if (originPost.getWriter().equals(updatePostRequest.getFoundUsername())) {
+        if (originPost.getMember().getUsername().equals(updatePostRequest.getFoundUsername())) {
             originPost.updatePost(updatePostRequest);
             postRepository.save(originPost);
         } else {

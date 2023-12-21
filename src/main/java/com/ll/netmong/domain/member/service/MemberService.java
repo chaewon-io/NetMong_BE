@@ -117,8 +117,10 @@ public class MemberService {
 
     @Transactional
     public String changeUsername(Member member, String newUsername) {
-        memberRepository.findByUsername(newUsername)
-                .orElseThrow(() -> new AlreadyUsedException("이미 사용중인 닉네임입니다."));
+        Optional<Member> optMember = memberRepository.findByUsername(newUsername);
+        if (optMember.isPresent()) {
+            throw new AlreadyUsedException("이미 사용중인 닉네임입니다.");
+        }
         member.changeUsername(newUsername);
         return member.getUsername();
     }

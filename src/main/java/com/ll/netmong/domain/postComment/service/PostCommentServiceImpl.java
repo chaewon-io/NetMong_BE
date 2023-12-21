@@ -98,7 +98,10 @@ public class PostCommentServiceImpl implements PostCommentService {
     }
 
     private void checkCommentAuthor(PostComment comment, UserDetails userDetails) {
-        if (!comment.getUsername().equals(userDetails.getUsername())) {
+        Member member = memberRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new DataNotFoundException("해당하는 회원을 찾을 수 없습니다."));
+
+        if (!comment.getUsername().equals(member.getUsername())) {
             throw new AccessDeniedException("댓글 작성자만 수정할 수 있습니다.");
         }
     }

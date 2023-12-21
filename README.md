@@ -1,6 +1,8 @@
 # NetMong
 
-반려동물 커뮤니티, **NetMong**  
+반려동물 커뮤니티, **NetMong**
+
+https://netmong.kkbk.me/
 
 ## 서비스 소개
 반려동물 양육 가구가 증가함에 따라 관련 관심사도 주목되고 있습니다.  
@@ -104,3 +106,137 @@ https://netmong.kkbk.me/
 - 신고된 게시글 및 댓글 관리
   <img width="1251" alt="스크린샷 2023-12-21 오후 2 05 42" src="https://github.com/besp-team1/NetMong/assets/82140052/2b041237-cbac-402e-9664-796870558c1a">
 
+
+### 패키지 구조
+```bash
+└── src
+   ├── main
+   	├── java
+	│  └── com
+	│	└── ll
+	│	  └── netmong
+	│	    ├── base
+	│	    │  ├── config
+	│	    │  ├── exceptionhandler
+	│	    │  ├── jwt
+	│	    │  └── security
+	│	    ├── common
+	│	    │	
+	│	    │
+	│	    └── domain
+	│	      ├─── cart
+	│	          ├─── controller
+	│	          ├─── dto
+	│	            ├─── request
+	│	            └─── response
+	│	          ├─── entity
+	│	          ├─── itemCart
+	│	           ├─── entity
+	│	           ├─── repository
+	│	           └─── service
+	│	         ├─── repository
+	│	         └─── service
+	│	      ├─── follow
+   	│	         ├─── controller
+	│		 ├─── dto
+	│		 ├─── exception
+	│		 ├─── entity
+	│		 ├─── repository
+	│		 └─── service	
+	│	      ├─── hashtag
+	│		 ├─── entity
+	│		 ├─── repository
+	│		 └─── service
+	│	      ├─── image
+	│		 ├─── entity
+	│		 ├─── repository
+	│		 └─── service
+	│	      ├─── likedPost
+	│		 ├─── controller
+	│		 ├─── dto
+	│	           ├─── request
+	│	 	   └─── response
+	│		 ├─── entity
+	│		 ├─── exception
+	│		 ├─── repository
+	│		 └─── service
+     	│	      ├─── likePark
+	│		 ├─── controller
+	│		 ├─── dto
+	│	           ├─── request
+	│		   └─── response
+	│		 ├─── entity
+	│		 ├─── repository
+	│		 └─── service
+	│	      ├─── member
+	│		 ├─── controller
+	│		 ├─── dto
+	│		 ├─── entity
+	│		 ├─── exception
+	│		 ├─── repository
+	│		 └─── service	
+	│	      ├─── park
+	│		 ├─── controller
+	│		 ├─── dto
+	│		   └─── response
+	│		 ├─── entity
+	│		 ├─── exception
+	│		 ├─── repository
+	│	 	 └─── service
+	│	      ├─── parkComment
+	│		 ├─── controller
+	│		 ├─── dto
+	│	           ├─── request
+	│		   └─── response
+	│		 ├─── entity
+	│		 ├─── repository
+	│		 └─── service
+	│	      ├─── post
+	│		 ├─── controller
+	│		 ├─── dto
+	│	           ├─── request
+	│		   └─── response
+	│		 ├─── entity
+	│		 ├─── repository
+	│		 └─── service
+	│	      ├─── postComment
+	│		 ├─── controller
+	│		 ├─── dto
+	│	           ├─── request
+	│		   └─── response
+	│		 ├─── entity
+	│		 ├─── exception
+	│		 ├─── repository
+	│		 └─── service
+	│	      ├─── postHashtag
+	│		 ├─── entity
+	│		 ├─── repository
+	│		 └─── service
+	│	      ├─── product
+	│		 ├─── controller
+	│		 ├─── dto
+	│	           ├─── request
+	│		   └─── response
+	│		 ├─── entity
+	│		 ├─── repository
+	│		 ├─── service
+	│		 └─── util
+	│	      └─── reports
+	│		 ├─── controller
+	│		 ├─── dto
+	│	            ├─── request
+	│	 	    └─── response
+	│		 ├─── entity
+	│		 ├─── repository
+	│	 	 ├─── service
+	│		 └─── util
+	│							
+        │
+        │
+        │
+	└── resource
+  	  ├── application.yml
+   	  ├── application-secret.yml
+          └── application-test.yml
+
+``` 

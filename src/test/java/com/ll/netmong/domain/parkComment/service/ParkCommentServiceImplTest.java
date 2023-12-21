@@ -52,9 +52,9 @@ public class ParkCommentServiceImplTest {
         park = Park.builder().comments(new ArrayList<>()).build();
         park = parkRepository.save(park);
 
-        String username = "testUser" + UUID.randomUUID().toString();
-        userDetails = User.withUsername(username).password("testPassword").authorities("USER").build();
-        member = Member.builder().email(username).build();
+        String testUsername = "testUser" + UUID.randomUUID().toString();
+        userDetails = User.withUsername(testUsername).password("testPassword").authorities("USER").build();
+        member = Member.builder().email(userDetails.getUsername()).username(testUsername).build();
         memberRepository.save(member);
 
         parkCommentRequest = new ParkCommentRequest();
@@ -69,8 +69,8 @@ public class ParkCommentServiceImplTest {
         ParkComment savedComment = parkCommentRepository.findById(result.getId())
                 .orElseThrow(() -> new DataNotFoundException("댓글을 찾을 수 없습니다."));
 
-        assertEquals(savedComment.getContent(), parkCommentRequest.getContent());
-        assertEquals(savedComment.getUsername(), userDetails.getUsername());
+        assertEquals(savedComment.getContent(), parkCommentRequest.getContent(), "댓글의 내용이 일치하지 않습니다.");
+        assertEquals(savedComment.getUsername(), member.getUsername(), "댓글 작성자의 이름이 일치하지 않습니다.");
     }
 
     @Test

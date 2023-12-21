@@ -8,7 +8,7 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class MemberRepositoryImpl implements MemberRepository{
+public class MemberRepositoryImpl implements MemberRepository {
     private final MemberJpaRepository memberJpaRepository;
 
     @Override
@@ -24,5 +24,20 @@ public class MemberRepositoryImpl implements MemberRepository{
     @Override
     public Optional<Member> findByUsername(String username) {
         return memberJpaRepository.findByUsername(username);
+    }
+
+    @Override
+    public Boolean existsByUsername(String admin) {
+        return memberJpaRepository.existsByUsername(admin);
+    }
+
+    @Override
+    public Long countPostsByMemberUsername(String username) {
+        return memberJpaRepository.countPostsByMemberUsername(username);
+    }
+
+    @Override
+    public Optional<Member> findByEmail(String email) {
+        return memberJpaRepository.findByEmail(email);
     }
 }

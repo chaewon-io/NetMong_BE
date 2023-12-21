@@ -1,8 +1,12 @@
 package com.ll.netmong.domain.park.service;
 
+import com.ll.netmong.domain.likePark.repository.LikedParkRepository;
+import com.ll.netmong.domain.member.entity.Member;
+import com.ll.netmong.domain.member.repository.MemberRepository;
 import com.ll.netmong.domain.park.dto.response.ParkResponse;
 import com.ll.netmong.domain.park.entity.Park;
 import com.ll.netmong.domain.park.repository.ParkRepository;
+import com.ll.netmong.domain.postComment.exception.DataNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Arrays;
@@ -20,6 +25,7 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -28,6 +34,12 @@ class ParkServiceImplTest {
 
     @MockBean
     private ParkRepository parkRepository;
+
+    @MockBean
+    private MemberRepository memberRepository;
+
+    @MockBean
+    private LikedParkRepository likedParkRepository;
 
     @Autowired
     private ParkService parkService;
@@ -61,7 +73,7 @@ class ParkServiceImplTest {
     }
 
     @Test
-    @DisplayName("getPark() 메서드는 유효한 parkId를 입력받으면, 해당 ParkResponse를 반환해야 한다.")
+    @DisplayName("getPark() 메서드는 유효한 parkId를 입력받으면, ParkResponse를 반환하고, isLiked 필드를 설정 한다.")
     void testGetParkExists() {
         Long parkId = 1L;
         Park existingPark = sampleParks.stream()
@@ -71,12 +83,21 @@ class ParkServiceImplTest {
 
         assertNotNull(existingPark);
 
+        UserDetails mockUserDetails = mock(UserDetails.class);
+        when(mockUserDetails.getUsername()).thenReturn("testUsername");
+
         when(parkRepository.findById(parkId)).thenReturn(Optional.ofNullable(existingPark));
 
-        ParkResponse result = parkService.getPark(parkId);
+        Member mockMember = mock(Member.class);
+        when(memberRepository.findByEmail(mockUserDetails.getUsername())).thenReturn(Optional.of(mockMember));
+
+        when(likedParkRepository.existsByMemberAndPark(mockMember, existingPark)).thenReturn(true);
+
+        ParkResponse result = parkService.getPark(parkId, mockUserDetails);
 
         assertThat(result).isNotNull();
         assertThat(result.getParkNm()).isEqualTo(existingPark.getParkNm());
+        assertThat(result.getIsLiked()).isTrue();
     }
 
     @Test
@@ -84,9 +105,32 @@ class ParkServiceImplTest {
     void testGetParkNotExists() {
         Long parkId = 1L;
 
+        UserDetails mockUserDetails = mock(UserDetails.class);
+        when(mockUserDetails.getUsername()).thenReturn("testUsername");
+
         when(parkRepository.findById(parkId)).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class, () -> parkService.getPark(parkId));
+        assertThrows(IllegalArgumentException.class, () -> parkService.getPark(parkId, mockUserDetails));
+    }
+
+    @Test
+    @DisplayName("getPark() 메서드는 존재하지 않는 username을 입력받으면, DataNotFoundException을 발생시켜야 한다.")
+    void testGetParkUserNotExists() {
+        Long parkId = 1L;
+        Park existingPark = sampleParks.stream()
+                .filter(park -> park.getId().equals(parkId))
+                .findFirst()
+                .orElse(null);
+
+        assertNotNull(existingPark);
+
+        UserDetails mockUserDetails = mock(UserDetails.class);
+        when(mockUserDetails.getUsername()).thenReturn("nonExistingUsername");
+
+        when(parkRepository.findById(parkId)).thenReturn(Optional.ofNullable(existingPark));
+        when(memberRepository.findByEmail(mockUserDetails.getUsername())).thenReturn(Optional.empty());
+
+        assertThrows(DataNotFoundException.class, () -> parkService.getPark(parkId, mockUserDetails));
     }
 
     @Test
@@ -176,3 +220,4 @@ class ParkServiceImplTest {
     }
 
 }
+

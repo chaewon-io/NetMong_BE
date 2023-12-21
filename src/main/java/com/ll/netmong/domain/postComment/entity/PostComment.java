@@ -6,6 +6,7 @@ import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.post.entity.Post;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -46,6 +47,14 @@ public class PostComment extends BaseEntity {
 
     private String username;
 
+    @Builder.Default
+    @Column(name = "reports_count", nullable = false)
+    private Integer reportCount = 0; // 신고된 횟수
+
+    @ColumnDefault("FALSE")
+    @Column(nullable = false)
+    private Boolean isBlinded;  // 블라인드 처리 여부
+
     public void updateContent(String content) {
         this.content = content;
     }
@@ -65,5 +74,16 @@ public class PostComment extends BaseEntity {
 
     public void setPost(Post post) {
         this.post = post;
+    }
+
+    public void increaseReportCount() { // 신고 횟수 증가 메소드
+        this.reportCount++;
+    }
+
+    public void checkAndBlindComment() { // 신고 횟수가 10회 이상이면 댓글 블라인드 처리
+        if (this.reportCount >= 10) {
+            this.isBlinded = true;
+            this.content = "신고가 누적되어 블라인드 처리되었습니다.";
+        }
     }
 }

@@ -2,17 +2,22 @@ package com.ll.netmong.domain.member.controller;
 
 import com.ll.netmong.base.jwt.TokenDto;
 import com.ll.netmong.common.RsData;
-import com.ll.netmong.domain.member.dto.ChangePasswordRequest;
-import com.ll.netmong.domain.member.dto.JoinRequest;
-import com.ll.netmong.domain.member.dto.LoginDto;
-import com.ll.netmong.domain.member.dto.UsernameRequest;
+import com.ll.netmong.domain.cart.service.CartService;
+import com.ll.netmong.domain.follow.dto.FollowCountDto;
+import com.ll.netmong.domain.follow.service.FollowService;
+import com.ll.netmong.domain.member.dto.*;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.member.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/members")
@@ -20,6 +25,8 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
+    private final CartService cartService;
+    private final FollowService followService;
 
     @GetMapping("/find")
     public Member findMember() {
@@ -27,9 +34,10 @@ public class MemberController {
     }
 
     @PostMapping("/join")
-    public RsData<String> join(@Valid @RequestBody JoinRequest joinRequest) {
+    public RsData<String> join(@Valid @RequestBody JoinRequest joinRequest) throws Exception {
 
         String username = memberService.createMember(joinRequest).getUsername();
+        cartService.createCart(memberService.findByEmail(joinRequest.getEmail()));
 
         return RsData.successOf(username);
     }
@@ -42,6 +50,16 @@ public class MemberController {
         }
 
         return RsData.of("S-1", "사용가능한 아이디입니다.");
+    }
+
+    @PostMapping("/dup-email")
+    public RsData checkDupUsername(@Valid @RequestBody EmailRequest emailRequest) {
+
+        if (memberService.isDuplicateEmail(emailRequest)) {
+            return RsData.of("F-1", "이미 중복된 이메일이 있습니다.");
+        }
+
+        return RsData.of("S-1", "사용가능한 이메일입니다.");
     }
 
     @PostMapping("/login")
@@ -62,5 +80,76 @@ public class MemberController {
         String username = memberService.changePassword(userDetails, changePasswordRequest.getOldPassword(),
                 changePasswordRequest.getNewPassword());
         return RsData.successOf(username + "님의 비밀번호가 변경되었습니다.");
+    }
+
+    @PostMapping("/follow")
+    public RsData follow(@RequestBody UsernameRequest usernameRequest, @AuthenticationPrincipal UserDetails userDetails) throws Exception {
+
+        //팔로우 하는 사람
+        String followerEmail = userDetails.getUsername();
+        Member follower = memberService.findByEmail(followerEmail);
+
+        //팔로우 받는 사람
+        Member followee = memberService.findByUsername(usernameRequest.getUsername());
+
+        if (follower.getUsername().equals(usernameRequest.getUsername())) {
+            return RsData.failOf("follow 실패");
+        }
+
+        followService.follow(follower, followee);
+
+        return RsData.successOf("follow 성공");
+    }
+
+    @PostMapping("/unfollow")
+    public RsData unfollow(@RequestBody UsernameRequest usernameRequest, @AuthenticationPrincipal UserDetails userDetails) throws Exception {
+
+        //언팔로우 하는 사람
+        String followerEmail = userDetails.getUsername();
+        Member follower = memberService.findByEmail(followerEmail);
+
+        //언팔로우 받는 사람
+        Member followee = memberService.findByUsername(usernameRequest.getUsername());
+        followService.unfollow(follower, followee);
+
+        return RsData.successOf("unfollow 성공");
+    }
+
+    @GetMapping("/{username}")
+    public RsData<MemberDetailDto> showMember(@PathVariable String username, @AuthenticationPrincipal UserDetails userDetails) throws Exception {
+
+        Member loginMember = memberService.findByEmail(userDetails.getUsername());
+        Member pathMember = memberService.findByUsername(username);
+
+        FollowCountDto followCountDto = followService.countFollowerAndFollowee(pathMember);
+        Boolean following = followService.isFollowing(loginMember, pathMember);
+
+        Long postCount = memberService.countPostsByUsername(username);
+        return RsData.successOf(new MemberDetailDto(following, followCountDto.getFollowerCount(), followCountDto.getFolloweeCount(), postCount));
+    }
+
+    @GetMapping("/user")
+    public Map<String, Object> user(@AuthenticationPrincipal OAuth2User principal) {
+        return Collections.singletonMap("name", principal.getAttribute("name"));
+    }
+
+    @GetMapping("/username")
+    public RsData<String> getUsername(@AuthenticationPrincipal UserDetails userDetails) throws Exception {
+        String username = memberService.findByEmail(userDetails.getUsername()).getUsername();
+        return RsData.successOf(username);
+    }
+
+    @PatchMapping("/change-username")
+    public RsData<String> changeUsername(@Valid @RequestBody ChangeUsernameRequest changeUsernameRequest, @AuthenticationPrincipal UserDetails userDetails) throws Exception {
+
+        Member member = memberService.findByEmail(userDetails.getUsername());
+        LocalDateTime usernameUpdatedTime = member.getUsernameUpdatedTime();
+
+        if (usernameUpdatedTime != null && usernameUpdatedTime.plusDays(1L).isAfter(LocalDateTime.now())) {
+            return RsData.failOf("닉네임 변경 후 24시간 후에 재변경 가능합니다.");
+        }
+        String username = memberService.changeUsername(member,
+                changeUsernameRequest.getNewUsername());
+        return RsData.successOf(username + " 으로 닉네임이 변경되었습니다.");
     }
 }

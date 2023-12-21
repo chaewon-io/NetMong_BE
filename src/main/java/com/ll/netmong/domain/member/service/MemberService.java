@@ -2,12 +2,14 @@ package com.ll.netmong.domain.member.service;
 
 import com.ll.netmong.base.jwt.TokenDto;
 import com.ll.netmong.base.jwt.TokenService;
+import com.ll.netmong.domain.member.dto.EmailRequest;
 import com.ll.netmong.domain.member.dto.JoinRequest;
 import com.ll.netmong.domain.member.dto.LoginDto;
 import com.ll.netmong.domain.member.dto.UsernameRequest;
 import com.ll.netmong.domain.member.entity.AuthLevel;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.member.entity.ProviderTypeCode;
+import com.ll.netmong.domain.member.exception.AlreadyUsedException;
 import com.ll.netmong.domain.member.exception.NotMatchPasswordException;
 import com.ll.netmong.domain.member.repository.MemberRepository;
 import lombok.Builder;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.security.auth.login.AccountNotFoundException;
+import java.util.Optional;
 
 @Service
 @Builder
@@ -52,9 +55,13 @@ public class MemberService {
         return memberRepository.findByUsername(username).isPresent();
     }
 
+    public boolean isDuplicateEmail(EmailRequest emailRequest) {
+        return memberRepository.findByEmail(emailRequest.getEmail()).isPresent();
+    }
+
     public TokenDto login(LoginDto loginDto) throws Exception {
 
-        Member member = memberRepository.findByUsername(loginDto.getUsername())
+        Member member = memberRepository.findByEmail(loginDto.getEmail())
                 .orElseThrow(() -> new AccountNotFoundException("아이디/비밀번호가 잘못되었습니다."));
 
         boolean matches = passwordEncoder.matches(loginDto.getPassword(), member.getPassword());
@@ -65,20 +72,56 @@ public class MemberService {
         return tokenService.provideTokenWithLoginDto(loginDto);
     }
 
+    public Member findByEmail(String email) throws Exception {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new AccountNotFoundException("User not Found"));
+    }
+
 
     public Member findByUsername(String username) throws Exception {
         return memberRepository.findByUsername(username)
                 .orElseThrow(() -> new AccountNotFoundException("User not Found"));
     }
 
+    @Transactional
     public String changePassword(UserDetails userDetails, String oldPassword, String newPassword) throws Exception {
 
-        Member member = findByUsername(userDetails.getUsername());
+        Member member = findByEmail(userDetails.getUsername());
 
         if (passwordEncoder.matches(oldPassword, member.getPassword())) {
             member.changePassword(newPassword);
             member.encryptPassword(passwordEncoder);
         }
         return memberRepository.save(member).getUsername();
+    }
+
+    public Long countPostsByUsername(String username) {
+        return memberRepository.countPostsByMemberUsername(username);
+    }
+
+    @Transactional
+    public Member socialLogin(ProviderTypeCode providerTypeCode, String username) {
+
+        Optional<Member> opMember = memberRepository.findByUsername(username);
+
+        return opMember.orElseGet(() -> {
+            Member member = Member.builder().username(username)
+                    .password("")
+                    .providerTypeCode(providerTypeCode)
+                    .authLevel(AuthLevel.MEMBER)
+                    .build();
+
+            return memberRepository.save(member);
+        });
+    }
+
+    @Transactional
+    public String changeUsername(Member member, String newUsername) {
+        Optional<Member> optMember = memberRepository.findByUsername(newUsername);
+        if (optMember.isPresent()) {
+            throw new AlreadyUsedException("이미 사용중인 닉네임입니다.");
+        }
+        member.changeUsername(newUsername);
+        return member.getUsername();
     }
 }

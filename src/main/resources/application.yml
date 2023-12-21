@@ -1,14 +1,15 @@
 server:
   port: 9000
 spring:
-  spring:
-    config:
-      activate:
-        on-profile: local
+  transaction:
+    default-timeout: '${custom.transaction.default-timeout}'
   profiles:
-    active:
+    active: prod
     include: secret
   datasource:
+    hikari:
+      maximum-pool-size: '${custom.hikari.maximum-pool-size}'
+      idle-timeout: '${custom.hikari.idle-timeout}'
     driver-class-name: org.mariadb.jdbc.Driver
     url: '${custom.db.url}'
     username: '${custom.db.username}'
@@ -29,9 +30,31 @@ spring:
       location: '${custom.image.url}'
       max-request-size: 500MB
       max-file-size: 500MB
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-name: Google
+            redirect-uri: '${custom.site.baseUrl}/oauth2/code/{registrationId}'
+            scope:
+              - email
+              - profile
+
+cloud:
+  aws:
+    s3:
+      bucket: '${cloud.aws.s3.bucket}'
+      url: '${cloud.aws.s3.url}'
+    stack.auto: false
+    region.static: ap-northeast-2
+    credentials:
+      accessKey: '${cloud.aws.s3.credentials.accessKey}'
+      secretKey: '${cloud.aws.s3.credentials.secretKey}'
 
 logging:
   level:
     root: INFO
+    org.hibernate.orm.jdbc.bind: trace
 
 domain: '${custom.image.domain}'

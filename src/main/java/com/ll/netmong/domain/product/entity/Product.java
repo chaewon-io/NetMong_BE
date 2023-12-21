@@ -2,27 +2,24 @@ package com.ll.netmong.domain.product.entity;
 
 import com.ll.netmong.common.BaseEntity;
 import com.ll.netmong.domain.image.entity.Image;
+import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.product.dto.request.UpdateRequest;
 import com.ll.netmong.domain.product.util.Category;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.SQLDelete;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Getter
+@DynamicInsert
 @Table(name = "product")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuperBuilder(toBuilder = true)
-@SQLDelete(sql = "UPDATE product SET deleted_at = CURRENT_TIMESTAMP where id = ?")
+@Where(clause = "status = 'Y'")
+@SQLDelete(sql = "UPDATE product SET status = 'N' where id = ?")
 public class Product extends BaseEntity {
     @Column(name = "product_name")
     private String productName;
@@ -35,28 +32,31 @@ public class Product extends BaseEntity {
     private String content;
 
     @Column(name = "product_count")
+    @Setter
     private Integer count;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "product_category")
     private Category category;
 
-    @Column(name = "deleted_at")
-    private String deleteDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
-
-    @OneToMany(
-            mappedBy = "product",
-            orphanRemoval = true)
     @Builder.Default
-    private List<Image> productImages = new ArrayList<>();
+    @Column(nullable = false)
+    private String status = "Y";
 
-    public static Image createProductImage(String imageUrl) {
-        return new Image(imageUrl);
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    @OneToOne(orphanRemoval = true)
+    @JoinColumn(name = "image_id")
+    private Image image;
+
+    public static Image createProductImage(String imageUrl, String s3ImageUrl) {
+        return new Image(imageUrl, s3ImageUrl);
     }
 
     public void addProductImage(Image productImage) {
-        productImages.add(productImage);
-        productImage.setProduct(this);
+        this.image = productImage;
     }
 
     public void modifyProduct(UpdateRequest updateRequest) {
@@ -65,6 +65,5 @@ public class Product extends BaseEntity {
         this.count = updateRequest.getCount();
         this.content = updateRequest.getContent();
         this.category = updateRequest.getCategory();
-
     }
 }

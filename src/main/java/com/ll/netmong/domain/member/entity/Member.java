@@ -1,7 +1,10 @@
 package com.ll.netmong.domain.member.entity;
 
 import com.ll.netmong.common.BaseEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -9,6 +12,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,22 +28,25 @@ public class Member extends BaseEntity {
     private ProviderTypeCode providerTypeCode;
 
     @Column(unique = true)
-    private String username;
+    private String email;
     private String password;
 
+    @Column(unique = true)
+    private String username;
+    private LocalDateTime usernameUpdatedTime;
+
     private String realName;
-    private String email;
 
     // 스프링 시큐리티 규격
     public List<? extends GrantedAuthority> getGrantedAuthorities() {
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
 
         // 모든 멤버는 member 권한을 가진다.
-        grantedAuthorities.add(new SimpleGrantedAuthority("member"));
+        grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_MEMBER"));
 
         // username이 admin인 회원은 추가로 admin 권한도 가진다.
         if ("admin".equals(username)) {
-            grantedAuthorities.add(new SimpleGrantedAuthority("admin"));
+            grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
         }
 
         return grantedAuthorities;
@@ -51,5 +58,9 @@ public class Member extends BaseEntity {
 
     public void changePassword(String newPassword) {
         this.password = newPassword;
+    }
+
+    public void changeUsername(String newUsername) {
+        this.username = newUsername;
     }
 }

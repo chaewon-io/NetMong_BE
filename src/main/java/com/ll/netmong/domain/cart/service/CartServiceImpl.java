@@ -9,6 +9,7 @@ import com.ll.netmong.domain.cart.repository.CartRepository;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.product.util.ProductErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,8 +31,9 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
-    public void addProductByCart(String findByMemberName, Long productId, ProductCountRequest productCountRequest) {
-        Cart cart = validateExistMember(findByMemberName);
+    public void addProductByCart(UserDetails currentUser, Long productId, ProductCountRequest productCountRequest) {
+        Cart cart = validateExistMember(currentUser);
+        validateSelfAddProduct(currentUser, productId);
 
         Optional<ItemCart> findItemCart = Optional.ofNullable(itemCartService.getItemCart(cart, productId));
 
@@ -42,8 +44,15 @@ public class CartServiceImpl implements CartService {
         itemCartService.addToCartForExistingProduct(findItemCart.get(), cart, productCountRequest);
     }
 
-    private Cart validateExistMember(String findByMemberName) {
-        return cartRepository.findByMemberEmail(findByMemberName)
+    private Cart validateExistMember(UserDetails currentUser) {
+        return cartRepository.findByMemberEmail(currentUser.getUsername())
                 .orElseThrow(() -> new ProductException("회원이 존재하지 않습니다.", ProductErrorCode.NOT_EXIST_PRODUCT));
+    }
+
+    private void validateSelfAddProduct(UserDetails currentUser, Long productId) {
+        if (itemCartService.findMemberEmailByProductId(productId).equals(currentUser.getUsername())) {
+            throw new ProductException("본인이 등록한 상품은 장바구니에 담을 수 없습니다.",
+                    ProductErrorCode.NOT_SELF_ADD_PRODUCT_CART);
+        }
     }
 }

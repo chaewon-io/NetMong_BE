@@ -15,7 +15,7 @@ import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    @Query("select p from Product p join fetch p.image")
+    @Query("select p from Product p join fetch p.image order by p.id desc")
     List<Product> findAllWithImage();
 
     @Query("select p from Product p join fetch p.image where p.category = :category")
@@ -24,7 +24,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("select p from Product p join fetch p.image where p.productName = :productName")
     List<Product> findByProductName(@Param("productName") String productName);
 
-    @Query("select p from Product p left join fetch p.image")
+    @Query("select p from Product p left join fetch p.image order by p.id desc")
     Page<Product> findAllPageWithImage(Pageable pageable);
 
     @Lock(value = LockModeType.PESSIMISTIC_WRITE)

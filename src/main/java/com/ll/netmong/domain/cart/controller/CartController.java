@@ -24,12 +24,10 @@ public class CartController {
     }
 
     @PostMapping("{productId}")
-    public RsData addMyCart(@AuthenticationPrincipal UserDetails userDetails,
+    public RsData addMyCart(@AuthenticationPrincipal UserDetails currentUser,
                             @PathVariable(name = "productId") Long productId,
                             @RequestBody ProductCountRequest productCountRequest) {
-        String findMemberName = userDetails.getUsername();
-        cartService.addProductByCart(findMemberName, productId, productCountRequest);
-
+        cartService.addProductByCart(currentUser, productId, productCountRequest);
         return RsData.of("S-1", CART_SUCCESS_PRODUCT, "create");
     }
 }

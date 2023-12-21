@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -39,7 +40,7 @@ public class PostController {
 
     @GetMapping("/hashtagSearch")
     public RsData searchByHashtag(@RequestParam String hashtag, @RequestParam(defaultValue = "1") int page) {
-        Pageable pageRequest = PageRequest.of(page - 1, 5);
+        Pageable pageRequest = PageRequest.of(page - 1, 5, Sort.by("modifyDate").descending());
         Page<PostResponse> hashtagSearch = postService.searchPostsByHashtag(hashtag, pageRequest);
 
         return RsData.successOf(new PageResponse<>(hashtagSearch));
@@ -47,7 +48,7 @@ public class PostController {
 
     @GetMapping("/categorySearch")
     public RsData postsSearch(@RequestParam String category, @RequestParam String searchWord, @RequestParam(defaultValue = "1") int page) {
-        Pageable pageRequest = PageRequest.of(page - 1, 5);
+        Pageable pageRequest = PageRequest.of(page - 1, 5, Sort.by("modifyDate").descending());
         Page<PostResponse> categorySearch = postService.searchPostsByCategory(category, searchWord, pageRequest);
 
         return RsData.successOf(new PageResponse<>(categorySearch));
@@ -55,7 +56,7 @@ public class PostController {
 
     @GetMapping("/view")
     public RsData postsViewByPage(@RequestParam(defaultValue = "1") int page) {
-        Pageable pageRequest = PageRequest.of(page - 1, 5);
+        Pageable pageRequest = PageRequest.of(page - 1, 5, Sort.by("modifyDate").descending());
         Page<PostResponse> postsView = postService.viewPostsByPage(pageRequest);
 
         return RsData.successOf(new PageResponse<>(postsView));

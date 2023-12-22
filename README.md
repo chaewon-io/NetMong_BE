@@ -60,13 +60,14 @@ https://youtu.be/l5cFlGmHn5k
 ## 아키텍쳐
 ![netmong drawio-3](https://github.com/besp-team1/NetMong/assets/71304637/75c6069d-dfc7-41c1-afa0-5b98293b7c73)
 
-
+## API명세 
+https://documenter.getpostman.com/view/30759412/2s9Ykq8Lfx
 
 ## 테이블 (다이어그램)  
 
 <img width="1152" alt="스크린샷 2023-12-21 오후 2 08 32" src="https://github.com/besp-team1/NetMong/assets/82140052/7e197b8e-8f91-4fdb-9e6a-69d2d7ab2b6c">
 
-## API명세 
+
 
 ## 사이트
 https://netmong.kkbk.me/

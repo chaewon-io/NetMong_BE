@@ -2,6 +2,9 @@
 
 https://netmong.kkbk.me/
 
+### 시연영상
+https://youtu.be/l5cFlGmHn5k
+
 ## 서비스 소개
 반려동물 양육 가구가 증가함에 따라 관련 관심사도 주목되고 있습니다.  
 저희 서비스는 사용자 입장에서 다양한 정보를 소통할 수 있는 네트워킹에 초점을 두어 아이디어를 기획하게 되었습니다.  
@@ -53,6 +56,11 @@ https://netmong.kkbk.me/
 
   <br>  
 </div>
+
+## 아키텍쳐
+![netmong drawio-3](https://github.com/besp-team1/NetMong/assets/71304637/75c6069d-dfc7-41c1-afa0-5b98293b7c73)
+
+
 
 ## 테이블 (다이어그램)  
 

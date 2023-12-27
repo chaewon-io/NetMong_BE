@@ -1,13 +1,15 @@
 package com.ll.netmong.member.service;
 
+import com.ll.netmong.base.jwt.TokenDto;
 import com.ll.netmong.base.jwt.TokenService;
 import com.ll.netmong.domain.member.dto.JoinRequest;
+import com.ll.netmong.domain.member.dto.LoginDto;
 import com.ll.netmong.domain.member.dto.UsernameRequest;
 import com.ll.netmong.domain.member.entity.AuthLevel;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.member.entity.ProviderTypeCode;
 import com.ll.netmong.domain.member.service.MemberService;
-import com.ll.netmong.member.mock.FakeAuthenticationManagerBuilder;
+import com.ll.netmong.member.mock.FakeAuthenticationManager;
 import com.ll.netmong.member.mock.FakeMemberRepository;
 import com.ll.netmong.member.mock.FakePasswordEncoder;
 import com.ll.netmong.member.mock.FakeTokenProvider;
@@ -22,14 +24,16 @@ class MemberServiceTest {
     private MemberService memberService;
     private TokenService tokenService;
 
+    String encodedPassword1;
+
     @BeforeEach
     void init() {
         FakeMemberRepository fakeMemberRepository = new FakeMemberRepository();
         FakePasswordEncoder fakePasswordEncoder = new FakePasswordEncoder();
         FakeTokenProvider fakeTokenProvider = new FakeTokenProvider("1", 84900L, "1", 90000L);
-        FakeAuthenticationManagerBuilder fakeAuthenticationManagerBuilder = new FakeAuthenticationManagerBuilder();
+        FakeAuthenticationManager fakeAuthenticationManager = new FakeAuthenticationManager();
 
-        this.tokenService = new TokenService(fakeTokenProvider, fakeAuthenticationManagerBuilder);
+        this.tokenService = new TokenService(fakeTokenProvider, fakeAuthenticationManager);
 
         this.memberService = MemberService.builder()
                 .memberRepository(fakeMemberRepository)
@@ -37,10 +41,12 @@ class MemberServiceTest {
                 .tokenService(tokenService)
                 .build();
 
+        encodedPassword1 = fakePasswordEncoder.encode("password1");
+
         Member member1 = Member.builder()
                 .id(1L)
                 .username("member1")
-                .password("encodedpassword1")
+                .password(encodedPassword1)
                 .email("aaa@aaa.com")
                 .realName("realMember1")
                 .authLevel(AuthLevel.MEMBER)
@@ -91,6 +97,22 @@ class MemberServiceTest {
         //then
         assertThat(result).isTrue();
 
+    }
+
+    @Test
+    @DisplayName("login은 loginDTO를 받아 tokenDTO를 반환한다.")
+    public void loginTest() throws Exception{
+        //given
+        LoginDto loginDto = new LoginDto();
+        loginDto.setEmail("aaa@aaa.com");
+        loginDto.setPassword("password1");
+
+        //when
+        TokenDto tokenDto = memberService.login(loginDto);
+
+        //then
+        assertThat(tokenDto.getAccess_token()).isEqualTo("ACCESS_TOKEN");
+        assertThat(tokenDto.getRefresh_token()).isEqualTo("REFRESH_TOKEN");
     }
 
 }

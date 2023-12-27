@@ -100,22 +100,6 @@ public class MemberService {
     }
 
     @Transactional
-    public Member socialLogin(ProviderTypeCode providerTypeCode, String username) {
-
-        Optional<Member> opMember = memberRepository.findByUsername(username);
-
-        return opMember.orElseGet(() -> {
-            Member member = Member.builder().username(username)
-                    .password("")
-                    .providerTypeCode(providerTypeCode)
-                    .authLevel(AuthLevel.MEMBER)
-                    .build();
-
-            return memberRepository.save(member);
-        });
-    }
-
-    @Transactional
     public String changeUsername(Member member, String newUsername) {
         Optional<Member> optMember = memberRepository.findByUsername(newUsername);
         if (optMember.isPresent()) {

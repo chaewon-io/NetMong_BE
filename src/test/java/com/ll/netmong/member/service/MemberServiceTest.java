@@ -2,12 +2,14 @@ package com.ll.netmong.member.service;
 
 import com.ll.netmong.base.jwt.TokenDto;
 import com.ll.netmong.base.jwt.TokenService;
+import com.ll.netmong.domain.member.dto.EmailRequest;
 import com.ll.netmong.domain.member.dto.JoinRequest;
 import com.ll.netmong.domain.member.dto.LoginDto;
 import com.ll.netmong.domain.member.dto.UsernameRequest;
 import com.ll.netmong.domain.member.entity.AuthLevel;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.member.entity.ProviderTypeCode;
+import com.ll.netmong.domain.member.exception.NotMatchPasswordException;
 import com.ll.netmong.domain.member.service.MemberService;
 import com.ll.netmong.member.mock.FakeAuthenticationManager;
 import com.ll.netmong.member.mock.FakeMemberRepository;
@@ -18,6 +20,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class MemberServiceTest {
 
@@ -25,6 +28,7 @@ class MemberServiceTest {
     private TokenService tokenService;
 
     String encodedPassword1;
+    Member member1;
 
     @BeforeEach
     void init() {
@@ -43,7 +47,7 @@ class MemberServiceTest {
 
         encodedPassword1 = fakePasswordEncoder.encode("password1");
 
-        Member member1 = Member.builder()
+        member1 = Member.builder()
                 .id(1L)
                 .username("member1")
                 .password(encodedPassword1)
@@ -115,4 +119,48 @@ class MemberServiceTest {
         assertThat(tokenDto.getRefresh_token()).isEqualTo("REFRESH_TOKEN");
     }
 
+    @Test
+    @DisplayName("login시 비밀번호가 잘못되면 NotMatchPasswordException(잘못된 비밀번호입니다.)를 던진다.")
+    public void passwordNotMatchTest() throws Exception{
+        //given
+        LoginDto loginDto = new LoginDto();
+        loginDto.setEmail("aaa@aaa.com");
+        loginDto.setPassword("passwordxxx");
+
+        //when
+        //then
+        assertThatThrownBy(()->memberService.login(loginDto)).isInstanceOf(NotMatchPasswordException.class);
+    }
+
+    @Test
+    @DisplayName("isDuplicateEmail은 emailRequest를 받아 중복된 이메일이 있으면 true를 반환한다.")
+    public void isDuplicateEmailTest() throws Exception{
+        //given
+        EmailRequest emailRequest1 = new EmailRequest();
+        emailRequest1.setEmail("aaa@aaa.com");
+
+        EmailRequest emailRequest2 = new EmailRequest();
+        emailRequest2.setEmail("aaa@aabb.com");
+
+        //when
+        boolean duplicateEmail = memberService.isDuplicateEmail(emailRequest1);
+        boolean duplicateEmail2 = memberService.isDuplicateEmail(emailRequest2);
+
+        //then
+        assertThat(duplicateEmail).isEqualTo(true);
+        assertThat(duplicateEmail2).isEqualTo(false);
+    }
+    
+    @Test
+    @DisplayName("findByUsername는 username을 받아 member를 반환한다.")
+    public void findByUsernameTest() throws Exception{
+        //given
+        String username = "member1";
+
+        //when
+        Member testMember1 = memberService.findByUsername(username);
+
+        //then
+        assertThat(testMember1).isEqualTo(member1);
+    }
 }

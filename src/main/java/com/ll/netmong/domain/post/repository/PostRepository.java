@@ -24,4 +24,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("SELECT p FROM Post p JOIN p.names ph WHERE ph.name = :hashtag")
     Page<Post> findByHashtagName(@Param("hashtag") String hashtag, Pageable pageable);
 
+    @Query("select p from Post p join fetch p.image")
+    Page<Post> findAllWithImage(Pageable pageable);
 }

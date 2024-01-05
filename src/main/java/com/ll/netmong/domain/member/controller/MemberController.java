@@ -77,8 +77,11 @@ public class MemberController {
 
     @PatchMapping("/change-password")
     public RsData<String> changePassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest, @AuthenticationPrincipal UserDetails userDetails) throws Exception {
-        String username = memberService.changePassword(userDetails, changePasswordRequest.getOldPassword(),
-                changePasswordRequest.getNewPassword());
+
+        Member member = memberService.findByEmail(userDetails.getUsername());
+
+        String username = memberService.changePassword(member, changePasswordRequest.getOldPassword(),
+                changePasswordRequest.getNewPassword(), changePasswordRequest.getRepeatPassword());
         return RsData.successOf(username + "님의 비밀번호가 변경되었습니다.");
     }
 

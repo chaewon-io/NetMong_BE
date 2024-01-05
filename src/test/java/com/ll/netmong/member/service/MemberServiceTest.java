@@ -163,4 +163,17 @@ class MemberServiceTest {
         //then
         assertThat(testMember1).isEqualTo(member1);
     }
+
+    @Test
+    @DisplayName("changePassword()는 비밀번호를 변경하고, username을 반환한다.")
+    public void changePasswordTest() throws Exception{
+        //given
+        String newPassword = "newPassword";
+
+        //when
+        String username = memberService.changePassword(member1, "password", newPassword, newPassword);
+
+        //then
+        assertThat(username).isEqualTo(member1.getUsername());
+    }
 }

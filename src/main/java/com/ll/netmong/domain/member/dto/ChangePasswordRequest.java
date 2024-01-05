@@ -6,4 +6,5 @@ import lombok.Getter;
 public class ChangePasswordRequest {
     String oldPassword;
     String newPassword;
+    String repeatPassword;
 }

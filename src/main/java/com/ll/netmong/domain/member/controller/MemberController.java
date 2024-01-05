@@ -82,39 +82,6 @@ public class MemberController {
         return RsData.successOf(username + "님의 비밀번호가 변경되었습니다.");
     }
 
-    @PostMapping("/follow")
-    public RsData follow(@RequestBody UsernameRequest usernameRequest, @AuthenticationPrincipal UserDetails userDetails) throws Exception {
-
-        //팔로우 하는 사람
-        String followerEmail = userDetails.getUsername();
-        Member follower = memberService.findByEmail(followerEmail);
-
-        //팔로우 받는 사람
-        Member followee = memberService.findByUsername(usernameRequest.getUsername());
-
-        if (follower.getUsername().equals(usernameRequest.getUsername())) {
-            return RsData.failOf("follow 실패");
-        }
-
-        followService.follow(follower, followee);
-
-        return RsData.successOf("follow 성공");
-    }
-
-    @PostMapping("/unfollow")
-    public RsData unfollow(@RequestBody UsernameRequest usernameRequest, @AuthenticationPrincipal UserDetails userDetails) throws Exception {
-
-        //언팔로우 하는 사람
-        String followerEmail = userDetails.getUsername();
-        Member follower = memberService.findByEmail(followerEmail);
-
-        //언팔로우 받는 사람
-        Member followee = memberService.findByUsername(usernameRequest.getUsername());
-        followService.unfollow(follower, followee);
-
-        return RsData.successOf("unfollow 성공");
-    }
-
     @GetMapping("/{username}")
     public RsData<MemberDetailDto> showMember(@PathVariable String username, @AuthenticationPrincipal UserDetails userDetails) throws Exception {
 

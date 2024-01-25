@@ -6,6 +6,7 @@ import com.ll.netmong.domain.park.entity.Park;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -15,4 +16,6 @@ public interface LikedParkRepository extends JpaRepository<LikedPark, Long> {
     Long countLikesByPark(Park park);
 
     Optional<LikedPark> findByMemberAndPark(Member member, Park park);
+
+    List<LikedPark> findByMember(Member member);
 }

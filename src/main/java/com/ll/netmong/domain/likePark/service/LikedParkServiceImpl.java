@@ -15,6 +15,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -80,5 +83,13 @@ public class LikedParkServiceImpl implements LikedParkService {
         } catch (OptimisticLockingFailureException e) {
             throw new OptimisticLockingFailureException("다른 사용자가 동시에 좋아요를 삭제했습니다. 다시 시도해주세요.");
         }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Park> getLikedParksByUser(@AuthenticationPrincipal UserDetails userDetails) {
+        Member member = getMemberById(userDetails);
+        List<LikedPark> likedParks = likedParkRepository.findByMember(member);
+        return likedParks.stream().map(LikedPark::getPark).collect(Collectors.toList());
     }
 }

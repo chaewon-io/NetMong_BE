@@ -219,5 +219,25 @@ class ParkServiceImplTest {
         assertThat(result).isEmpty();
     }
 
+    @Test
+    @DisplayName("getParksWithPetAllowed() 메서드는 petAllowed가 true인 공원 목록을 반환해야 한다.")
+    void testGetParksWithPetAllowed() {
+        List<Park> petAllowedParks = sampleParks.stream()
+                .filter(park -> park.getPetAllowed())
+                .collect(Collectors.toList());
+
+        when(parkRepository.findByPetAllowedTrue()).thenReturn(petAllowedParks);
+
+        List<ParkResponse> result = parkService.getParksWithPetAllowed();
+
+        assertThat(result).isNotNull();
+        // result의 크기가 petAllowedParks의 크기와 같은지 확인
+        assertThat(result.size()).isEqualTo(petAllowedParks.size());
+
+        for (ParkResponse parkResponse : result) {
+            // parkResponse의 petAllowed 값이 true인지 확인
+            assertThat(parkResponse.getPetAllowed()).isTrue();
+        }
+    }
 }
 

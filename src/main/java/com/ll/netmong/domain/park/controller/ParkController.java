@@ -53,4 +53,9 @@ public class ParkController {
         return RsData.successOf(parks);
     }
 
+    @GetMapping("/petAllowed")
+    public RsData<List<ParkResponse>> getParksWithPetAllowed() {
+        List<ParkResponse> parks = parkService.getParksWithPetAllowed();
+        return RsData.successOf(parks);
+    }
 }

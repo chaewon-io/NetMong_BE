@@ -9,6 +9,7 @@ import com.ll.netmong.domain.park.entity.Park;
 import com.ll.netmong.domain.park.repository.ParkRepository;
 import com.ll.netmong.domain.postComment.exception.DataNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -102,6 +103,18 @@ public class ParkServiceImpl implements ParkService {
         List<Park> parks = parkRepository.findByLnmadrStartingWith(state + " " + city);
 
         return convertToParkResponses(parks);
+    }
+
+    @Override
+    public List<ParkResponse> getParksWithPetAllowed() {
+        try {
+            List<Park> parks = parkRepository.findByPetAllowedTrue();
+            return parks.stream()
+                    .map(Park::toResponse)
+                    .collect(Collectors.toList());
+        } catch (OptimisticLockingFailureException e) {
+            throw new OptimisticLockingFailureException("다른 사용자가 동시에 데이터를 수정하였습니다. 다시 시도해주세요.");
+        }
     }
 
     private List<ParkResponse> convertToParkResponses(List<Park> parks) {

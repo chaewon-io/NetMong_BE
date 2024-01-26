@@ -22,4 +22,7 @@ public interface ParkRepository extends JpaRepository<Park, Long> {
     @Lock(LockModeType.OPTIMISTIC)
     @Query("SELECT p FROM Park p WHERE p.id = :parkId")
     Optional<Park> findWithOptimisticLockById(@Param("parkId") Long parkId);
+
+    @Lock(LockModeType.OPTIMISTIC)
+    List<Park> findByPetAllowedTrue();
 }

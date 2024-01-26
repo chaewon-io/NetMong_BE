@@ -36,6 +36,8 @@ public class ParkCommentServiceImpl implements ParkCommentService {
         Member member = memberRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new DataNotFoundException("사용자를 찾을 수 없습니다."));
 
+        park.updatePetAllowed(parkCommentRequest.getPetAllowed());
+
         ParkComment comment = ParkComment.builder()
                 .park(park)
                 .memberID(member)

@@ -87,7 +87,9 @@ public class Park extends BaseEntity {
         this.likesCount--;
     }
 
-    public void updatePetAllowed(boolean petAllowed) {
-        this.petAllowed = petAllowed;
+    public void updatePetAllowed(Boolean petAllowed) {
+        if (petAllowed != null) {
+            this.petAllowed = petAllowed;
+        }
     }
 }

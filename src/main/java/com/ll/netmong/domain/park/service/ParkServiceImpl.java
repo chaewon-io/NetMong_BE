@@ -9,7 +9,6 @@ import com.ll.netmong.domain.park.entity.Park;
 import com.ll.netmong.domain.park.repository.ParkRepository;
 import com.ll.netmong.domain.postComment.exception.DataNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +30,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class ParkServiceImpl implements ParkService {
 
     private final ParkRepository parkRepository;
@@ -48,16 +46,16 @@ public class ParkServiceImpl implements ParkService {
 //    }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ParkResponse> getParks() {
         List<Park> parks = parkRepository.findAll();
         return convertToParkResponses(parks);
     }
 
-    @Transactional
-    @Override
-    public void saveParksFromApi() {
-        List<Park> parks = new ArrayList<>();
+    @Transactional(readOnly = true)
+    public List<Park> fetchParksFromApi() {
         int pageNo = 1;
+        List<Park> parks = new ArrayList<>();
 
         while (true) {
             String result = callApi(pageNo);
@@ -69,10 +67,22 @@ public class ParkServiceImpl implements ParkService {
             pageNo++;
         }
 
+        return parks;
+    }
+
+    @Transactional
+    public void saveParksToDatabase(List<Park> parks) {
         parkRepository.saveAll(parks);
     }
 
     @Override
+    public void saveParksFromApi() {
+        List<Park> parks = fetchParksFromApi();
+        saveParksToDatabase(parks);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public ParkResponse getPark(Long parkId, UserDetails userDetails) {
         Park park = parkRepository.findById(parkId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 공원이 존재하지 않습니다: " + parkId));
@@ -89,16 +99,19 @@ public class ParkServiceImpl implements ParkService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<String> getStates() {
         return parkRepository.findStates();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<String> getCitiesByState(String state) {
         return parkRepository.findCitiesByState(state);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ParkResponse> getParksByStateAndCity(String state, String city) {
         List<Park> parks = parkRepository.findByLnmadrStartingWith(state + " " + city);
 
@@ -106,15 +119,12 @@ public class ParkServiceImpl implements ParkService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ParkResponse> getParksWithPetAllowed() {
-        try {
-            List<Park> parks = parkRepository.findByPetAllowedTrue();
-            return parks.stream()
-                    .map(Park::toResponse)
-                    .collect(Collectors.toList());
-        } catch (OptimisticLockingFailureException e) {
-            throw new OptimisticLockingFailureException("다른 사용자가 동시에 데이터를 수정하였습니다. 다시 시도해주세요.");
-        }
+        List<Park> parks = parkRepository.findByPetAllowedTrue();
+        return parks.stream()
+                .map(Park::toResponse)
+                .collect(Collectors.toList());
     }
 
     private List<ParkResponse> convertToParkResponses(List<Park> parks) {

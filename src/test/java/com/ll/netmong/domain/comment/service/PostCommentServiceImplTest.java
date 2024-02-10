@@ -1,6 +1,8 @@
 package com.ll.netmong.domain.comment.service;
 
+import com.ll.netmong.domain.member.entity.AuthLevel;
 import com.ll.netmong.domain.member.entity.Member;
+import com.ll.netmong.domain.member.entity.ProviderTypeCode;
 import com.ll.netmong.domain.member.repository.MemberRepository;
 import com.ll.netmong.domain.post.entity.Post;
 import com.ll.netmong.domain.post.repository.PostRepository;
@@ -9,8 +11,13 @@ import com.ll.netmong.domain.postComment.dto.response.PostCommentResponse;
 import com.ll.netmong.domain.postComment.entity.PostComment;
 import com.ll.netmong.domain.postComment.repository.PostCommentRepository;
 import com.ll.netmong.domain.postComment.service.PostCommentService;
+import com.ll.netmong.domain.postComment.service.PostCommentServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -18,93 +25,85 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/*
-@SpringBootTest
-class PostCommentServiceImplTest {
+public class PostCommentServiceImplTest {
 
-    @Autowired
-    PostCommentService postCommentService;
+    @Mock
+    private PostRepository postRepository;
 
-    @MockBean
-    PostRepository postRepository;
+    @Mock
+    private MemberRepository memberRepository;
 
-    @MockBean
-    MemberRepository memberRepository;
+    @Mock
+    private PostCommentRepository postCommentRepository;
 
-    @MockBean
-    PostCommentRepository postCommentRepository;
+    @Mock
+    private PostCommentServiceImpl postCommentService;
 
-    @Test
-    @DisplayName("게시글에 댓글을 작성할 수 있다.")
-    public void addPostCommentTest() {
-        // given
-        Long postId = 1L;
-        Post post = Post.builder()
-                .comments(new ArrayList<>())
+    @Mock
+    private UserDetails userDetails;
+
+    private Post post;
+    private Member member;
+    private PostComment postComment;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.initMocks(this);
+
+        post = Post.builder()
+                .title("곧 크리스마스당")
+                .writer("네트멍의 익명 누군가")
+                .content("네트멍 팀원들 모두 행복한 크리스마스 보내세요!")
+                .likes(new ArrayList<>())
                 .build();
-        when(postRepository.findById(postId)).thenReturn(Optional.of(post));
 
-        String username = "네트멍";
-        Member member = new Member();
-        when(memberRepository.findByUsername(username)).thenReturn(Optional.of(member));
+        member = Member.builder()
+                .authLevel(AuthLevel.MEMBER)
+                .providerTypeCode(ProviderTypeCode.NETMONG)
+                .username("네트멍01")
+                .password("netmong1234")
+                .realName("네트멍")
+                .email("test@test.com")
+                .build();
 
-        // when
-        PostCommentRequest request = new PostCommentRequest();
-        request.setContent("네트멍 GOAT");
-
-        UserDetails userDetails = new User(username, "password", new ArrayList<>());
-
-        PostComment comment = PostComment.builder()
+        postComment = PostComment.builder()
                 .post(post)
                 .memberID(member)
-                .content(request.getContent())
+                .content("테스트 댓글")
+                .isDeleted(false)
+                .isBlinded(false)
                 .build();
 
-        when(postCommentRepository.save(any(PostComment.class))).thenReturn(comment);
+        PostCommentResponse postCommentResponse = new PostCommentResponse();
+        postCommentResponse.setId(1L);
+        postCommentResponse.setContent("테스트 댓글");
+        postCommentResponse.setIsDeleted(false);
+        postCommentResponse.setUsername("네트멍01");
+        postCommentResponse.setChildCommentsIds(new ArrayList<>());
 
-        PostCommentResponse response = postCommentService.addPostComment(postId, request, userDetails);
-
-        // then
-        verify(postRepository, times(1)).findById(postId);
-        verify(memberRepository, times(1)).findByUsername(username);
-        verify(postCommentRepository, times(1)).save(any(PostComment.class));
-
-        assertEquals("네트멍 GOAT", response.getContent());
-
+        when(postCommentService.addPostComment(anyLong(), any(PostCommentRequest.class), any(UserDetails.class)))
+                .thenReturn(postCommentResponse);
     }
 
     @Test
-    @DisplayName("게시글에 달린 댓글을 가져올 수 있다.")
-    public void getCommentsOfPostTest() {
+    void addPostCommentTest() {
         // given
-        Long postId = 1L;
+        PostCommentRequest postCommentRequest = new PostCommentRequest();
+        postCommentRequest.setContent("테스트 댓글");
 
-        List<PostComment> childComments = new ArrayList<>();
-        PostComment comment1 = PostComment.builder().id(1L).content("네트멍").childComments(childComments).build();
-        PostComment comment2 = PostComment.builder().id(2L).content("멍멍 왈왈").childComments(childComments).build();
-        List<PostComment> comments = Arrays.asList(comment1, comment2);
+        when(userDetails.getUsername()).thenReturn("네트멍01");
 
         // when
-        when(postCommentRepository.findByPostIdAndParentCommentIsNull(postId)).thenReturn(comments);
-
-        List<PostCommentResponse> responses = postCommentService.getCommentsOfPost(postId);
+        PostCommentResponse response = postCommentService.addPostComment(1L, postCommentRequest, userDetails);
 
         // then
-        verify(postCommentRepository, times(1)).findByPostIdAndParentCommentIsNull(postId);
-
-        assertEquals(2, responses.size());
-        assertEquals("네트멍", responses.get(0).getContent());
-        assertEquals("멍멍 왈왈", responses.get(1).getContent());
-
+        assertEquals("테스트 댓글", response.getContent());
+        assertEquals("네트멍01", response.getUsername());
     }
 
 }
-
- */

@@ -21,4 +21,7 @@ public interface LikedParkRepository extends JpaRepository<LikedPark, Long> {
     List<LikedPark> findByMember(@Param("member") Member member);
 
     Optional<LikedPark> findByMemberAndPark(Member member, Park park);
+
+    @Query("SELECT lp.park.id FROM LikedPark lp WHERE lp.member.id = :memberId")
+    List<Long> findLikedParkIdsByMemberId(@Param("memberId") Long memberId);
 }

@@ -54,10 +54,10 @@ public class Park extends BaseEntity {
     private Long likesCount = 0L;
 
     @Builder.Default
-    @Column(name = "petAllowed", nullable = false)
+    @Column(name = "pet_allowed", nullable = false)
     private Boolean petAllowed = false;
 
-    public ParkResponse toResponse() {
+    public ParkResponse toResponse(Boolean isLiked) {
         return ParkResponse.builder()
                 .id(getId())
                 .parkNm(parkNm)
@@ -68,6 +68,7 @@ public class Park extends BaseEntity {
                 .state(state)
                 .city(city)
                 .likesCount(likesCount)
+                .isLiked(isLiked)
                 .petAllowed(petAllowed)
                 .build();
     }

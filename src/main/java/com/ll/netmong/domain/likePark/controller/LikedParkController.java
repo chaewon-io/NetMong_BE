@@ -47,7 +47,7 @@ public class LikedParkController {
     public RsData<List<ParkResponse>> getLikedParksByUser(@AuthenticationPrincipal UserDetails userDetails) {
         List<Park> likedParks = likedParkService.getLikedParksByUser(userDetails);
         List<ParkResponse> parkResponses = likedParks.stream()
-                .map(Park::toResponse)
+                .map(park -> park.toResponse(true))
                 .collect(Collectors.toList());
 
         return RsData.successOf(parkResponses);

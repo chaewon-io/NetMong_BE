@@ -92,10 +92,7 @@ public class ParkServiceImpl implements ParkService {
 
         boolean isLiked = likedParkRepository.existsByMemberAndPark(member, park);
 
-        ParkResponse parkResponse = park.toResponse();
-        parkResponse.setIsLiked(isLiked);
-
-        return parkResponse;
+        return park.toResponse(isLiked);
     }
 
     @Override
@@ -112,10 +109,20 @@ public class ParkServiceImpl implements ParkService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ParkResponse> getParksByStateAndCity(String state, String city) {
+    public List<ParkResponse> getParksByStateAndCity(String state, String city, UserDetails userDetails) {
         List<Park> parks = parkRepository.findByLnmadrStartingWith(state + " " + city);
 
-        return convertToParkResponses(parks);
+        Member member = memberRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new DataNotFoundException("사용자를 찾을 수 없습니다."));
+
+        List<Long> likedParkIds = likedParkRepository.findLikedParkIdsByMemberId(member.getId());
+
+        List<ParkResponse> parkResponses = parks.stream().map(park -> {
+            boolean isLiked = likedParkIds.contains(park.getId());
+            return park.toResponse(isLiked);
+        }).collect(Collectors.toList());
+
+        return parkResponses;
     }
 
     @Override
@@ -123,13 +130,13 @@ public class ParkServiceImpl implements ParkService {
     public List<ParkResponse> getParksWithPetAllowed() {
         List<Park> parks = parkRepository.findByPetAllowedTrue();
         return parks.stream()
-                .map(Park::toResponse)
+                .map(park -> park.toResponse(null))
                 .collect(Collectors.toList());
     }
 
     private List<ParkResponse> convertToParkResponses(List<Park> parks) {
         return parks.stream()
-                .map(Park::toResponse)
+                .map(park -> park.toResponse(null))
                 .collect(Collectors.toList());
     }
 

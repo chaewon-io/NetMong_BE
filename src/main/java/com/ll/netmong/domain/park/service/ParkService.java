@@ -17,7 +17,7 @@ public interface ParkService {
 
     List<String> getCitiesByState(String state);
 
-    List<ParkResponse> getParksByStateAndCity(String state, String city);
+    List<ParkResponse> getParksByStateAndCity(String state, String city, UserDetails userDetails);
 
     List<ParkResponse> getParksWithPetAllowed();
     void saveParksToDatabase(List<Park> parks);

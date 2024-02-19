@@ -28,11 +28,6 @@ public class MemberController {
     private final CartService cartService;
     private final FollowService followService;
 
-    @GetMapping("/find")
-    public Member findMember() {
-        return memberService.findById(1L);
-    }
-
     @PostMapping("/join")
     public RsData<String> join(@Valid @RequestBody JoinRequest joinRequest) throws Exception {
 

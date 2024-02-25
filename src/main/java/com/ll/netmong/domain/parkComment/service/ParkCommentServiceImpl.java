@@ -10,6 +10,7 @@ import com.ll.netmong.domain.parkComment.entity.ParkComment;
 import com.ll.netmong.domain.parkComment.repository.ParkCommentRepository;
 import com.ll.netmong.domain.postComment.exception.DataNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
@@ -30,22 +31,28 @@ public class ParkCommentServiceImpl implements ParkCommentService {
     @Override
     @Transactional
     public ParkCommentResponse addParkComment(Long parkId, ParkCommentRequest parkCommentRequest, @AuthenticationPrincipal UserDetails userDetails) {
-        Park park = parkRepository.findById(parkId)
-                .orElseThrow(() -> new DataNotFoundException("해당하는 공원을 찾을 수 없습니다."));
+        try {
+            Park park = parkRepository.findWithOptimisticLockById(parkId)
+                    .orElseThrow(() -> new DataNotFoundException("해당하는 공원을 찾을 수 없습니다."));
 
-        Member member = memberRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new DataNotFoundException("사용자를 찾을 수 없습니다."));
+            Member member = memberRepository.findByEmail(userDetails.getUsername())
+                    .orElseThrow(() -> new DataNotFoundException("사용자를 찾을 수 없습니다."));
 
-        ParkComment comment = ParkComment.builder()
-                .park(park)
-                .memberID(member)
-                .username(member.getUsername())
-                .content(parkCommentRequest.getContent())
-                .isDeleted(false)
-                .build();
-        park.addComment(comment);
-        ParkComment savedComment = parkCommentRepository.save(comment);
-        return savedComment.toResponse();
+            park.updatePetAllowed(parkCommentRequest.getPetAllowed());
+
+            ParkComment comment = ParkComment.builder()
+                    .park(park)
+                    .memberID(member)
+                    .username(member.getUsername())
+                    .content(parkCommentRequest.getContent())
+                    .isDeleted(false)
+                    .build();
+            park.addComment(comment);
+            ParkComment savedComment = parkCommentRepository.save(comment);
+            return savedComment.toResponse();
+        } catch (OptimisticLockingFailureException e) {
+            throw new OptimisticLockingFailureException("다른 사용자가 동시에 데이터를 수정하였습니다. 다시 시도해주세요.");
+        }
     }
 
     @Override

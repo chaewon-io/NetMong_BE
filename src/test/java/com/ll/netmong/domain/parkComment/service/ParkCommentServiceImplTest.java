@@ -62,8 +62,11 @@ public class ParkCommentServiceImplTest {
     }
 
     @Test
-    @DisplayName("addParkComment() 메서드는 댓글을 추가하고 저장한다.")
+    @DisplayName("addParkComment() 메서드는 댓글을 추가하고 저장하며 반려동물 출입 여부를 업데이트한다.")
     void AddParkComment() {
+
+        parkCommentRequest.setPetAllowed(true);
+
         ParkCommentResponse result = parkCommentService.addParkComment(park.getId(), parkCommentRequest, userDetails);
 
         ParkComment savedComment = parkCommentRepository.findById(result.getId())
@@ -71,6 +74,12 @@ public class ParkCommentServiceImplTest {
 
         assertEquals(savedComment.getContent(), parkCommentRequest.getContent(), "댓글의 내용이 일치하지 않습니다.");
         assertEquals(savedComment.getUsername(), member.getUsername(), "댓글 작성자의 이름이 일치하지 않습니다.");
+
+        // park의 petAllowed가 정확하게 업데이트 되었는지
+        Park updatedPark = parkRepository.findById(park.getId())
+                .orElseThrow(() -> new DataNotFoundException("공원을 찾을 수 없습니다."));
+
+        assertEquals(updatedPark.getPetAllowed(), parkCommentRequest.getPetAllowed(), "공원의 반려동물 출입 여부가 일치하지 않습니다.");
     }
 
     @Test
@@ -96,6 +105,9 @@ public class ParkCommentServiceImplTest {
     @Test
     @DisplayName("getCommentsOfPark() 메서드는 해당 공원의 댓글 페이징 처리를 검증한다.")
     void GetCommentsOfPark() {
+
+        parkCommentRequest.setPetAllowed(true);
+
         // 5개 댓글 추가
         for (int i = 0; i < 5; i++) {
             parkCommentService.addParkComment(park.getId(), parkCommentRequest, userDetails);
@@ -113,6 +125,9 @@ public class ParkCommentServiceImplTest {
     @Test
     @DisplayName("getCommentsOfPark() 메서드는 논리 삭제된 댓글의 반환값을 보고 제공한다.")
     void GetCommentsOfPark_WhenFindByParkIdAndIsDeletedFalse() {
+
+        parkCommentRequest.setPetAllowed(true);
+
         // 5개 댓글 추가 후 2개 논리 삭제
         for (int i = 0; i < 5; i++) {
             ParkCommentResponse comment = parkCommentService.addParkComment(park.getId(), parkCommentRequest, userDetails);
@@ -134,6 +149,9 @@ public class ParkCommentServiceImplTest {
     @Test
     @DisplayName("updateComment() 메서드는 댓글의 내용을 수정한다.")
     void UpdateComment() {
+
+        parkCommentRequest.setPetAllowed(true);
+
         ParkCommentResponse comment = parkCommentService.addParkComment(park.getId(), parkCommentRequest, userDetails);
 
         ParkCommentRequest updateRequest = new ParkCommentRequest();
@@ -158,6 +176,9 @@ public class ParkCommentServiceImplTest {
     @Test
     @DisplayName("deleteComment() 메서드는 댓글을 논리 삭제하며, 존재하지 않는 댓글에 대해서는 DataNotFoundException을 발생시킨다.")
     void DeleteComment() {
+
+        parkCommentRequest.setPetAllowed(true);
+
         ParkCommentResponse comment = parkCommentService.addParkComment(park.getId(), parkCommentRequest, userDetails);
 
         parkCommentService.deleteComment(comment.getId(), userDetails);
@@ -167,4 +188,3 @@ public class ParkCommentServiceImplTest {
         assertTrue(deletedComment.getIsDeleted());
     }
 }
-

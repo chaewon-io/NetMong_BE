@@ -17,14 +17,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -188,17 +186,22 @@ class ParkServiceImplTest {
     @Test
     @DisplayName("getParksByStateAndCity() 메서드는 유효한 state와 city를 입력받으면, 해당 지역의 ParkResponse 리스트를 반환해야 한다.")
     void testGetParksByStateAndCityExists() {
-
         String state = "Test State";
         String city = "Test City";
+        String email = "test@example.com";
 
         List<Park> existingParks = sampleParks.stream()
                 .filter(park -> park.getState().equals(state) && park.getCity().equals(city))
                 .collect(Collectors.toList());
 
-        when(parkRepository.findByLnmadrStartingWith(state + " " + city)).thenReturn(existingParks);
+        UserDetails mockUserDetails = mock(UserDetails.class);
+        when(mockUserDetails.getUsername()).thenReturn(email);
 
-        List<ParkResponse> result = parkService.getParksByStateAndCity(state, city);
+        when(parkRepository.findByLnmadrStartingWith(state + " " + city)).thenReturn(existingParks);
+        when(memberRepository.findByEmail(email)).thenReturn(Optional.of(new Member()));
+        when(likedParkRepository.findLikedParkIdsByMemberId(anyLong())).thenReturn(Collections.emptyList());
+
+        List<ParkResponse> result = parkService.getParksByStateAndCity(state, city, mockUserDetails);
 
         assertThat(result).isNotEmpty();
         assertThat(result.size()).isEqualTo(existingParks.size());
@@ -211,13 +214,39 @@ class ParkServiceImplTest {
     void testGetParksByStateAndCityNotExists() {
         String state = "Test State";
         String city = "Test City";
+        String email = "test@example.com";
 
         when(parkRepository.findByLnmadrStartingWith(state + " " + city)).thenReturn(Collections.emptyList());
+        when(memberRepository.findByEmail(email)).thenReturn(Optional.of(new Member()));
+        when(likedParkRepository.findLikedParkIdsByMemberId(anyLong())).thenReturn(Collections.emptyList());
 
-        List<ParkResponse> result = parkService.getParksByStateAndCity(state, city);
+        UserDetails mockUserDetails = mock(UserDetails.class);
+        when(mockUserDetails.getUsername()).thenReturn(email);
+
+        List<ParkResponse> result = parkService.getParksByStateAndCity(state, city, mockUserDetails);
 
         assertThat(result).isEmpty();
     }
 
+    @Test
+    @DisplayName("getParksWithPetAllowed() 메서드는 petAllowed가 true인 공원 목록을 반환해야 한다.")
+    void testGetParksWithPetAllowed() {
+        List<Park> petAllowedParks = sampleParks.stream()
+                .filter(park -> park.getPetAllowed())
+                .collect(Collectors.toList());
+
+        when(parkRepository.findByPetAllowedTrue()).thenReturn(petAllowedParks);
+
+        List<ParkResponse> result = parkService.getParksWithPetAllowed();
+
+        assertThat(result).isNotNull();
+        // result의 크기가 petAllowedParks의 크기와 같은지 확인
+        assertThat(result.size()).isEqualTo(petAllowedParks.size());
+
+        for (ParkResponse parkResponse : result) {
+            // parkResponse의 petAllowed 값이 true인지 확인
+            assertThat(parkResponse.getPetAllowed()).isTrue();
+        }
+    }
 }
 

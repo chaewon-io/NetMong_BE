@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class ParkServiceImpl implements ParkService {
 
     private final ParkRepository parkRepository;
@@ -47,16 +46,16 @@ public class ParkServiceImpl implements ParkService {
 //    }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ParkResponse> getParks() {
         List<Park> parks = parkRepository.findAll();
         return convertToParkResponses(parks);
     }
 
-    @Transactional
-    @Override
-    public void saveParksFromApi() {
-        List<Park> parks = new ArrayList<>();
+    @Transactional(readOnly = true)
+    public List<Park> fetchParksFromApi() {
         int pageNo = 1;
+        List<Park> parks = new ArrayList<>();
 
         while (true) {
             String result = callApi(pageNo);
@@ -68,10 +67,22 @@ public class ParkServiceImpl implements ParkService {
             pageNo++;
         }
 
+        return parks;
+    }
+
+    @Transactional
+    public void saveParksToDatabase(List<Park> parks) {
         parkRepository.saveAll(parks);
     }
 
     @Override
+    public void saveParksFromApi() {
+        List<Park> parks = fetchParksFromApi();
+        saveParksToDatabase(parks);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public ParkResponse getPark(Long parkId, UserDetails userDetails) {
         Park park = parkRepository.findById(parkId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 공원이 존재하지 않습니다: " + parkId));
@@ -81,32 +92,51 @@ public class ParkServiceImpl implements ParkService {
 
         boolean isLiked = likedParkRepository.existsByMemberAndPark(member, park);
 
-        ParkResponse parkResponse = park.toResponse();
-        parkResponse.setIsLiked(isLiked);
-
-        return parkResponse;
+        return park.toResponse(isLiked);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<String> getStates() {
         return parkRepository.findStates();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<String> getCitiesByState(String state) {
         return parkRepository.findCitiesByState(state);
     }
 
     @Override
-    public List<ParkResponse> getParksByStateAndCity(String state, String city) {
+    @Transactional(readOnly = true)
+    public List<ParkResponse> getParksByStateAndCity(String state, String city, UserDetails userDetails) {
         List<Park> parks = parkRepository.findByLnmadrStartingWith(state + " " + city);
 
-        return convertToParkResponses(parks);
+        Member member = memberRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new DataNotFoundException("사용자를 찾을 수 없습니다."));
+
+        List<Long> likedParkIds = likedParkRepository.findLikedParkIdsByMemberId(member.getId());
+
+        List<ParkResponse> parkResponses = parks.stream().map(park -> {
+            boolean isLiked = likedParkIds.contains(park.getId());
+            return park.toResponse(isLiked);
+        }).collect(Collectors.toList());
+
+        return parkResponses;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ParkResponse> getParksWithPetAllowed() {
+        List<Park> parks = parkRepository.findByPetAllowedTrue();
+        return parks.stream()
+                .map(park -> park.toResponse(null))
+                .collect(Collectors.toList());
     }
 
     private List<ParkResponse> convertToParkResponses(List<Park> parks) {
         return parks.stream()
-                .map(Park::toResponse)
+                .map(park -> park.toResponse(null))
                 .collect(Collectors.toList());
     }
 

@@ -19,5 +19,6 @@ public class ParkResponse {
     private String city;
     private Long likesCount;
     private Boolean isLiked;
+    private Boolean petAllowed;
 
 }

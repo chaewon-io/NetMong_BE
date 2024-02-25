@@ -55,7 +55,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Page<PostResponse> viewPostsByPage(Pageable pageable) {
-        Page<Post> postsPage = postRepository.findAll(pageable);
+        Page<Post> postsPage = postRepository.findAllWithImage(pageable);
 
         return postsPage.map(PostResponse::postsView);
     }

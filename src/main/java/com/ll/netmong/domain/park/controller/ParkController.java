@@ -48,9 +48,14 @@ public class ParkController {
     }
 
     @GetMapping("/states/{state}/{city}")
-    public RsData<List<ParkResponse>> getParksByStateAndCity(@PathVariable String state, @PathVariable String city) {
-        List<ParkResponse> parks = parkService.getParksByStateAndCity(state, city);
+    public RsData<List<ParkResponse>> getParksByStateAndCity(@PathVariable String state, @PathVariable String city, @AuthenticationPrincipal UserDetails userDetails) {
+        List<ParkResponse> parks = parkService.getParksByStateAndCity(state, city, userDetails);
         return RsData.successOf(parks);
     }
 
+    @GetMapping("/petAllowed")
+    public RsData<List<ParkResponse>> getParksWithPetAllowed() {
+        List<ParkResponse> parks = parkService.getParksWithPetAllowed();
+        return RsData.successOf(parks);
+    }
 }

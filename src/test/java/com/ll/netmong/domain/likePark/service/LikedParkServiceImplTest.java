@@ -1,5 +1,6 @@
 package com.ll.netmong.domain.likePark.service;
 
+import com.ll.netmong.domain.likePark.entity.LikedPark;
 import com.ll.netmong.domain.likePark.repository.LikedParkRepository;
 import com.ll.netmong.domain.likedPost.exception.DuplicateLikeException;
 import com.ll.netmong.domain.member.entity.Member;
@@ -18,12 +19,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -218,6 +221,23 @@ public class LikedParkServiceImplTest {
     @DisplayName("removeLikeFromPark() 메서드는 해당 공원에 userDetails가 좋아요를 누르지 않았을 경우 IllegalArgumentException을 발생시킨다.")
     void testRemoveLikeFromParkThrowsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> likedParkService.removeLikeFromPark(park, userDetails));
+    }
+
+    @Test
+    @DisplayName("getLikedParksByUser() 메서드는 특정 사용자가 좋아요를 누른 공원 목록을 반환해야 한다.")
+    void testGetLikedParksByUser() {
+        LikedPark likedPark = LikedPark.builder()
+                .member(member)
+                .park(park)
+                .build();
+
+        likedParkRepository.save(likedPark);
+
+        List<Park> result = likedParkService.getLikedParksByUser(userDetails);
+
+        assertThat(result).isNotNull();
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.get(0).getId()).isEqualTo(park.getId());
     }
 }
 

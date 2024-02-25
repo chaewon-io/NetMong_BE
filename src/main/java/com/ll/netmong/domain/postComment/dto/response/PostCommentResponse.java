@@ -21,6 +21,7 @@ public class PostCommentResponse {
     private String username;
     private Long parentCommentId;
     private List<PostCommentResponse> childCommentsIds;
+    private Integer depth;
 
     public static PostCommentResponse of(PostComment comment) {
         List<PostCommentResponse> childResponses = comment.getChildComments() != null
@@ -33,7 +34,8 @@ public class PostCommentResponse {
                 comment.getIsDeleted(),
                 comment.getUsername(),
                 comment.getParentComment() != null ? comment.getParentComment().getId() : null,
-                childResponses
-        );
+                childResponses,
+                comment.getDepth()
+                );
     }
 }

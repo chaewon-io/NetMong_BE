@@ -44,6 +44,9 @@ public class PostCommentServiceImpl implements PostCommentService {
         Member member = memberRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new DataNotFoundException("사용자를 찾을 수 없습니다."));
 
+        // 부모 댓글이 없는 경우 depth는 0으로 설정
+        Integer depth = 0;
+
         PostComment comment = PostComment.builder()
                 .post(post)
                 .memberID(member)
@@ -51,6 +54,7 @@ public class PostCommentServiceImpl implements PostCommentService {
                 .content(postCommentRequest.getContent())
                 .isDeleted(false)
                 .isBlinded(false)
+                .depth(depth)
                 .build();
         post.addComment(comment);
         PostComment savedComment = postCommentRepository.save(comment);
@@ -93,8 +97,9 @@ public class PostCommentServiceImpl implements PostCommentService {
                 comment.getIsDeleted(),
                 comment.getUsername(),
                 comment.getParentComment() != null ? comment.getParentComment().getId() : null,
-                childResponses
-        );
+                childResponses,
+                comment.getDepth()
+                );
     }
 
     private void checkCommentAuthor(PostComment comment, UserDetails userDetails) {
@@ -114,6 +119,9 @@ public class PostCommentServiceImpl implements PostCommentService {
         Member member = memberRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new DataNotFoundException("해당하는 회원을 찾을 수 없습니다."));
 
+        // 부모 댓글의 깊이를 기반으로 자식 댓글의 깊이 설정
+        Integer childDepth = parentComment.getDepth() + 1;
+
         PostComment childComment = PostComment.builder()
                 .post(parentComment.getPost())
                 .memberID(member)
@@ -121,6 +129,7 @@ public class PostCommentServiceImpl implements PostCommentService {
                 .isDeleted(false)
                 .isBlinded(false)
                 .username(member.getUsername())
+                .depth(childDepth)
                 .build();
 
         parentComment.addChildComment(childComment);
@@ -142,5 +151,12 @@ public class PostCommentServiceImpl implements PostCommentService {
     public PostComment findByCommentId(Long commentId) {
         return postCommentRepository.findById(commentId)
                 .orElseThrow(() -> new DataNotFoundException("해당하는 댓글을 찾을 수 없습니다."));
+    }
+
+    private void addChildComment(PostComment parentComment, PostComment childComment) {
+        childComment.setParentComment(parentComment);
+        // 부모 댓글의 깊이에 1을 더하여 자식 댓글의 깊이를 설정
+        childComment.setDepth(parentComment.getDepth() + 1);
+        parentComment.addChildComment(childComment);
     }
 }

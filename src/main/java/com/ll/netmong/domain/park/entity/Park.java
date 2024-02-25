@@ -48,11 +48,16 @@ public class Park extends BaseEntity {
 
     @OneToMany(mappedBy = "park", cascade = CascadeType.ALL)
     private List<LikedPark> likedParks = new ArrayList<>();
+
     @Builder.Default
     @Column(name = "likes_count", nullable = false)
     private Long likesCount = 0L;
 
-    public ParkResponse toResponse() {
+    @Builder.Default
+    @Column(name = "pet_allowed", nullable = false)
+    private Boolean petAllowed = false;
+
+    public ParkResponse toResponse(Boolean isLiked) {
         return ParkResponse.builder()
                 .id(getId())
                 .parkNm(parkNm)
@@ -63,6 +68,8 @@ public class Park extends BaseEntity {
                 .state(state)
                 .city(city)
                 .likesCount(likesCount)
+                .isLiked(isLiked)
+                .petAllowed(petAllowed)
                 .build();
     }
 
@@ -79,5 +86,11 @@ public class Park extends BaseEntity {
     public void removeLikeFromPark(LikedPark like) {
         this.likedParks.remove(like);
         this.likesCount--;
+    }
+
+    public void updatePetAllowed(Boolean petAllowed) {
+        if (petAllowed != null) {
+            this.petAllowed = petAllowed;
+        }
     }
 }

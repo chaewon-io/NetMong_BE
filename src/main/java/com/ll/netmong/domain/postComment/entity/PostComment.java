@@ -47,6 +47,9 @@ public class PostComment extends BaseEntity {
 
     private String username;
 
+    @Column(nullable = false)
+    private Integer depth;
+
     @Builder.Default
     @Column(name = "reports_count", nullable = false)
     private Integer reportCount = 0; // 신고된 횟수
@@ -59,13 +62,19 @@ public class PostComment extends BaseEntity {
         this.content = content;
     }
 
-    private void setParentComment(PostComment postComment) {
+    public void setParentComment(PostComment postComment) {
         this.parentComment = postComment;
     }
 
+    public void setDepth(Integer depth) {
+        this.depth = depth;
+    }
+
+    // 자식 댓글 추가 시 깊이 계산
     public void addChildComment(PostComment childComment) {
-        this.childComments.add(childComment);
         childComment.setParentComment(this);
+        childComment.setDepth(this.getDepth() + 1);
+        this.childComments.add(childComment);
     }
 
     public void markAsDeleted(Boolean b) {
@@ -86,4 +95,5 @@ public class PostComment extends BaseEntity {
             this.content = "신고가 누적되어 블라인드 처리되었습니다.";
         }
     }
+
 }

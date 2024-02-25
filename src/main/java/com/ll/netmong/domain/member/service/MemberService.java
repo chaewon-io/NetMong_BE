@@ -14,7 +14,6 @@ import com.ll.netmong.domain.member.exception.NotMatchPasswordException;
 import com.ll.netmong.domain.member.repository.MemberRepository;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -84,11 +83,9 @@ public class MemberService {
     }
 
     @Transactional
-    public String changePassword(UserDetails userDetails, String oldPassword, String newPassword) throws Exception {
+    public String changePassword(Member member, String oldPassword, String newPassword, String repeatPassword) throws Exception {
 
-        Member member = findByEmail(userDetails.getUsername());
-
-        if (passwordEncoder.matches(oldPassword, member.getPassword())) {
+        if (passwordEncoder.matches(oldPassword, member.getPassword()) && newPassword.equals(repeatPassword)) {
             member.changePassword(newPassword);
             member.encryptPassword(passwordEncoder);
         }
@@ -97,22 +94,6 @@ public class MemberService {
 
     public Long countPostsByUsername(String username) {
         return memberRepository.countPostsByMemberUsername(username);
-    }
-
-    @Transactional
-    public Member socialLogin(ProviderTypeCode providerTypeCode, String username) {
-
-        Optional<Member> opMember = memberRepository.findByUsername(username);
-
-        return opMember.orElseGet(() -> {
-            Member member = Member.builder().username(username)
-                    .password("")
-                    .providerTypeCode(providerTypeCode)
-                    .authLevel(AuthLevel.MEMBER)
-                    .build();
-
-            return memberRepository.save(member);
-        });
     }
 
     @Transactional

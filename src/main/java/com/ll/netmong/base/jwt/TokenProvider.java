@@ -32,7 +32,6 @@ public class TokenProvider implements InitializingBean {
    private final long tokenValidityInMilliseconds2;
    private Key key;
 
-   //
    public TokenProvider(
       @Value("${custom.jwt.secret}") String secret,
       @Value("${custom.jwt.token-validity-in-seconds}") long tokenValidityInSeconds,
@@ -61,8 +60,6 @@ public class TokenProvider implements InitializingBean {
       long now = (new Date()).getTime();
       Date validity = new Date(now + this.tokenValidityInMilliseconds);
       Date validity2 = new Date(now + this.tokenValidityInMilliseconds2);
-
-       System.out.println("authentication = " + authentication.toString());
       
       String access_token = Jwts.builder()
     	         .setSubject(authentication.getName())

@@ -84,7 +84,7 @@ public class Post extends BaseEntity {
         postHashtag.setPost(null);
     }
 
-    @OneToOne(orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "image_id")
     private Image image;
 

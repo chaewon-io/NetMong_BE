@@ -2,7 +2,6 @@ package com.ll.netmong.domain.park.entity;
 
 import com.ll.netmong.common.BaseEntity;
 import com.ll.netmong.domain.likePark.entity.LikedPark;
-import com.ll.netmong.domain.park.dto.response.ParkResponse;
 import com.ll.netmong.domain.parkComment.entity.ParkComment;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -56,22 +55,6 @@ public class Park extends BaseEntity {
     @Builder.Default
     @Column(name = "pet_allowed", nullable = false)
     private Boolean petAllowed = false;
-
-    public ParkResponse toResponse(Boolean isLiked) {
-        return ParkResponse.builder()
-                .id(getId())
-                .parkNm(parkNm)
-                .lnmadr(lnmadr)
-                .latitude(latitude)
-                .longitude(longitude)
-                .phoneNumber(phoneNumber)
-                .state(state)
-                .city(city)
-                .likesCount(likesCount)
-                .isLiked(isLiked)
-                .petAllowed(petAllowed)
-                .build();
-    }
 
     public void addComment(ParkComment comment) {
         this.comments.add(comment);

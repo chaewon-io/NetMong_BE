@@ -26,10 +26,4 @@ public class LikedPark extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public static LikedPark createLikedPark(Park park, Member member) {
-        return LikedPark.builder()
-                .park(park)
-                .member(member)
-                .build();
-    }
 }

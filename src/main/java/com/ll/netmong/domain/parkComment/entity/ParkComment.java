@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ll.netmong.common.BaseEntity;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.park.entity.Park;
-import com.ll.netmong.domain.parkComment.dto.response.ParkCommentResponse;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -30,18 +29,18 @@ public class ParkComment extends BaseEntity {
     @Column(nullable = false)
     private Boolean isDeleted;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member memberID;
+    @Column(name = "member_id")
+    private Long memberId;
 
     private String username;
 
-    public ParkCommentResponse toResponse() {
-        return ParkCommentResponse.builder()
-                .id(getId())
+    public static ParkComment toEntity(Park park, Member member, String content) {
+        return ParkComment.builder()
+                .park(park)
+                .memberId(member.getId())
+                .username(member.getUsername())
                 .content(content)
-                .isDeleted(isDeleted)
-                .username(username)
+                .isDeleted(false)
                 .build();
     }
 

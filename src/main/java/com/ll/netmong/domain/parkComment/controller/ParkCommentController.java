@@ -24,7 +24,8 @@ public class ParkCommentController {
 
     @PostMapping("/{parkId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public RsData<ParkCommentResponse> addParkComment(@PathVariable Long parkId, @Valid @RequestBody ParkCommentRequest request, @AuthenticationPrincipal UserDetails userDetails) {
+    public RsData<ParkCommentResponse> addParkComment(@PathVariable Long parkId, @Valid @RequestBody ParkCommentRequest request,
+                                                      @AuthenticationPrincipal UserDetails userDetails) {
         ParkCommentResponse newComment = parkCommentService.addParkComment(parkId, request, userDetails);
         return RsData.successOf(newComment);
     }
@@ -38,7 +39,8 @@ public class ParkCommentController {
 
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public RsData<ParkCommentResponse> updateComment(@PathVariable Long id, @RequestBody ParkCommentRequest request, @AuthenticationPrincipal UserDetails userDetails) {
+    public RsData<ParkCommentResponse> updateComment(@PathVariable Long id, @RequestBody ParkCommentRequest request,
+                                                     @AuthenticationPrincipal UserDetails userDetails) {
         ParkCommentResponse updatedComment = parkCommentService.updateComment(id, request, userDetails);
         return RsData.successOf(updatedComment);
     }

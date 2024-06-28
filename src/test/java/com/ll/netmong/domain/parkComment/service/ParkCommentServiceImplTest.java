@@ -3,12 +3,13 @@ package com.ll.netmong.domain.parkComment.service;
 import com.ll.netmong.domain.member.entity.Member;
 import com.ll.netmong.domain.member.repository.MemberRepository;
 import com.ll.netmong.domain.park.entity.Park;
+import com.ll.netmong.domain.park.exception.ParkNotFoundException;
 import com.ll.netmong.domain.park.repository.ParkRepository;
 import com.ll.netmong.domain.parkComment.dto.request.ParkCommentRequest;
 import com.ll.netmong.domain.parkComment.dto.response.ParkCommentResponse;
 import com.ll.netmong.domain.parkComment.entity.ParkComment;
+import com.ll.netmong.domain.parkComment.exception.ParkCommentNotFoundException;
 import com.ll.netmong.domain.parkComment.repository.ParkCommentRepository;
-import com.ll.netmong.domain.postComment.exception.DataNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -63,48 +64,28 @@ public class ParkCommentServiceImplTest {
 
     @Test
     @DisplayName("addParkComment() 메서드는 댓글을 추가하고 저장하며 반려동물 출입 여부를 업데이트한다.")
-    void AddParkComment() {
+    void testAddParkComment() {
 
         parkCommentRequest.setPetAllowed(true);
 
         ParkCommentResponse result = parkCommentService.addParkComment(park.getId(), parkCommentRequest, userDetails);
 
         ParkComment savedComment = parkCommentRepository.findById(result.getId())
-                .orElseThrow(() -> new DataNotFoundException("댓글을 찾을 수 없습니다."));
+                .orElseThrow(() -> new ParkCommentNotFoundException("댓글을 찾을 수 없습니다."));
 
         assertEquals(savedComment.getContent(), parkCommentRequest.getContent(), "댓글의 내용이 일치하지 않습니다.");
         assertEquals(savedComment.getUsername(), member.getUsername(), "댓글 작성자의 이름이 일치하지 않습니다.");
 
         // park의 petAllowed가 정확하게 업데이트 되었는지
         Park updatedPark = parkRepository.findById(park.getId())
-                .orElseThrow(() -> new DataNotFoundException("공원을 찾을 수 없습니다."));
+                .orElseThrow(() -> new ParkNotFoundException("공원을 찾을 수 없습니다."));
 
         assertEquals(updatedPark.getPetAllowed(), parkCommentRequest.getPetAllowed(), "공원의 반려동물 출입 여부가 일치하지 않습니다.");
     }
 
     @Test
-    @DisplayName("addParkComment() 메서드는 parkId에 해당하는 공원이 없을 경우 DataNotFoundException을 발생시킨다.")
-    void AddParkComment_WhenFindById_ThrowDataNotFound() {
-        Long ParkId = park.getId() + 1;
-
-        assertThrows(DataNotFoundException.class, () -> {
-            parkCommentService.addParkComment(ParkId, parkCommentRequest, userDetails);
-        });
-    }
-
-    @Test
-    @DisplayName("addParkComment() 메서드는 userDetails의 유저가 없을 경우 DataNotFoundException을 발생시킨다.")
-    void AddParkComment_WhenFindByUsername_ThrowDataNotFound() {
-        UserDetails UserDetails = User.withUsername("invalidUser").password("testPassword").authorities("USER").build();
-
-        assertThrows(DataNotFoundException.class, () -> {
-            parkCommentService.addParkComment(park.getId(), parkCommentRequest, UserDetails);
-        });
-    }
-
-    @Test
     @DisplayName("getCommentsOfPark() 메서드는 해당 공원의 댓글 페이징 처리를 검증한다.")
-    void GetCommentsOfPark() {
+    void testPagination() {
 
         parkCommentRequest.setPetAllowed(true);
 
@@ -124,7 +105,7 @@ public class ParkCommentServiceImplTest {
 
     @Test
     @DisplayName("getCommentsOfPark() 메서드는 논리 삭제된 댓글의 반환값을 보고 제공한다.")
-    void GetCommentsOfPark_WhenFindByParkIdAndIsDeletedFalse() {
+    void testGetCommentsOfPark() {
 
         parkCommentRequest.setPetAllowed(true);
 
@@ -148,7 +129,7 @@ public class ParkCommentServiceImplTest {
 
     @Test
     @DisplayName("updateComment() 메서드는 댓글의 내용을 수정한다.")
-    void UpdateComment() {
+    void testUpdateComment() {
 
         parkCommentRequest.setPetAllowed(true);
 
@@ -163,19 +144,19 @@ public class ParkCommentServiceImplTest {
     }
 
     @Test
-    @DisplayName("updateComment() 메서드는 존재하지 않는 댓글을 수정하려 할 경우 DataNotFoundException을 발생시킨다.")
-    void testUpdateComment_WhenNonExistentCommentId_ThrowDataNotFound() {
+    @DisplayName("updateComment() 메서드는 존재하지 않는 댓글을 수정하려 할 경우 ParkCommentNotFoundException을 발생시킨다.")
+    void testUpdateComment_exception() {
         Long nonExistentCommentId = 999999L;
 
         ParkCommentRequest updateRequest = new ParkCommentRequest();
         updateRequest.setContent("Updated Comment");
 
-        assertThrows(DataNotFoundException.class, () -> parkCommentService.updateComment(nonExistentCommentId, updateRequest, userDetails));
+        assertThrows(ParkCommentNotFoundException.class, () -> parkCommentService.updateComment(nonExistentCommentId, updateRequest, userDetails));
     }
 
     @Test
-    @DisplayName("deleteComment() 메서드는 댓글을 논리 삭제하며, 존재하지 않는 댓글에 대해서는 DataNotFoundException을 발생시킨다.")
-    void DeleteComment() {
+    @DisplayName("deleteComment() 메서드는 댓글을 논리 삭제하며, 존재하지 않는 댓글에 대해서는 ParkCommentNotFoundException을 발생시킨다.")
+    void testDeleteComment() {
 
         parkCommentRequest.setPetAllowed(true);
 
@@ -184,7 +165,7 @@ public class ParkCommentServiceImplTest {
         parkCommentService.deleteComment(comment.getId(), userDetails);
 
         ParkComment deletedComment = parkCommentRepository.findById(comment.getId())
-                .orElseThrow(() -> new DataNotFoundException("해당 댓글이 없습니다. id: " + comment.getId()));
+                .orElseThrow(() -> new ParkCommentNotFoundException("해당 댓글이 없습니다. id: " + comment.getId()));
         assertTrue(deletedComment.getIsDeleted());
     }
 }

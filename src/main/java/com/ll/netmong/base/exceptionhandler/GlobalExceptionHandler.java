@@ -2,8 +2,13 @@ package com.ll.netmong.base.exceptionhandler;
 
 import com.ll.netmong.common.ProductException;
 import com.ll.netmong.common.RsData;
+import com.ll.netmong.domain.likePark.exception.DuplicateLikedParkException;
+import com.ll.netmong.domain.likePark.exception.LikedParkNotFoundException;
 import com.ll.netmong.domain.likedPost.exception.DuplicateLikeException;
+import com.ll.netmong.domain.member.exception.MemberNotFoundException;
 import com.ll.netmong.domain.member.exception.NotMatchPasswordException;
+import com.ll.netmong.domain.park.exception.ParkNotFoundException;
+import com.ll.netmong.domain.parkComment.exception.ParkCommentNotFoundException;
 import com.ll.netmong.domain.product.dto.response.ErrorResponse;
 import com.ll.netmong.domain.reports.exception.DuplicateReportException;
 import com.ll.netmong.domain.reports.exception.InvalidReportException;
@@ -33,6 +38,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotMatchPasswordException.class)
     @ResponseStatus(HttpStatus.OK)
     public RsData handleNotMatchPassword(NotMatchPasswordException e) {
+        return RsData.failOf(e.getMessage());
+    }
+
+    @ExceptionHandler(MemberNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public RsData handleMemberNotFoundException(MemberNotFoundException e) {
         return RsData.failOf(e.getMessage());
     }
 
@@ -84,6 +95,30 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DuplicateReportException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public RsData handleDuplicateReport(DuplicateReportException e) {
+        return RsData.failOf(e.getMessage());
+    }
+
+    @ExceptionHandler(ParkNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public RsData handleParkNotFoundException(ParkNotFoundException e) {
+        return RsData.failOf(e.getMessage());
+    }
+
+    @ExceptionHandler(ParkCommentNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public RsData handleParkCommentNotFoundException(ParkCommentNotFoundException e) {
+        return RsData.failOf(e.getMessage());
+    }
+
+    @ExceptionHandler(LikedParkNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public RsData handleLikedParkNotFoundException(LikedParkNotFoundException e) {
+        return RsData.failOf(e.getMessage());
+    }
+
+    @ExceptionHandler(DuplicateLikedParkException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public RsData handleDuplicateLikedParkException(DuplicateLikedParkException e) {
         return RsData.failOf(e.getMessage());
     }
 

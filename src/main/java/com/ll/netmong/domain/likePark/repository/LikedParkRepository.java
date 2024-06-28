@@ -15,7 +15,7 @@ import java.util.Optional;
 public interface LikedParkRepository extends JpaRepository<LikedPark, Long> {
     Boolean existsByMemberAndPark(Member member, Park park);
 
-    Long countLikesByPark(@Param("park") Park park);
+    Long countLikesByParkId(@Param("parkId") Long parkId);
 
     @Query("SELECT DISTINCT lp FROM LikedPark lp JOIN FETCH lp.park WHERE lp.member = :member")
     List<LikedPark> findByMember(@Param("member") Member member);

@@ -3,17 +3,19 @@ package com.ll.netmong.domain.park.service;
 import com.ll.netmong.base.config.ApiKeys;
 import com.ll.netmong.domain.likePark.repository.LikedParkRepository;
 import com.ll.netmong.domain.member.entity.Member;
+import com.ll.netmong.domain.member.exception.MemberNotFoundException;
 import com.ll.netmong.domain.member.repository.MemberRepository;
 import com.ll.netmong.domain.park.dto.response.ParkResponse;
 import com.ll.netmong.domain.park.entity.Park;
+import com.ll.netmong.domain.park.exception.ParkNotFoundException;
 import com.ll.netmong.domain.park.repository.ParkRepository;
-import com.ll.netmong.domain.postComment.exception.DataNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
@@ -49,11 +51,14 @@ public class ParkServiceImpl implements ParkService {
     @Transactional(readOnly = true)
     public List<ParkResponse> getParks() {
         List<Park> parks = parkRepository.findAll();
-        return convertToParkResponses(parks);
+        return parks.stream()
+                .map(park -> ParkResponse.of(park, null))
+                .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
-    public List<Park> fetchParksFromApi() {
+    @Override
+    @Transactional
+    public void saveParksFromApi() {
         int pageNo = 1;
         List<Park> parks = new ArrayList<>();
 
@@ -67,32 +72,16 @@ public class ParkServiceImpl implements ParkService {
             pageNo++;
         }
 
-        return parks;
-    }
-
-    @Transactional
-    public void saveParksToDatabase(List<Park> parks) {
         parkRepository.saveAll(parks);
-    }
-
-    @Override
-    public void saveParksFromApi() {
-        List<Park> parks = fetchParksFromApi();
-        saveParksToDatabase(parks);
     }
 
     @Override
     @Transactional(readOnly = true)
     public ParkResponse getPark(Long parkId, UserDetails userDetails) {
-        Park park = parkRepository.findById(parkId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 공원이 존재하지 않습니다: " + parkId));
-
-        Member member = memberRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new DataNotFoundException("사용자를 찾을 수 없습니다."));
-
+        Park park = getParkById(parkId);
+        Member member = getMemberById(userDetails);
         boolean isLiked = likedParkRepository.existsByMemberAndPark(member, park);
-
-        return park.toResponse(isLiked);
+        return ParkResponse.of(park, isLiked);
     }
 
     @Override
@@ -111,18 +100,12 @@ public class ParkServiceImpl implements ParkService {
     @Transactional(readOnly = true)
     public List<ParkResponse> getParksByStateAndCity(String state, String city, UserDetails userDetails) {
         List<Park> parks = parkRepository.findByLnmadrStartingWith(state + " " + city);
-
-        Member member = memberRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new DataNotFoundException("사용자를 찾을 수 없습니다."));
-
+        Member member = getMemberById(userDetails);
         List<Long> likedParkIds = likedParkRepository.findLikedParkIdsByMemberId(member.getId());
 
-        List<ParkResponse> parkResponses = parks.stream().map(park -> {
-            boolean isLiked = likedParkIds.contains(park.getId());
-            return park.toResponse(isLiked);
-        }).collect(Collectors.toList());
-
-        return parkResponses;
+        return parks.stream()
+                .map(park -> ParkResponse.of(park, likedParkIds.contains(park.getId())))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -130,13 +113,7 @@ public class ParkServiceImpl implements ParkService {
     public List<ParkResponse> getParksWithPetAllowed() {
         List<Park> parks = parkRepository.findByPetAllowedTrue();
         return parks.stream()
-                .map(park -> park.toResponse(null))
-                .collect(Collectors.toList());
-    }
-
-    private List<ParkResponse> convertToParkResponses(List<Park> parks) {
-        return parks.stream()
-                .map(park -> park.toResponse(null))
+                .map(park -> ParkResponse.of(park, null))
                 .collect(Collectors.toList());
     }
 
@@ -145,28 +122,26 @@ public class ParkServiceImpl implements ParkService {
                 "?ServiceKey=" + apikeys.getParkApiKey() +
                 "&pageNo=" + pageNo +
                 "&numOfRows=100";
-        String result;
+        StringBuilder result = new StringBuilder();
+
         try {
             URL url = new URL(urlStr);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
 
             BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
-
             String returnLine;
-            StringBuilder resultBuilder = new StringBuilder();
 
             while ((returnLine = br.readLine()) != null) {
-                resultBuilder.append(returnLine).append("\n\r");
+                result.append(returnLine).append("\n\r");
             }
 
             urlConnection.disconnect();
-            result = resultBuilder.toString();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
-        return result;
+        return result.toString();
     }
 
     private List<Park> parseParksData(String data) {
@@ -191,10 +166,8 @@ public class ParkServiceImpl implements ParkService {
     private Park createParkFromElement(Element element) {
         String parkNm = element.getElementsByTagName("parkNm").item(0).getTextContent();
         String lnmadr = element.getElementsByTagName("lnmadr").item(0).getTextContent();
-        String latitudeStr = element.getElementsByTagName("latitude").item(0).getTextContent();
-        double latitude = latitudeStr.isEmpty() ? 0 : Double.parseDouble(latitudeStr);
-        String longitudeStr = element.getElementsByTagName("longitude").item(0).getTextContent();
-        double longitude = longitudeStr.isEmpty() ? 0 : Double.parseDouble(longitudeStr);
+        double latitude = Double.parseDouble(getElementTextContent(element, "latitude", "0"));
+        double longitude = Double.parseDouble(getElementTextContent(element, "longitude", "0"));
         String phoneNumber = element.getElementsByTagName("phoneNumber").item(0).getTextContent();
         String[] lnmadrSplit = lnmadr.split("\\s");
         String state = lnmadrSplit.length > 0 ? lnmadrSplit[0] : "";
@@ -210,4 +183,20 @@ public class ParkServiceImpl implements ParkService {
                 .city(city)
                 .build();
     }
+
+    private String getElementTextContent(Element element, String tagName, String defaultValue) {
+        Node node = element.getElementsByTagName(tagName).item(0);
+        return node != null ? node.getTextContent() : defaultValue;
+    }
+
+    private Member getMemberById(UserDetails userDetails) {
+        return memberRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new MemberNotFoundException("사용자를 찾을 수 없습니다."));
+    }
+
+    private Park getParkById(Long parkId) {
+        return parkRepository.findById(parkId)
+                .orElseThrow(() -> new ParkNotFoundException("해당하는 공원을 찾을 수 없습니다." + parkId));
+    }
+
 }

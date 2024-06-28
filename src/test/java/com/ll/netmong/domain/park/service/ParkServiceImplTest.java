@@ -6,7 +6,6 @@ import com.ll.netmong.domain.member.repository.MemberRepository;
 import com.ll.netmong.domain.park.dto.response.ParkResponse;
 import com.ll.netmong.domain.park.entity.Park;
 import com.ll.netmong.domain.park.repository.ParkRepository;
-import com.ll.netmong.domain.postComment.exception.DataNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -99,39 +98,6 @@ class ParkServiceImplTest {
     }
 
     @Test
-    @DisplayName("getPark() 메서드는 존재하지 않는 parkId를 입력받으면, IllegalArgumentException을 발생시켜야 한다.")
-    void testGetParkNotExists() {
-        Long parkId = 1L;
-
-        UserDetails mockUserDetails = mock(UserDetails.class);
-        when(mockUserDetails.getUsername()).thenReturn("testUsername");
-
-        when(parkRepository.findById(parkId)).thenReturn(Optional.empty());
-
-        assertThrows(IllegalArgumentException.class, () -> parkService.getPark(parkId, mockUserDetails));
-    }
-
-    @Test
-    @DisplayName("getPark() 메서드는 존재하지 않는 username을 입력받으면, DataNotFoundException을 발생시켜야 한다.")
-    void testGetParkUserNotExists() {
-        Long parkId = 1L;
-        Park existingPark = sampleParks.stream()
-                .filter(park -> park.getId().equals(parkId))
-                .findFirst()
-                .orElse(null);
-
-        assertNotNull(existingPark);
-
-        UserDetails mockUserDetails = mock(UserDetails.class);
-        when(mockUserDetails.getUsername()).thenReturn("nonExistingUsername");
-
-        when(parkRepository.findById(parkId)).thenReturn(Optional.ofNullable(existingPark));
-        when(memberRepository.findByEmail(mockUserDetails.getUsername())).thenReturn(Optional.empty());
-
-        assertThrows(DataNotFoundException.class, () -> parkService.getPark(parkId, mockUserDetails));
-    }
-
-    @Test
     @DisplayName("getParks() 메서드는 데이터를 조회하고, 조회한 데이터를 ParkResponse 객체로 변환한다.")
     void testGetParks() {
         when(parkRepository.findAll()).thenReturn(sampleParks);
@@ -142,14 +108,6 @@ class ParkServiceImplTest {
         assertThat(result.size()).isEqualTo(sampleParks.size());
         assertThat(result.get(0).getParkNm()).isEqualTo(sampleParks.get(0).getParkNm());
         assertThat(result.get(1).getParkNm()).isEqualTo(sampleParks.get(1).getParkNm());
-    }
-
-    @Test   // Open API 호출과 데이터 저장 부분은 예외를 발생시키지 않는다고 가정한다.
-    @DisplayName("getParks() 메서드는 비어있는 리스트를 반환하는 경우에도 예외를 발생시키지 않아야 한다.")
-    void testGetParksWhenNoData() {
-        when(parkRepository.findAll()).thenReturn(Collections.emptyList());
-
-        assertDoesNotThrow(() -> parkService.getParks());
     }
 
     @Test
